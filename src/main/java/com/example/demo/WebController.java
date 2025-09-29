@@ -12,7 +12,7 @@ public class WebController {
         return "home";
     }
 
-    @GetMapping("/test")
+    @GetMapping("/login")
     public String test() {
         System.out.println("Test controller hit");
         return "home";

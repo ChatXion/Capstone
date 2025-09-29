@@ -39,3 +39,17 @@ body {
 .btn:hover {
     background-color: #005fa3;
 }
+
+/* Add to: c:\demo\Capstone\src\main\resources\static\css\style.css */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-10px); }
+    80% { transform: translateX(10px); }
+    100% { transform: translateX(0); }
+}
+
+.shake {
+    animation: shake 0.5s;
+}
