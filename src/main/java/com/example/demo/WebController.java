@@ -8,13 +8,18 @@ public class WebController {
 
     @GetMapping("/")
     public String home() {
-        System.out.println("Home controller hit");
+        //System.out.println("Home controller hit");
         return "home";
     }
 
     @GetMapping("/login")
-    public String test() {
-        System.out.println("Test controller hit");
-        return "home";
+    public String login() {
+        return "login";
+    }
+
+    @GetMapping("/registration")
+    public String registration() {
+        return "registration";
     }
 }
+
