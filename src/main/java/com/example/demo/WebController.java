@@ -21,5 +21,10 @@ public class WebController {
     public String registration() {
         return "registration";
     }
+
+        @GetMapping("/employee-home")
+    public String employeeHome() {
+        return "employee-home";
+    }
 }
 
