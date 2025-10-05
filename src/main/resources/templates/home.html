@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+     <link rel="stylesheet" th:href="@{/css/nav.css}">
     <meta charset="UTF-8">
     <title>Express Time Card: Home</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
@@ -9,10 +11,15 @@
 <body>
     <div th:replace="~{fragments/nav :: nav}"></div>
     <div class="hero">
-        <h1>HOMEPAGE</h1>
-        <p>Your Spring Boot journey starts here.</p>
-        <a href="javascript:void(0)" class="btn" id="exploreBtn">Explore More</a>
+        <h1>Express Time Card</h1>
+        <p>Welcome to Express Time Card</p>
+        <!--  testing javascript
+        <a href="javascript:void(0)" class="btn" id="exploreBtn">TEST JAVASCRIPT</a> 
+         -->
+        <a href="/registration" class="btn">Register now!</a>
+        <p>Already have an account? <a href="/login">Login here</a></p>
     </div>
     <script src="/js/javascript.js"></script> 
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

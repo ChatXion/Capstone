@@ -5,6 +5,7 @@ body {
     color: #333;
 }
 
+
 .hero {
     text-align: center;
     padding: 100px 20px;
@@ -52,4 +53,61 @@ body {
 
 .shake {
     animation: shake 0.5s;
+}
+
+
+
+
+/* nav.css content *//* Add to: c:\demo\Capstone\src\main\resources\static\css\nav.css */
+
+.nav {
+    background: #007acc;
+    padding: 16px 0;
+    text-align: center;
+    margin-bottom: 30px;
+}
+.nav-link {
+    color: white;
+    text-decoration: none;
+    margin: 0 20px;
+    font-weight: bold;
+    font-size: 1.1em;
+    transition: color 0.2s;
+}
+.nav-link:hover {
+    color: #ffd700;
+}
+
+/* about.css content *//* Add to: c:\demo\Capstone\src\main\resources\static\css\style.css */
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background: #007acc;
+    color: white;
+    text-align: center;
+    padding: 16px 0;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+    font-size: 1em;
+}
+.footer h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.2em;
+}
+.footer p {
+    margin: 0;
+    font-size: 1em;
+}
+
+/** Responsive Design for mobile*/
+@media (max-width: 600px) {
+    .hero {
+        padding: 40px 10px;
+        font-size: 1em;
+    }
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 }
