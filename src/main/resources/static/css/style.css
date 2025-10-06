@@ -111,3 +111,65 @@ body {
         margin-bottom: 10px;
     }
 }
+
+/* login.html styles*/
+
+.login-page .login-container {
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.login-page .login-container h1 {
+    color: #007acc;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.login-page .login-container p {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #555;
+}
+
+.login-page .form-group {
+    margin-bottom: 20px;
+}
+
+.login-page .form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+.login-page .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.login-page .form-group input:focus {
+    border-color: #007acc;
+    outline: none;
+}
+
+.login-page .btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1em;
+    background-color: #007acc;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-page .btn:hover {
+    background-color: #005fa3;
+}

@@ -8,10 +8,27 @@
 
 <body>
     <div th:replace="~{fragments/nav :: nav}"></div>
-    <div class="hero">
-        <h1>Login Page🚀</h1>
-        <p>Login page</p>
+
+    <div class="hero login-page">
+        <div class="login-container">
+            <h1>Login</h1>
+            <p>Enter your credentials below</p>
+            <form>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="text" id="email" name="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+
+                <button type="button" class="btn">Log In</button>
+            </form>
+        </div>
     </div>
+
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
