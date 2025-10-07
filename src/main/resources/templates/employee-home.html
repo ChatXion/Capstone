@@ -5,214 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Home Page</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-     <link rel="stylesheet" th:href="@{/css/nav.css}">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-        }
-
-        .header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-name {
-            font-size: 0.9rem;
-        }
-
-        .logout-btn {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .logout-btn:hover {
-            background-color: #c0392b;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        .welcome-section {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .welcome-section h2 {
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-        }
-
-        .welcome-section p {
-            color: #7f8c8d;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .card {
-            background-color: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #ecf0f1;
-        }
-
-        .card-icon {
-            width: 50px;
-            height: 50px;
-            background-color: #3498db;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        .card-title {
-            font-size: 1.2rem;
-            color: #2c3e50;
-        }
-
-        .card-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .action-btn {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 0.75rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: background-color 0.2s;
-            text-align: left;
-        }
-
-        .action-btn:hover {
-            background-color: #2980b9;
-        }
-
-        .action-btn.secondary {
-            background-color: #95a5a6;
-        }
-
-        .action-btn.secondary:hover {
-            background-color: #7f8c8d;
-        }
-
-        .action-btn.success {
-            background-color: #27ae60;
-        }
-
-        .action-btn.success:hover {
-            background-color: #229954;
-        }
-
-        .info-section {
-            background-color: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .info-section h3 {
-            color: #2c3e50;
-            margin-bottom: 1rem;
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #ecf0f1;
-        }
-
-        .info-item:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            color: #7f8c8d;
-            font-weight: 500;
-        }
-
-        .info-value {
-            color: #2c3e50;
-            font-weight: 600;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/nav.css}">
 </head>
 <body>
+    <!-- Navigation -->
     <div th:replace="~{fragments/nav :: nav}"></div>
-    <div class="header">
-        <div class="header-content">
-            <h1>Timesheet Management System</h1>
-            <div class="user-info">
-                <span class="user-name" th:text="${firstName + ' ' + lastName}">John Doe</span>
-                <button class="logout-btn" onclick="logout()">Logout</button>
-            </div>
-        </div>
-    </div>
 
     <div class="container">
         <div class="welcome-section">
@@ -221,7 +18,7 @@
         </div>
 
         <div class="dashboard-grid">
-            <!-- Timesheet Management -->
+            <!-- Timesheet Management Card -->
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon">📋</div>
@@ -232,11 +29,11 @@
                     <button class="action-btn success" onclick="addTimesheet()">Add New Timesheet</button>
                     <button class="action-btn secondary" onclick="editTimesheet()">Edit Timesheet</button>
                     <button class="action-btn" onclick="submitTimesheet()">Submit Timesheet</button>
-                    <a href="/timesheet" class="action-btn">Go to Timesheet</a> </div>
+                    <a href="/timesheet" class="action-btn">Go to Timesheet</a>
                 </div>
             </div>
 
-            <!-- PTO Management -->
+            <!-- PTO Management Card -->
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon" style="background-color: #e74c3c;">🏖️</div>
@@ -248,7 +45,7 @@
                 </div>
             </div>
 
-            <!-- Pay Information -->
+            <!-- Pay Information Card -->
             <div class="card">
                 <div class="card-header">
                     <div class="card-icon" style="background-color: #27ae60;">💰</div>
@@ -311,14 +108,9 @@
         function viewPayCodes() {
             alert('View Pay Codes - This will display your available pay codes');
         }
-
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                alert('Logging out... This would redirect to the login page');
-                // window.location.href = '/logout';
-            }
-        }
     </script>
+
+    <!-- Footer -->
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
