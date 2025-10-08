@@ -5,12 +5,33 @@
     <title>Express Time Card: Registration</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-
 <body>
     <div th:replace="~{fragments/nav :: nav}"></div>
     <div class="hero">
-        <h1>Registration Page🚀</h1>
-        <p>Registration page</p>
+        <h1>Registration Page 🚀</h1>
+        <form class="registration_registration-form">
+            <div class="registration_form-group">
+                <label for="registration_invitationCode">Invitation Code</label>
+                <input type="text" id="registration_invitationCode" name="registration_invitationCode" required>
+            </div>
+            <div class="registration_form-group">
+                <label for="registration_firstName">First Name</label>
+                <input type="text" id="registration_firstName" name="registration_firstName" required>
+            </div>
+            <div class="registration_form-group">
+                <label for="registration_lastName">Last Name</label>
+                <input type="text" id="registration_lastName" name="registration_lastName" required>
+            </div>
+            <div class="registration_form-group">
+                <label for="registration_email">Email</label>
+                <input type="email" id="registration_email" name="registration_email" required>
+            </div>
+            <div class="registration_form-group">
+                <label for="registration_phone">Phone</label>
+                <input type="tel" id="registration_phone" name="registration_phone" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
     </div>
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>

@@ -397,3 +397,42 @@ body#timesheet_body {
 .timesheet_btn-primary:hover {
     background-color: #229954;
 }
+
+/* Registration form with unique classes/ids */
+.registration_registration-form {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.registration_registration-form .registration_form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.registration_registration-form label {
+    font-weight: 500;
+    color: #333;
+}
+
+.registration_registration-form input {
+    padding: 0.7rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    width: 100%;
+}
+
+.registration_registration-form input:focus {
+    border-color: #3498db;
+    outline: none;
+}
