@@ -22,9 +22,10 @@ public class WebController {
         return "registration";
     }
 
-        @GetMapping("/employee-home")
+    @GetMapping("/employee-home")
     public String employeeHome() {
         return "employee-home";
     }
+
 }
 

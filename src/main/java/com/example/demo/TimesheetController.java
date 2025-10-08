@@ -17,6 +17,6 @@ public class TimesheetController {
     @PostMapping("/timesheet")
     public String timesheetSubmit(Timesheet timesheet) {
         // Add logic to save the timesheet data
-        return "redirect:/employee-home";
+        return "redirect:/employee/home";
     }
 }

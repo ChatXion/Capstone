@@ -17,7 +17,7 @@ public class EmployeeHomePage {
         model.addAttribute("role", "Developer");
         model.addAttribute("organization", "Company Co.");
         
-        System.out.println("Employee home page accessed");
+        //System.out.println("Employee home page accessed");
         return "employee-home";
     }
 }
