@@ -23,8 +23,6 @@ public class EmployeeHomePage {
 
     @GetMapping("/nav_user")
     public String navUser(Model model) {
-        // Placeholder data - will be replaced with actual employee data from session/database
-        model.addAttribute("firstName", "John");
         return "nav_user";
     }
 }

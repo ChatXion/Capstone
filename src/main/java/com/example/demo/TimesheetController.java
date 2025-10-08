@@ -11,6 +11,7 @@ public class TimesheetController {
     @GetMapping("/timesheet")
     public String timesheetForm(Model model) {
         model.addAttribute("timesheet", new Timesheet());
+        model.addAttribute("firstName", "John");
         return "timesheet";
     }
 
