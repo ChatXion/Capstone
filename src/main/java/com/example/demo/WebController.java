@@ -26,6 +26,5 @@ public class WebController {
     public String employeeHome() {
         return "employee-home";
     }
-
 }
 

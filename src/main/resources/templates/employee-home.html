@@ -5,76 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Home Page</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" th:href="@{/css/nav.css}">
 </head>
 <body>
     <!-- Navigation -->
-    <div th:replace="~{fragments/nav :: nav}"></div>
+    <div th:replace="~{fragments/nav_user :: nav}"></div>
 
-    <div class="container">
-        <div class="welcome-section">
+    <div class="employeehome_container">
+        <div class="employeehome_welcome-section">
             <h2 th:text="'Welcome Back, ' + ${firstName} + '!'">Welcome Back, John!</h2>
             <p>Manage your timesheets, view your PTO balance, and access your pay information.</p>
         </div>
 
-        <div class="dashboard-grid">
+        <div class="employeehome_dashboard-grid">
             <!-- Timesheet Management Card -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon">📋</div>
-                    <h3 class="card-title">Timesheets</h3>
+            <div class="employeehome_card">
+                <div class="employeehome_card-header">
+                    <div class="employeehome_card-icon">📋</div>
+                    <h3 class="employeehome_card-title">Timesheets</h3>
                 </div>
-                <div class="card-actions">
-                    <button class="action-btn" onclick="viewTimesheets()">View All Timesheets</button>
-                    <button class="action-btn success" onclick="addTimesheet()">Add New Timesheet</button>
-                    <button class="action-btn secondary" onclick="editTimesheet()">Edit Timesheet</button>
-                    <button class="action-btn" onclick="submitTimesheet()">Submit Timesheet</button>
-                    <a href="/timesheet" class="action-btn">Go to Timesheet</a>
+                <div class="employeehome_card-actions">
+                    <button class="employeehome_action-btn" onclick="viewTimesheets()">View All Timesheets</button>
+                    <button class="employeehome_action-btn employeehome_success" onclick="addTimesheet()">Add New Timesheet</button>
+                    <button class="employeehome_action-btn employeehome_secondary" onclick="editTimesheet()">Edit Timesheet</button>
+                    <button class="employeehome_action-btn" onclick="submitTimesheet()">Submit Timesheet</button>
+                    <a href="/timesheet" class="employeehome_action-btn">Go to Timesheet</a>
                 </div>
             </div>
 
             <!-- PTO Management Card -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon" style="background-color: #e74c3c;">🏖️</div>
-                    <h3 class="card-title">Time Off</h3>
+            <div class="employeehome_card">
+                <div class="employeehome_card-header">
+                    <div class="employeehome_card-icon" style="background-color: #e74c3c;">🏖️</div>
+                    <h3 class="employeehome_card-title">Time Off</h3>
                 </div>
-                <div class="card-actions">
-                    <button class="action-btn" onclick="viewPTOBalance()">View PTO Balance</button>
-                    <button class="action-btn success" onclick="requestPTO()">Request Time Off</button>
+                <div class="employeehome_card-actions">
+                    <button class="employeehome_action-btn" onclick="viewPTOBalance()">View PTO Balance</button>
+                    <button class="employeehome_action-btn employeehome_success" onclick="requestPTO()">Request Time Off</button>
                 </div>
             </div>
 
             <!-- Pay Information Card -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon" style="background-color: #27ae60;">💰</div>
-                    <h3 class="card-title">Pay Information</h3>
+            <div class="employeehome_card">
+                <div class="employeehome_card-header">
+                    <div class="employeehome_card-icon" style="background-color: #27ae60;">💰</div>
+                    <h3 class="employeehome_card-title">Pay Information</h3>
                 </div>
-                <div class="card-actions">
-                    <button class="action-btn" onclick="viewPayCodes()">View Pay Codes</button>
+                <div class="employeehome_card-actions">
+                    <button class="employeehome_action-btn" onclick="viewPayCodes()">View Pay Codes</button>
                 </div>
             </div>
         </div>
 
         <!-- Employee Information Section -->
-        <div class="info-section">
+        <div class="employeehome_info-section">
             <h3>Your Information</h3>
-            <div class="info-item">
-                <span class="info-label">Employee ID:</span>
-                <span class="info-value" th:text="${employeeId}">12345</span>
+            <div class="employeehome_info-item">
+                <span class="employeehome_info-label">Employee ID:</span>
+                <span class="employeehome_info-value" th:text="${employeeId}">12345</span>
             </div>
-            <div class="info-item">
-                <span class="info-label">Email:</span>
-                <span class="info-value" th:text="${email}">john.doe@company.com</span>
+            <div class="employeehome_info-item">
+                <span class="employeehome_info-label">Email:</span>
+                <span class="employeehome_info-value" th:text="${email}">john.doe@company.com</span>
             </div>
-            <div class="info-item">
-                <span class="info-label">Role:</span>
-                <span class="info-value" th:text="${role}">Developer</span>
+            <div class="employeehome_info-item">
+                <span class="employeehome_info-label">Role:</span>
+                <span class="employeehome_info-value" th:text="${role}">Developer</span>
             </div>
-            <div class="info-item">
-                <span class="info-label">Organization:</span>
-                <span class="info-value" th:text="${organization}">Tech Department</span>
+            <div class="employeehome_info-item">
+                <span class="employeehome_info-label">Organization:</span>
+                <span class="employeehome_info-value" th:text="${organization}">Tech Department</span>
             </div>
         </div>
     </div>

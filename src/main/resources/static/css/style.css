@@ -176,13 +176,13 @@ body {
 
 /* ===== EMPLOYEE HOME PAGE STYLES ===== */
 
-.container {
+.employeehome_container {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 2rem;
 }
 
-.welcome-section {
+.employeehome_welcome-section {
     background-color: white;
     padding: 2rem;
     border-radius: 8px;
@@ -190,23 +190,23 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.welcome-section h2 {
+.employeehome_welcome-section h2 {
     color: #2c3e50;
     margin-bottom: 0.5rem;
 }
 
-.welcome-section p {
+.employeehome_welcome-section p {
     color: #7f8c8d;
 }
 
-.dashboard-grid {
+.employeehome_dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
 }
 
-.card {
+.employeehome_card {
     background-color: white;
     border-radius: 8px;
     padding: 1.5rem;
@@ -214,12 +214,12 @@ body {
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.card:hover {
+.employeehome_card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-.card-header {
+.employeehome_card-header {
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -228,7 +228,7 @@ body {
     border-bottom: 2px solid #ecf0f1;
 }
 
-.card-icon {
+.employeehome_card-icon {
     width: 50px;
     height: 50px;
     background-color: #3498db;
@@ -240,18 +240,18 @@ body {
     color: white;
 }
 
-.card-title {
+.employeehome_card-title {
     font-size: 1.2rem;
     color: #2c3e50;
 }
 
-.card-actions {
+.employeehome_card-actions {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
 }
 
-.action-btn {
+.employeehome_action-btn {
     background-color: #3498db;
     color: white;
     border: none;
@@ -265,7 +265,7 @@ body {
     display: block;
 }
 
-.action-btn:hover {
+.employeehome_action-btn:hover {
     background-color: #2980b9;
 }
 
@@ -273,19 +273,19 @@ body {
     background-color: #95a5a6;
 }
 
-.action-btn.secondary:hover {
+.employeehome_action-btn.secondary:hover {
     background-color: #7f8c8d;
 }
 
-.action-btn.success {
+.employeehome_action-btn.success {
     background-color: #27ae60;
 }
 
-.action-btn.success:hover {
+.employeehome_action-btn.success:hover {
     background-color: #229954;
 }
 
-.info-section {
+.employeehome_info-section {
     background-color: white;
     border-radius: 8px;
     padding: 1.5rem;
@@ -293,28 +293,28 @@ body {
     margin-bottom: 80px; /* Space for fixed footer */
 }
 
-.info-section h3 {
+.employeehome_info-section h3 {
     color: #2c3e50;
     margin-bottom: 1rem;
 }
 
-.info-item {
+.employeehome_info-item {
     display: flex;
     justify-content: space-between;
     padding: 0.75rem 0;
     border-bottom: 1px solid #ecf0f1;
 }
 
-.info-item:last-child {
+.employeehome_info-item:last-child {
     border-bottom: none;
 }
 
-.info-label {
+.employeehome_info-label {
     color: #7f8c8d;
     font-weight: 500;
 }
 
-.info-value {
+.employeehome_info-value {
     color: #2c3e50;
     font-weight: 600;
 }

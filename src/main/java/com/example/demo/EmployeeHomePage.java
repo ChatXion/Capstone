@@ -20,4 +20,11 @@ public class EmployeeHomePage {
         //System.out.println("Employee home page accessed");
         return "employee-home";
     }
+
+    @GetMapping("/nav_user")
+    public String navUser(Model model) {
+        // Placeholder data - will be replaced with actual employee data from session/database
+        model.addAttribute("firstName", "John");
+        return "nav_user";
+    }
 }
