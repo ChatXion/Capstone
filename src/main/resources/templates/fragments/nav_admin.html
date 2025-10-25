@@ -1,0 +1,8 @@
+<!-- Nav bar for logged-in admin users -->
+<div class="nav" th:fragment="nav">
+    <a href="/admin/home" class="nav-link"><span th:text="${firstName}">Admin</span>'s Dashboard</a>
+    <a href="/admin/registrations" class="nav-link">Registrations</a>
+    <a href="/admin/users" class="nav-link">Users</a>
+    <a href="/admin/approvals" class="nav-link">Approvals</a>
+    <a href="/" class="nav-link">Logout</a> 
+</div>

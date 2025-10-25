@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create User - Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/nav_admin :: nav}"></div>
+    
+    <div class="hero">
+        <h1>Create New User</h1>
+        <form class="registration_registration-form" action="#" th:action="@{/admin/create-user}" method="post">
+            <div class="registration_form-group">
+                <label for="create_firstName">First Name</label>
+                <input type="text" id="create_firstName" name="firstName" required>
+            </div>
+            <div class="registration_form-group">
+                <label for="create_lastName">Last Name</label>
+                <input type="text" id="create_lastName" name="lastName" required>
+            </div>
+            <div class="registration_form-group">
+                <label for="create_email">Email</label>
+                <input type="email" id="create_email" name="email" required>
+            </div>
+            <div class="registration_form-group">
+                <label for="create_phone">Phone</label>
+                <input type="tel" id="create_phone" name="phone" required>
+            </div>
+            <div class="registration_form-group">
+                <label for="create_userType">User Type</label>
+                <select id="create_userType" name="userType" required style="padding: 0.7rem 1rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; width: 100%;">
+                    <option value="">Select User Type</option>
+                    <option value="employee">Employee</option>
+                    <option value="admin">Administrator</option>
+                    <option value="manager">Manager</option>
+                </select>
+            </div>
+            <div class="registration_form-group">
+                <label for="create_organization">Organization</label>
+                <input type="text" id="create_organization" name="organization" required>
+            </div>
+            <div class="registration_form-group">
+                <label for="create_role">Role/Position</label>
+                <input type="text" id="create_role" name="role" required>
+            </div>
+            <div class="registration_form-group">
+                <label for="create_tempPassword">Temporary Password</label>
+                <input type="password" id="create_tempPassword" name="tempPassword" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Create User</button>
+            <a href="/admin/home" class="btn" style="background-color: #95a5a6; margin-top: 10px;">Cancel</a>
+        </form>
+    </div>
+    
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

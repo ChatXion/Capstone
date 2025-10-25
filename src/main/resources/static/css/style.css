@@ -1,3 +1,5 @@
+/*GLOBAL STYLES*/
+
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -5,12 +7,68 @@ body {
     color: #333;
 }
 
+body#timesheet_body {
+    background-color: #f5f5f5;
+    padding: 0;
+}
+
+
+/*NAVIGATION*/
+
+.nav {
+    background: #007acc;
+    padding: 16px 0;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    margin: 0 20px;
+    font-weight: bold;
+    font-size: 1.1em;
+    transition: color 0.2s;
+}
+
+.nav-link:hover {
+    color: #ffd700;
+}
+
+
+/*FOOTER*/
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background: #007acc;
+    color: white;
+    text-align: center;
+    padding: 16px 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+    font-size: 1em;
+}
+
+.footer h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.2em;
+}
+
+.footer p {
+    margin: 0;
+    font-size: 1em;
+}
+
+
+/*HERO SECTION*/
 
 .hero {
     text-align: center;
     padding: 100px 20px;
     background-color: white;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     margin: 50px auto;
     max-width: 600px;
     border-radius: 12px;
@@ -27,6 +85,9 @@ body {
     margin-bottom: 30px;
 }
 
+
+/*BUTTONS*/
+
 .btn {
     display: inline-block;
     padding: 12px 24px;
@@ -41,14 +102,138 @@ body {
     background-color: #005fa3;
 }
 
-/* Add to: c:\demo\Capstone\src\main\resources\static\css\style.css */
+.btn-small {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-view {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-view:hover {
+    background-color: #2980b9;
+}
+
+.btn-edit {
+    background-color: #f39c12;
+    color: white;
+}
+
+.btn-edit:hover {
+    background-color: #e67e22;
+}
+
+.btn-timesheets {
+    background-color: #27ae60;
+    color: white;
+}
+
+.btn-timesheets:hover {
+    background-color: #229954;
+}
+
+.btn-delete {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #c0392b;
+}
+
+.btn-approve {
+    background-color: #27ae60;
+    color: white;
+}
+
+.btn-approve:hover {
+    background-color: #229954;
+}
+
+.btn-deny {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-deny:hover {
+    background-color: #c0392b;
+}
+
+.btn-cancel {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #7f8c8d;
+}
+
+.btn-confirm {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-confirm:hover {
+    background-color: #2980b9;
+}
+
+.btn-confirm-delete {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-confirm-delete:hover {
+    background-color: #c0392b;
+}
+
+.btn-confirm-approve {
+    background-color: #27ae60;
+    color: white;
+}
+
+.btn-confirm-approve:hover {
+    background-color: #229954;
+}
+
+.btn-confirm-deny {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-confirm-deny:hover {
+    background-color: #c0392b;
+}
+
+
+/*ANIMATIONS*/
+
 @keyframes shake {
-    0% { transform: translateX(0); }
-    20% { transform: translateX(-10px); }
-    40% { transform: translateX(10px); }
-    60% { transform: translateX(-10px); }
-    80% { transform: translateX(10px); }
-    100% { transform: translateX(0); }
+    0% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateX(-10px);
+    }
+    40% {
+        transform: translateX(10px);
+    }
+    60% {
+        transform: translateX(-10px);
+    }
+    80% {
+        transform: translateX(10px);
+    }
+    100% {
+        transform: translateX(0);
+    }
 }
 
 .shake {
@@ -56,63 +241,7 @@ body {
 }
 
 
-
-
-/* nav.css content *//* Add to: c:\demo\Capstone\src\main\resources\static\css\nav.css */
-
-.nav {
-    background: #007acc;
-    padding: 16px 0;
-    text-align: center;
-    margin-bottom: 30px;
-}
-.nav-link {
-    color: white;
-    text-decoration: none;
-    margin: 0 20px;
-    font-weight: bold;
-    font-size: 1.1em;
-    transition: color 0.2s;
-}
-.nav-link:hover {
-    color: #ffd700;
-}
-
-/* footer.css content *//* Add to: c:\demo\Capstone\src\main\resources\static\css\style.css */
-.footer {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    background: #007acc;
-    color: white;
-    text-align: center;
-    padding: 16px 0;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-    font-size: 1em;
-}
-.footer h3 {
-    margin: 0 0 8px 0;
-    font-size: 1.2em;
-}
-.footer p {
-    margin: 0;
-    font-size: 1em;
-}
-
-/** Responsive Design for mobile*/
-@media (max-width: 600px) {
-    .hero {
-        padding: 40px 10px;
-        font-size: 1em;
-    }
-    .btn {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-}
-
-/* login.html styles*/
+/*LOGIN PAGE*/
 
 .login-page .login-container {
     max-width: 400px;
@@ -174,7 +303,49 @@ body {
     background-color: #005fa3;
 }
 
-/* ===== EMPLOYEE HOME PAGE STYLES ===== */
+
+/*REGISTRATION FORM*/
+
+.registration_registration-form {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.registration_registration-form .registration_form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.registration_registration-form label {
+    font-weight: 500;
+    color: #333;
+}
+
+.registration_registration-form input {
+    padding: 0.7rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    width: 100%;
+}
+
+.registration_registration-form input:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+
+/*EMPLOYEE HOME PAGE*/
 
 .employeehome_container {
     max-width: 1200px;
@@ -187,7 +358,7 @@ body {
     padding: 2rem;
     border-radius: 8px;
     margin-bottom: 2rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .employeehome_welcome-section h2 {
@@ -210,13 +381,13 @@ body {
     background-color: white;
     border-radius: 8px;
     padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .employeehome_card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .employeehome_card-header {
@@ -289,8 +460,8 @@ body {
     background-color: white;
     border-radius: 8px;
     padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-bottom: 80px; /* Space for fixed footer */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 80px;
 }
 
 .employeehome_info-section h3 {
@@ -320,15 +491,7 @@ body {
 }
 
 
-/* Timesheet CSS */
-
-body#timesheet_body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f5f5;
-    color: #333;
-    margin: 0;
-    padding: 0;
-}
+/*TIMESHEET PAGE*/
 
 .timesheet_container {
     max-width: 800px;
@@ -336,7 +499,7 @@ body#timesheet_body {
     padding: 2rem;
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .timesheet_h2 {
@@ -362,7 +525,7 @@ body#timesheet_body {
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1rem;
-    box-sizing: border-box; /* Important for padding and width calculation */
+    box-sizing: border-box;
     transition: border-color 0.2s;
 }
 
@@ -383,7 +546,7 @@ body#timesheet_body {
     transition: background-color 0.2s;
     width: 100%;
     text-align: center;
-    text-decoration: none; /* In case you use an <a> tag as a button */
+    text-decoration: none;
 }
 
 .timesheet_btn:hover {
@@ -398,41 +561,520 @@ body#timesheet_body {
     background-color: #229954;
 }
 
-/* Registration form with unique classes/ids */
-.registration_registration-form {
-    max-width: 400px;
+
+/*APPROVALS PAGE*/
+
+.approvals-container {
+    max-width: 1400px;
     margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.approvals-header {
+    background-color: white;
     padding: 2rem;
-    background: #fff;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.header-text h2 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.header-text p {
+    color: #7f8c8d;
+    margin: 0;
+}
+
+.pending-summary {
+    display: flex;
+    gap: 2rem;
+}
+
+.pending-item {
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    min-width: 120px;
 }
 
-.registration_registration-form .registration_form-group {
+.pending-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #f39c12;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.pending-label {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    text-align: center;
+}
+
+.tabs {
     display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #ecf0f1;
 }
 
-.registration_registration-form label {
-    font-weight: 500;
-    color: #333;
+.tab-button {
+    padding: 1rem 2rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #7f8c8d;
+    transition: all 0.3s;
 }
 
-.registration_registration-form input {
-    padding: 0.7rem 1rem;
+.tab-button:hover {
+    color: #3498db;
+}
+
+.tab-button.active {
+    color: #3498db;
+    border-bottom-color: #3498db;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.approvals-header h2 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.approvals-header p {
+    color: #7f8c8d;
+}
+
+.approvals-table-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    margin-bottom: 100px;
+}
+
+.approvals-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.approvals-table thead {
+    background-color: #3498db;
+    color: white;
+}
+
+.approvals-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.approvals-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.approvals-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.no-items {
+    text-align: center;
+    padding: 3rem;
+    color: #7f8c8d;
+}
+
+.type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.type-vacation {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.type-sick {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.type-personal {
+    background-color: #d6eaf8;
+    color: #1f618d;
+}
+
+
+/*USERS PAGE*/
+
+.users-container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.users-header {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.users-header h2 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.users-header p {
+    color: #7f8c8d;
+}
+
+.users-table-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    margin-bottom: 100px;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.users-table thead {
+    background-color: #3498db;
+    color: white;
+}
+
+.users-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.users-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.users-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.no-users {
+    text-align: center;
+    padding: 3rem;
+    color: #7f8c8d;
+}
+
+
+/*REGISTRATIONS PAGE*/
+
+.registrations-container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.registrations-header {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.registrations-header h2 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.registrations-header p {
+    color: #7f8c8d;
+}
+
+.registrations-table-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    margin-bottom: 100px;
+}
+
+.registrations-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.registrations-table thead {
+    background-color: #3498db;
+    color: white;
+}
+
+.registrations-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.registrations-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.registrations-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.no-registrations {
+    text-align: center;
+    padding: 3rem;
+    color: #7f8c8d;
+}
+
+
+/*STATUS BADGES*/
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-approved {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-denied {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+
+/*USER TYPE BADGE*/
+
+.user-type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.type-admin {
+    background-color: #e8daef;
+    color: #6c3483;
+}
+
+.type-manager {
+    background-color: #d6eaf8;
+    color: #1f618d;
+}
+
+.type-employee {
+    background-color: #d5f4e6;
+    color: #0e6655;
+}
+
+
+/*ACTION BUTTONS*/
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+
+/*MODALS*/
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    margin-bottom: 1.5rem;
+}
+
+.modal-header h3 {
+    color: #2c3e50;
+    margin: 0;
+}
+
+.modal-body {
+    margin-bottom: 1.5rem;
+}
+
+.modal-body p {
+    margin: 0.5rem 0;
+    color: #555;
+}
+
+.modal-body textarea {
+    width: 100%;
+    padding: 0.75rem;
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-family: inherit;
     font-size: 1rem;
+    resize: vertical;
+    min-height: 100px;
     box-sizing: border-box;
-    transition: border-color 0.2s;
-    width: 100%;
 }
 
-.registration_registration-form input:focus {
-    border-color: #3498db;
-    outline: none;
+.modal-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.modal-footer button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #7f8c8d;
+}
+
+.info-value {
+    color: #2c3e50;
+}
+
+
+/*RESPONSIVE DESIGN*/
+
+@media (max-width: 768px) {
+    .tabs {
+        flex-direction: column;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pending-summary {
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    .approvals-table {
+        font-size: 0.85rem;
+    }
+
+    .approvals-table th,
+    .approvals-table td {
+        padding: 0.5rem;
+    }
+
+    .users-table,
+    .registrations-table {
+        font-size: 0.85rem;
+    }
+
+    .users-table th,
+    .users-table td,
+    .registrations-table th,
+    .registrations-table td {
+        padding: 0.5rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero {
+        padding: 40px 10px;
+        font-size: 1em;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 }

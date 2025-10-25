@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Registrations - Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Navigation -->
+    <div th:replace="~{fragments/nav_admin :: nav}"></div>
+
+    <div class="registrations-container">
+        <div class="registrations-header">
+            <h2>Pending Registrations</h2>
+            <p>Review and approve or deny user registration requests</p>
+        </div>
+
+        <div class="registrations-table-container">
+            <table class="registrations-table" th:if="${not #lists.isEmpty(registrations)}">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Invitation Code</th>
+                        <th>Submitted Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="registration : ${registrations}">
+                        <td th:text="${registration.id}">1</td>
+                        <td th:text="${registration.firstName + ' ' + registration.lastName}">Jane Smith</td>
+                        <td th:text="${registration.email}">jane.smith@email.com</td>
+                        <td th:text="${registration.phone}">555-0101</td>
+                        <td th:text="${registration.invitationCode}">INV12345</td>
+                        <td th:text="${#temporals.format(registration.submittedDate, 'MMM dd, yyyy')}">Oct 20, 2025</td>
+                        <td>
+                            <span class="status-badge status-pending" 
+                                  th:text="${registration.status}"
+                                  th:classappend="${registration.status == 'Pending' ? 'status-pending' : (registration.status == 'Approved' ? 'status-approved' : 'status-denied')}">
+                                Pending
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-small btn-view" 
+                                        th:data-registration-id="${registration.id}"
+                                        onclick="viewRegistration(this.getAttribute('data-registration-id'))">
+                                    View
+                                </button>
+                                <button class="btn-small btn-approve" 
+                                        th:data-registration-id="${registration.id}"
+                                        th:data-user-name="${registration.firstName + ' ' + registration.lastName}"
+                                        onclick="showApproveModal(this.getAttribute('data-registration-id'), this.getAttribute('data-user-name'))">
+                                    Approve
+                                </button>
+                                <button class="btn-small btn-deny" 
+                                        th:data-registration-id="${registration.id}"
+                                        th:data-user-name="${registration.firstName + ' ' + registration.lastName}"
+                                        onclick="showDenyModal(this.getAttribute('data-registration-id'), this.getAttribute('data-user-name'))">
+                                    Deny
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="no-registrations" th:if="${#lists.isEmpty(registrations)}">
+                <h3>No Pending Registrations</h3>
+                <p>There are no registration requests to review at this time.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="approveModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Approve Registration</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to approve the registration for <strong id="approveUserName"></strong>?</p>
+                <p>This will create a user account and send them a confirmation email.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeApproveModal()">Cancel</button>
+                <form id="approveForm" method="post" th:action="@{/admin/registrations/approve}" style="display: inline;">
+                    <input type="hidden" name="registrationId" id="approveRegistrationId">
+                    <button type="submit" class="btn-confirm-approve">Approve</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="denyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Deny Registration</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to deny the registration for <strong id="denyUserName"></strong>?</p>
+                <form id="denyForm" method="post" th:action="@{/admin/registrations/deny}">
+                    <input type="hidden" name="registrationId" id="denyRegistrationId">
+                    <label for="denyReason" style="display: block; margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Reason for denial (optional):</label>
+                    <textarea id="denyReason" name="reason" placeholder="Enter reason for denial..."></textarea>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeDenyModal()">Cancel</button>
+                <button type="button" class="btn-confirm-deny" onclick="submitDenyForm()">Deny</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Registration Details</h3>
+            </div>
+            <div class="modal-body" id="viewModalBody">
+                <!-- Details will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeViewModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        function showApproveModal(id, name) {
+            document.getElementById('approveModal').style.display = 'block';
+            document.getElementById('approveUserName').textContent = name;
+            document.getElementById('approveRegistrationId').value = id;
+        }
+
+        function closeApproveModal() {
+            document.getElementById('approveModal').style.display = 'none';
+        }
+
+        function showDenyModal(id, name) {
+            document.getElementById('denyModal').style.display = 'block';
+            document.getElementById('denyUserName').textContent = name;
+            document.getElementById('denyRegistrationId').value = id;
+        }
+
+        function closeDenyModal() {
+            document.getElementById('denyModal').style.display = 'none';
+            document.getElementById('denyReason').value = '';
+        }
+
+        function submitDenyForm() {
+            document.getElementById('denyForm').submit();
+        }
+
+
+        function viewRegistration(id) {
+            const modalBody = document.getElementById('viewModalBody');
+            modalBody.innerHTML = `
+                <p><strong>Registration ID:</strong> ${id}</p>
+                <p><strong>Status:</strong> Pending</p>
+                <p style="margin-top: 1rem; color: #7f8c8d;">Full registration details would be displayed here in the actual implementation.</p>
+            `;
+            document.getElementById('viewModal').style.display = 'block';
+        }
+
+        function closeViewModal() {
+            document.getElementById('viewModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const approveModal = document.getElementById('approveModal');
+            const denyModal = document.getElementById('denyModal');
+            const viewModal = document.getElementById('viewModal');
+            
+            if (event.target == approveModal) {
+                closeApproveModal();
+            }
+            if (event.target == denyModal) {
+                closeDenyModal();
+            }
+            if (event.target == viewModal) {
+                closeViewModal();
+            }
+        }
+    </script>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

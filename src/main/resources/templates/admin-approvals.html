@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approvals - Admin</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Navigation -->
+    <div th:replace="~{fragments/nav_admin :: nav}"></div>
+
+    <div class="approvals-container">
+        <div class="approvals-header">
+            <div class="header-content">
+                <div class="header-text">
+                    <h2>Approvals Management</h2>
+                    <p>Review and approve pending timesheets and PTO requests</p>
+                </div>
+                <div class="pending-summary">
+                    <div class="pending-item">
+                        <span class="pending-number" id="timesheetCount" th:text="${#lists.size(timesheets)}">4</span>
+                        <span class="pending-label">Pending Timesheets</span>
+                    </div>
+                    <div class="pending-item">
+                        <span class="pending-number" id="ptoCount" th:text="${#lists.size(ptoRequests)}">5</span>
+                        <span class="pending-label">Pending PTO Requests</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab(event, 'timesheets')">
+                ⏰ Pending Timesheets
+            </button>
+            <button class="tab-button" onclick="openTab(event, 'pto')">
+                🏖️ Pending PTO Requests
+            </button>
+        </div>
+
+        <!-- Timesheets Tab -->
+        <div id="timesheets" class="tab-content active">
+            <div class="approvals-table-container">
+                <table class="approvals-table" th:if="${not #lists.isEmpty(timesheets)}">
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Employee Name</th>
+                            <th>Week Period</th>
+                            <th>Total Hours</th>
+                            <th>Submitted Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="timesheet : ${timesheets}">
+                            <td th:text="${timesheet.employeeId}">12345</td>
+                            <td th:text="${timesheet.employeeName}">John Doe</td>
+                            <td th:text="${#temporals.format(timesheet.startDate, 'MMM dd')} + ' - ' + ${#temporals.format(timesheet.endDate, 'MMM dd, yyyy')}">Oct 14 - Oct 20, 2025</td>
+                            <td th:text="${timesheet.totalHours}">40.0</td>
+                            <td th:text="${#temporals.format(timesheet.submittedDate, 'MMM dd, yyyy')}">Oct 21, 2025</td>
+                            <td>
+                                <span class="status-badge status-pending" th:text="${timesheet.status}">Pending</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-small btn-view" 
+                                            th:data-timesheet-id="${timesheet.id}"
+                                            th:data-employee-id="${timesheet.employeeId}"
+                                            th:data-employee-name="${timesheet.employeeName}"
+                                            th:data-start-date="${#temporals.format(timesheet.startDate, 'MMM dd, yyyy')}"
+                                            th:data-end-date="${#temporals.format(timesheet.endDate, 'MMM dd, yyyy')}"
+                                            th:data-total-hours="${timesheet.totalHours}"
+                                            th:data-submitted-date="${#temporals.format(timesheet.submittedDate, 'MMM dd, yyyy')}"
+                                            th:data-notes="${timesheet.notes}"
+                                            onclick="viewTimesheetDetails(this)">
+                                        View
+                                    </button>
+                                    <button class="btn-small btn-approve" 
+                                            th:data-timesheet-id="${timesheet.id}"
+                                            th:data-employee-name="${timesheet.employeeName}"
+                                            onclick="showApproveTimesheetModal(this.getAttribute('data-timesheet-id'), this.getAttribute('data-employee-name'))">
+                                        Approve
+                                    </button>
+                                    <button class="btn-small btn-deny" 
+                                            th:data-timesheet-id="${timesheet.id}"
+                                            th:data-employee-name="${timesheet.employeeName}"
+                                            onclick="showDenyTimesheetModal(this.getAttribute('data-timesheet-id'), this.getAttribute('data-employee-name'))">
+                                        Deny
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="no-items" th:if="${#lists.isEmpty(timesheets)}">
+                    <h3>No Pending Timesheets</h3>
+                    <p>There are no timesheets awaiting approval at this time.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PTO Requests Tab -->
+        <div id="pto" class="tab-content">
+            <div class="approvals-table-container">
+                <table class="approvals-table" th:if="${not #lists.isEmpty(ptoRequests)}">
+                    <thead>
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Employee Name</th>
+                            <th>Request Type</th>
+                            <th>Date Range</th>
+                            <th>Days</th>
+                            <th>Submitted Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="pto : ${ptoRequests}">
+                            <td th:text="${pto.employeeId}">12349</td>
+                            <td th:text="${pto.employeeName}">Robert Wilson</td>
+                            <td>
+                                <span class="type-badge"
+                                      th:text="${pto.requestType}"
+                                      th:classappend="${pto.requestType == 'Vacation' ? 'type-vacation' : (pto.requestType == 'Sick Leave' ? 'type-sick' : 'type-personal')}">
+                                    Vacation
+                                </span>
+                            </td>
+                            <td th:text="${#temporals.format(pto.startDate, 'MMM dd')} + ' - ' + ${#temporals.format(pto.endDate, 'MMM dd, yyyy')}">Nov 10 - Nov 15, 2025</td>
+                            <td th:text="${pto.daysRequested}">5.0</td>
+                            <td th:text="${#temporals.format(pto.submittedDate, 'MMM dd, yyyy')}">Oct 20, 2025</td>
+                            <td>
+                                <span class="status-badge status-pending" th:text="${pto.status}">Pending</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-small btn-view" 
+                                            th:data-pto-id="${pto.id}"
+                                            th:data-employee-id="${pto.employeeId}"
+                                            th:data-employee-name="${pto.employeeName}"
+                                            th:data-request-type="${pto.requestType}"
+                                            th:data-start-date="${#temporals.format(pto.startDate, 'MMM dd, yyyy')}"
+                                            th:data-end-date="${#temporals.format(pto.endDate, 'MMM dd, yyyy')}"
+                                            th:data-days-requested="${pto.daysRequested}"
+                                            th:data-submitted-date="${#temporals.format(pto.submittedDate, 'MMM dd, yyyy')}"
+                                            th:data-reason="${pto.reason}"
+                                            onclick="viewPTODetails(this)">
+                                        View
+                                    </button>
+                                    <button class="btn-small btn-approve" 
+                                            th:data-pto-id="${pto.id}"
+                                            th:data-employee-name="${pto.employeeName}"
+                                            onclick="showApprovePTOModal(this.getAttribute('data-pto-id'), this.getAttribute('data-employee-name'))">
+                                        Approve
+                                    </button>
+                                    <button class="btn-small btn-deny" 
+                                            th:data-pto-id="${pto.id}"
+                                            th:data-employee-name="${pto.employeeName}"
+                                            onclick="showDenyPTOModal(this.getAttribute('data-pto-id'), this.getAttribute('data-employee-name'))">
+                                        Deny
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="no-items" th:if="${#lists.isEmpty(ptoRequests)}">
+                    <h3>No Pending PTO Requests</h3>
+                    <p>There are no PTO requests awaiting approval at this time.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Timesheet Details Modal -->
+    <div id="viewTimesheetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Timesheet Details</h3>
+            </div>
+            <div class="modal-body" id="timesheetDetailsBody">
+                <!-- Details populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeViewTimesheetModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View PTO Details Modal -->
+    <div id="viewPTOModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>PTO Request Details</h3>
+            </div>
+            <div class="modal-body" id="ptoDetailsBody">
+                <!-- Details populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeViewPTOModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approve Timesheet Modal -->
+    <div id="approveTimesheetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Approve Timesheet</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to approve the timesheet for <strong id="approveTimesheetEmployeeName"></strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeApproveTimesheetModal()">Cancel</button>
+                <form id="approveTimesheetForm" method="post" th:action="@{/admin/approvals/timesheet/approve}" style="display: inline;">
+                    <input type="hidden" name="timesheetId" id="approveTimesheetId">
+                    <button type="submit" class="btn-confirm-approve">Approve</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deny Timesheet Modal -->
+    <div id="denyTimesheetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Deny Timesheet</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to deny the timesheet for <strong id="denyTimesheetEmployeeName"></strong>?</p>
+                <form id="denyTimesheetForm" method="post" th:action="@{/admin/approvals/timesheet/deny}">
+                    <input type="hidden" name="timesheetId" id="denyTimesheetId">
+                    <label for="denyTimesheetReason" style="display: block; margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Reason for denial (optional):</label>
+                    <textarea id="denyTimesheetReason" name="reason" placeholder="Enter reason for denial..."></textarea>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeDenyTimesheetModal()">Cancel</button>
+                <button type="button" class="btn-confirm-deny" onclick="submitDenyTimesheetForm()">Deny</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approve PTO Modal -->
+    <div id="approvePTOModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Approve PTO Request</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to approve the PTO request for <strong id="approvePTOEmployeeName"></strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeApprovePTOModal()">Cancel</button>
+                <form id="approvePTOForm" method="post" th:action="@{/admin/approvals/pto/approve}" style="display: inline;">
+                    <input type="hidden" name="ptoId" id="approvePTOId">
+                    <button type="submit" class="btn-confirm-approve">Approve</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deny PTO Modal -->
+    <div id="denyPTOModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Deny PTO Request</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to deny the PTO request for <strong id="denyPTOEmployeeName"></strong>?</p>
+                <form id="denyPTOForm" method="post" th:action="@{/admin/approvals/pto/deny}">
+                    <input type="hidden" name="ptoId" id="denyPTOId">
+                    <label for="denyPTOReason" style="display: block; margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Reason for denial (optional):</label>
+                    <textarea id="denyPTOReason" name="reason" placeholder="Enter reason for denial..."></textarea>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeDenyPTOModal()">Cancel</button>
+                <button type="button" class="btn-confirm-deny" onclick="submitDenyPTOForm()">Deny</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function openTab(evt, tabName) {
+            var i, tabcontent, tabbuttons;
+            
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            
+            tabbuttons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // Timesheet view details
+        function viewTimesheetDetails(button) {
+            const body = document.getElementById('timesheetDetailsBody');
+            body.innerHTML = `
+                <div class="info-row">
+                    <span class="info-label">Employee ID:</span>
+                    <span class="info-value">${button.getAttribute('data-employee-id')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Employee Name:</span>
+                    <span class="info-value">${button.getAttribute('data-employee-name')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Start Date:</span>
+                    <span class="info-value">${button.getAttribute('data-start-date')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">End Date:</span>
+                    <span class="info-value">${button.getAttribute('data-end-date')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total Hours:</span>
+                    <span class="info-value">${button.getAttribute('data-total-hours')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Submitted Date:</span>
+                    <span class="info-value">${button.getAttribute('data-submitted-date')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Notes:</span>
+                    <span class="info-value">${button.getAttribute('data-notes')}</span>
+                </div>
+            `;
+            document.getElementById('viewTimesheetModal').style.display = 'block';
+        }
+
+        function closeViewTimesheetModal() {
+            document.getElementById('viewTimesheetModal').style.display = 'none';
+        }
+
+        // PTO view details
+        function viewPTODetails(button) {
+            const body = document.getElementById('ptoDetailsBody');
+            body.innerHTML = `
+                <div class="info-row">
+                    <span class="info-label">Employee ID:</span>
+                    <span class="info-value">${button.getAttribute('data-employee-id')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Employee Name:</span>
+                    <span class="info-value">${button.getAttribute('data-employee-name')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Request Type:</span>
+                    <span class="info-value">${button.getAttribute('data-request-type')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Start Date:</span>
+                    <span class="info-value">${button.getAttribute('data-start-date')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">End Date:</span>
+                    <span class="info-value">${button.getAttribute('data-end-date')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Days Requested:</span>
+                    <span class="info-value">${button.getAttribute('data-days-requested')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Submitted Date:</span>
+                    <span class="info-value">${button.getAttribute('data-submitted-date')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Reason:</span>
+                    <span class="info-value">${button.getAttribute('data-reason')}</span>
+                </div>
+            `;
+            document.getElementById('viewPTOModal').style.display = 'block';
+        }
+
+        function closeViewPTOModal() {
+            document.getElementById('viewPTOModal').style.display = 'none';
+        }
+
+        // Timesheet approve/deny modals
+        function showApproveTimesheetModal(id, name) {
+            document.getElementById('approveTimesheetModal').style.display = 'block';
+            document.getElementById('approveTimesheetEmployeeName').textContent = name;
+            document.getElementById('approveTimesheetId').value = id;
+        }
+
+        function closeApproveTimesheetModal() {
+            document.getElementById('approveTimesheetModal').style.display = 'none';
+        }
+
+        function showDenyTimesheetModal(id, name) {
+            document.getElementById('denyTimesheetModal').style.display = 'block';
+            document.getElementById('denyTimesheetEmployeeName').textContent = name;
+            document.getElementById('denyTimesheetId').value = id;
+        }
+
+        function closeDenyTimesheetModal() {
+            document.getElementById('denyTimesheetModal').style.display = 'none';
+            document.getElementById('denyTimesheetReason').value = '';
+        }
+
+        function submitDenyTimesheetForm() {
+            document.getElementById('denyTimesheetForm').submit();
+        }
+
+        // PTO approve/deny modals
+        function showApprovePTOModal(id, name) {
+            document.getElementById('approvePTOModal').style.display = 'block';
+            document.getElementById('approvePTOEmployeeName').textContent = name;
+            document.getElementById('approvePTOId').value = id;
+        }
+
+        function closeApprovePTOModal() {
+            document.getElementById('approvePTOModal').style.display = 'none';
+        }
+
+        function showDenyPTOModal(id, name) {
+            document.getElementById('denyPTOModal').style.display = 'block';
+            document.getElementById('denyPTOEmployeeName').textContent = name;
+            document.getElementById('denyPTOId').value = id;
+        }
+
+        function closeDenyPTOModal() {
+            document.getElementById('denyPTOModal').style.display = 'none';
+            document.getElementById('denyPTOReason').value = '';
+        }
+
+        function submitDenyPTOForm() {
+            document.getElementById('denyPTOForm').submit();
+        }
+
+        window.onclick = function(event) {
+            const modals = [
+                'viewTimesheetModal', 'viewPTOModal', 
+                'approveTimesheetModal', 'denyTimesheetModal',
+                'approvePTOModal', 'denyPTOModal'
+            ];
+            
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
