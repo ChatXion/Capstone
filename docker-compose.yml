@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: express-timecard
+    environment:
+      POSTGRES_PASSWORD: ics499team2
+      POSTGRES_DB: express_timecard
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql  # Persist data using a volume
+
+volumes:
+  postgres-data:  # This defines the volume

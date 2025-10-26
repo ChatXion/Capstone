@@ -15,6 +15,9 @@ repositories {
     mavenCentral()
 }
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // for spring data JPA
+    runtimeOnly 'org.postgresql:postgresql' // for postgreSQL driver
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose' // for docker compose
     implementation 'org.springframework.boot:spring-boot-starter:3.3.4'
     implementation 'org.springframework.boot:spring-boot-starter-web:3.3.4' // Add web support
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
