@@ -1,6 +1,5 @@
 package com.example.demo.Entities;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,22 +30,6 @@ public abstract class User {
         this.email = email;
         this.password = password;
     }
-
-    
-
-    // public static User register(String firstName, String lastName, String email, String password){
-    //     //check if email and password are used from database
-    //     //return new user object with data if exists
-    //     return new User();
-    // }
-
-    // public static User login(String email, String password){
-    //     //check if email and password combo exist in database
-    //     //return new user object with data if exists
-    //     return new User();
-    // }
-
-
 
     public void setPassword(String password) {
         this.password = password;

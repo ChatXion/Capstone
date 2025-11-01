@@ -8,10 +8,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import com.example.demo.Entities.User;
 
 @NoRepositoryBean
-public interface UserRepository extends JpaRepository<User, Long>{
-
-    Optional<User> findById(Long id);
-
+public interface UserRepository<T extends User> extends JpaRepository<T, Long>{
     
-    Optional<User> findByEmail(String email);
+    Optional<T> findByEmail(String email);
 }
