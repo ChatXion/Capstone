@@ -5,7 +5,6 @@
     <title>Express Time Card: Login</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
-
 <body>
     <div th:replace="~{fragments/nav :: nav}"></div>
 
@@ -13,7 +12,9 @@
         <div class="login-container">
             <h1>Login</h1>
             <p>Enter your credentials below</p>
-            <form>
+
+            <!-- POST to /login; controller should redirect on success or return "login" with model attribute "error" on failure -->
+            <form th:action="@{/login}" method="post" class="login-form">
                 <div class="form-group">
                     <label for="email">Email:</label>
                     <input type="text" id="email" name="email" placeholder="Enter your email" required>
@@ -24,7 +25,10 @@
                     <input type="password" id="password" name="password" placeholder="Enter your password" required>
                 </div>
 
-                <button type="button" class="btn">Log In</button>
+                <button type="submit" class="btn">Log In</button>
+
+                <!-- Server-side error message (controller adds model attribute "error" on failure) -->
+                <div id="login_error" th:if="${error}" th:text="${error}" class="form-error"></div>
             </form>
         </div>
     </div>

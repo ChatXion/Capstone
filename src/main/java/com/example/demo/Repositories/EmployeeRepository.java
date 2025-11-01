@@ -1,7 +1,11 @@
 package com.example.demo.Repositories;
 
-import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
-@Repository
-public interface EmployeeRepository extends UserRepository{
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.demo.Entities.Employee;
+
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+    Optional<Employee> findByEmail(String email);
 }
