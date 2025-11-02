@@ -40,5 +40,37 @@ public class Timesheet {
     public Timesheet() {
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public List<TimesheetEntry> getEntries() {
+        return entries;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public int getWeek() {
+        return week;
+    }
+
+    public String getApprovalStatus() {
+        return approvalStatus;
+    }
+
+    public String getApprovedBy() {
+        return approvedBy;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
     
 }

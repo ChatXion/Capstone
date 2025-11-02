@@ -62,8 +62,4 @@ public abstract class User {
     public Organization getOrganization() {
         return organization;
     }
-
-    public void logout(){
-        //log user out
-    }
 }

@@ -41,5 +41,25 @@ public class Role {
     public Role() {
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public List<Employee> getEmployees() {
+        return employees;
+    }
+
+    public List<PayCode> getPayCodes() {
+        return payCodes;
+    }
+
     
 }

@@ -32,6 +32,31 @@ public class TimesheetEntry {
     
     public TimesheetEntry() {
     }
+
+
+    public Long getId() {
+        return id;
+    }
+
+
+    public Timesheet getTimesheet() {
+        return timesheet;
+    }
+
+
+    public PayCode getPayCode() {
+        return payCode;
+    }
+
+
+    public double getHoursWorked() {
+        return hoursWorked;
+    }
+
+
+    public LocalDate getDate() {
+        return date;
+    }
     
     
 }

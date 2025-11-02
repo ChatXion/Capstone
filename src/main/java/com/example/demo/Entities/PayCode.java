@@ -30,5 +30,29 @@ public class PayCode {
     public PayCode() {
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public BigDecimal getHourlyRate() {
+        return hourlyRate;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
     
 }

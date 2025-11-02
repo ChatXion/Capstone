@@ -27,5 +27,13 @@ public class Employee extends User{
         super(firstName, lastName, email, password);
     }
 
+    public List<Timesheet> getTimesheets() {
+        return timesheets;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
     
 }
