@@ -7,28 +7,21 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.demo.Entities.Admin;
-import com.example.demo.Entities.Employee;
-import com.example.demo.Repositories.AdminRepository;
-import com.example.demo.Repositories.EmployeeRepository;
+import com.example.demo.Services.LoginService;
 
 import jakarta.servlet.http.HttpSession;
 
 /*
   LoginController
-  - No GET /login here (served by WebController).
-  - POST /login handles authentication.
+  - POST /login delegates authentication to LoginService.
 */
 @Controller
 public class LoginController {
 
-    private final EmployeeRepository employeeRepository;
-    private final AdminRepository adminRepository;
+    private final LoginService loginService;
 
-    public LoginController(EmployeeRepository employeeRepository,
-                           AdminRepository adminRepository) {
-        this.employeeRepository = employeeRepository;
-        this.adminRepository = adminRepository;
+    public LoginController(LoginService loginService) {
+        this.loginService = loginService;
     }
 
     @PostMapping("/login")
@@ -37,36 +30,16 @@ public class LoginController {
                               Model model,
                               HttpSession session) {
 
-        // Check employees
-        Optional<Employee> empOpt = employeeRepository.findByEmail(email);
-        if (empOpt.isPresent()) {
-            Employee e = empOpt.get();
-            if (e.getPassword() != null && e.getPassword().equals(password)) {
-                session.setAttribute("userId", e.getId());
-                session.setAttribute("firstName", e.getFirstName());
-                session.setAttribute("role", "EMPLOYEE");
-                return "redirect:/employee/home";
-            }
-            model.addAttribute("error", "Invalid email or password.");
-            return "login";
+        Optional<LoginService.AuthResult> result = loginService.authenticate(email, password);
+        if (result.isPresent()) {
+            LoginService.AuthResult ar = result.get();
+            session.setAttribute("userId", ar.id());
+            session.setAttribute("firstName", ar.firstName());
+            session.setAttribute("role", ar.role());
+            return ar.role().equals("ADMIN") ? "redirect:/admin/home" : "redirect:/employee/home";
         }
 
-        // Check admins
-        Optional<Admin> adminOpt = adminRepository.findByEmail(email);
-        if (adminOpt.isPresent()) {
-            Admin a = adminOpt.get();
-            if (a.getPassword() != null && a.getPassword().equals(password)) {
-                session.setAttribute("userId", a.getId());
-                session.setAttribute("firstName", a.getFirstName());
-                session.setAttribute("role", "ADMIN");
-                return "redirect:/admin/home";
-            }
-            model.addAttribute("error", "Invalid email or password.");
-            return "login";
-        }
-
-        // Not found
-        model.addAttribute("error", "Login not found.");
+        model.addAttribute("error", "Invalid email or password.");
         return "login";
     }
 
