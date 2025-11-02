@@ -5,23 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Timesheet</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <link rel="stylesheet" th:href="@{/css/nav.css}">
-    <style>
-
-</style>
 </head>
 <body id="timesheet_body">
     <div th:replace="~{fragments/nav_user :: nav}"></div>
     <div class="timesheet_container">
-        <h2 class="timesheet_h2">Timesheet</h2>
-        <form action="#" th:action="@{/timesheet}" th:object="${timesheet}" method="post">
+        <h2 class="timesheet_h2">Timesheet Entry</h2>
+        <form action="#" th:action="@{/timesheet}" th:object="${timesheetEntry}" method="post">
             <div class="timesheet_form-group">
                 <label for="timesheet_date">Date</label>
-                <input type="date" class="timesheet_form-control" id="timesheet_date" th:field="*{date}">
+                <input type="date" class="timesheet_form-control" id="timesheet_date" th:field="*{date}" required>
             </div>
             <div class="timesheet_form-group">
                 <label for="timesheet_hours">Hours Worked</label>
-                <input type="number" class="timesheet_form-control" id="timesheet_hours" th:field="*{hours}">
+                <input type="number" class="timesheet_form-control" id="timesheet_hours" th:field="*{hours}" step="0.5" min="0" max="24" required>
             </div>
             <button type="submit" class="timesheet_btn timesheet_btn-primary">Submit</button>
         </form>

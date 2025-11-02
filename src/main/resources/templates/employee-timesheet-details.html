@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timesheet Details</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Navigation -->
+    <div th:replace="~{fragments/nav_user :: nav}"></div>
+
+    <div class="timesheet-details-container">
+        <div class="timesheet-details-header">
+            <h2>Timesheet Details</h2>
+            <div class="header-actions">
+                <a href="/employee/timesheets" class="btn btn-secondary">
+                    ← Back to All Timesheets
+                </a>
+            </div>
+        </div>
+
+        <div class="timesheet-summary-card">
+            <h3>Timesheet Summary</h3>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span class="summary-label">Week Number:</span>
+                    <span class="summary-value" th:text="'Week ' + ${timesheet.week}">Week 1</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Total Hours:</span>
+                    <span class="summary-value" th:text="${timesheet.totalHours}">40.0</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Status:</span>
+                    <span class="status-badge"
+                          th:text="${timesheet.approvalStatus}"
+                          th:classappend="${timesheet.approvalStatus == 'approved' ? 'status-approved' : (timesheet.approvalStatus == 'rejected' ? 'status-denied' : 'status-pending')}">
+                        Approved
+                    </span>
+                </div>
+                <div class="summary-item" th:if="${timesheet.approvedBy != null}">
+                    <span class="summary-label">Approved By:</span>
+                    <span class="summary-value" th:text="${timesheet.approvedBy}">Alice Smith</span>
+                </div>
+                <div class="summary-item rejection-reason" th:if="${timesheet.rejectionReason != null}">
+                    <span class="summary-label">Rejection Reason:</span>
+                    <span class="summary-value rejection-text" th:text="${timesheet.rejectionReason}">Too many hours</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="entries-section">
+            <h3>Time Entries</h3>
+            <div class="entries-table-container" th:if="${timesheet.entries != null and not #lists.isEmpty(timesheet.entries)}">
+                <table class="entries-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Pay Code</th>
+                            <th>Code</th>
+                            <th>Hours Worked</th>
+                            <th>Hourly Rate</th>
+                            <th>Total Pay</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="entry : ${timesheet.entries}">
+                            <td th:text="${#temporals.format(entry.date, 'MMM dd, yyyy')}">Oct 01, 2023</td>
+                            <td th:text="${entry.payCodeName}">HR Regular</td>
+                            <td th:text="${entry.payCodeCode}">HR001</td>
+                            <td th:text="${entry.hoursWorked}">8.0</td>
+                            <td th:text="'$' + ${entry.hourlyRate}">$25.00</td>
+                            <td th:text="'$' + ${#numbers.formatDecimal(entry.hoursWorked * entry.hourlyRate, 1, 2)}">$200.00</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td colspan="3"><strong>Total:</strong></td>
+                            <td><strong th:text="${timesheet.totalHours}">40.0</strong></td>
+                            <td colspan="2">
+                                <strong th:text="'$' + ${#numbers.formatDecimal(
+                                    #aggregates.sum(timesheet.entries.![hoursWorked * hourlyRate]), 1, 2
+                                )}">$1000.00</strong>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="no-entries" th:if="${timesheet.entries == null or #lists.isEmpty(timesheet.entries)}">
+                <p>No time entries found for this timesheet.</p>
+            </div>
+        </div>
+
+        <div class="details-actions">
+            <a href="/employee/timesheets" class="btn btn-secondary">Back to All Timesheets</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

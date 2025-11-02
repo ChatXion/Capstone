@@ -1078,3 +1078,500 @@ body#timesheet_body {
         margin-bottom: 10px;
     }
 }
+
+/* TIMESHEETS LIST PAGE STYLES */
+
+.timesheets-container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+.timesheets-header {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.timesheets-header h2 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.timesheets-header p {
+    color: #7f8c8d;
+    margin: 0;
+}
+
+.timesheets-actions {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.timesheets-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.timesheets-table-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    margin-bottom: 100px;
+}
+
+.timesheets-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.timesheets-table thead {
+    background-color: #3498db;
+    color: white;
+}
+
+.timesheets-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.timesheets-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.timesheets-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.no-timesheets {
+    text-align: center;
+    padding: 3rem;
+    color: #7f8c8d;
+}
+
+.no-timesheets h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.no-timesheets .btn {
+    margin-top: 1.5rem;
+}
+
+/* TIMESHEET DETAILS PAGE STYLES */
+
+.timesheet-details-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    margin-bottom: 100px;
+}
+
+.timesheet-details-header {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.timesheet-details-header h2 {
+    color: #2c3e50;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+}
+
+.timesheet-summary-card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.timesheet-summary-card h3 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.summary-label {
+    font-weight: 600;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.summary-value {
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.rejection-reason {
+    grid-column: 1 / -1;
+    padding: 1rem;
+    background-color: #fee;
+    border-radius: 4px;
+    border-left: 4px solid #e74c3c;
+}
+
+.rejection-text {
+    color: #c0392b;
+    font-weight: 600;
+}
+
+.entries-section {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.entries-section h3 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+.entries-table-container {
+    overflow-x: auto;
+}
+
+.entries-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.entries-table thead {
+    background-color: #34495e;
+    color: white;
+}
+
+.entries-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.entries-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.entries-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.entries-table tfoot {
+    background-color: #ecf0f1;
+    font-weight: 600;
+}
+
+.entries-table tfoot td {
+    padding: 1rem;
+    border-top: 2px solid #34495e;
+}
+
+.total-row {
+    font-size: 1.1rem;
+}
+
+.no-entries {
+    text-align: center;
+    padding: 2rem;
+    color: #7f8c8d;
+}
+
+.details-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* RESPONSIVE DESIGN FOR TIMESHEETS */
+
+@media (max-width: 768px) {
+    .timesheets-table,
+    .entries-table {
+        font-size: 0.85rem;
+    }
+
+    .timesheets-table th,
+    .timesheets-table td,
+    .entries-table th,
+    .entries-table td {
+        padding: 0.5rem;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .timesheet-details-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .header-actions .btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* PAY CODES PAGE STYLES */
+
+.paycodes-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    margin-bottom: 100px;
+}
+
+.paycodes-header {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.paycodes-header h2 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.paycodes-header p {
+    color: #7f8c8d;
+    margin: 0;
+}
+
+.paycodes-info-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.info-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.info-content h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+}
+
+.info-content p {
+    margin: 0;
+    line-height: 1.6;
+    opacity: 0.95;
+}
+
+.paycodes-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.paycode-category {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.category-title {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid #3498db;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+}
+
+.category-icon {
+    font-size: 1.75rem;
+}
+
+.paycodes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.paycode-card {
+    background-color: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.paycode-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    border-color: #3498db;
+}
+
+.paycode-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.paycode-code {
+    background-color: #3498db;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+.paycode-rate {
+    color: #27ae60;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.paycode-name {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.paycode-description {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.no-paycodes {
+    text-align: center;
+    padding: 4rem 2rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.no-paycodes h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.no-paycodes p {
+    color: #7f8c8d;
+}
+
+.paycodes-actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+/* RESPONSIVE DESIGN */
+
+@media (max-width: 768px) {
+    .paycodes-container {
+        padding: 0 1rem;
+    }
+
+    .paycodes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .paycodes-info-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .info-icon {
+        font-size: 3rem;
+    }
+
+    .category-title {
+        font-size: 1.3rem;
+        flex-wrap: wrap;
+    }
+
+    .paycode-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .paycodes-header {
+        padding: 1.5rem;
+    }
+
+    .paycode-category {
+        padding: 1.5rem;
+    }
+
+    .paycode-card {
+        padding: 1rem;
+    }
+}

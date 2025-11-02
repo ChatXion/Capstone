@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Timesheets</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Navigation -->
+    <div th:replace="~{fragments/nav_user :: nav}"></div>
+
+    <div class="timesheets-container">
+        <div class="timesheets-header">
+            <h2>My Timesheets</h2>
+            <p>View and manage your timesheet history</p>
+        </div>
+
+        <div class="timesheets-actions">
+            <a href="/timesheet" class="btn btn-primary">
+                <span>➕</span> Create New Timesheet
+            </a>
+        </div>
+
+        <div class="timesheets-table-container">
+            <table class="timesheets-table" th:if="${not #lists.isEmpty(timesheets)}">
+                <thead>
+                    <tr>
+                        <th>Week</th>
+                        <th>Date Range</th>
+                        <th>Total Hours</th>
+                        <th>Status</th>
+                        <th>Approved By</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="timesheet : ${timesheets}">
+                        <td th:text="'Week ' + ${timesheet.week}">Week 1</td>
+                        <td>
+                            <span th:if="${timesheet.startDate != null and timesheet.endDate != null}"
+                                  th:text="${#temporals.format(timesheet.startDate, 'MMM dd')} + ' - ' + ${#temporals.format(timesheet.endDate, 'MMM dd, yyyy')}">
+                                Oct 01 - Oct 07, 2023
+                            </span>
+                            <span th:if="${timesheet.startDate == null or timesheet.endDate == null}">
+                                No entries
+                            </span>
+                        </td>
+                        <td th:text="${timesheet.totalHours}">40.0</td>
+                        <td>
+                            <span class="status-badge"
+                                  th:text="${timesheet.approvalStatus}"
+                                  th:classappend="${timesheet.approvalStatus == 'approved' ? 'status-approved' : (timesheet.approvalStatus == 'rejected' ? 'status-denied' : 'status-pending')}">
+                                Approved
+                            </span>
+                        </td>
+                        <td th:text="${timesheet.approvedBy != null ? timesheet.approvedBy : '-'}">Alice Smith</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a th:href="@{/employee/timesheets/{id}(id=${timesheet.id})}" 
+                                   class="btn-small btn-view">
+                                    View Details
+                                </a>
+                                <button th:if="${timesheet.approvalStatus == 'rejected'}" 
+                                        class="btn-small btn-edit"
+                                        th:onclick="'showRejectionReason(\'' + ${timesheet.id} + '\', \'' + ${timesheet.rejectionReason} + '\')'">
+                                    View Reason
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="no-timesheets" th:if="${#lists.isEmpty(timesheets)}">
+                <h3>No Timesheets Found</h3>
+                <p>You haven't submitted any timesheets yet.</p>
+                <a href="/timesheet" class="btn btn-primary">Create Your First Timesheet</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rejection Reason Modal -->
+    <div id="rejectionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Rejection Reason</h3>
+            </div>
+            <div class="modal-body">
+                <p id="rejectionReasonText"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeRejectionModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showRejectionReason(id, reason) {
+            document.getElementById('rejectionReasonText').textContent = reason || 'No reason provided';
+            document.getElementById('rejectionModal').style.display = 'block';
+        }
+
+        function closeRejectionModal() {
+            document.getElementById('rejectionModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('rejectionModal');
+            if (event.target == modal) {
+                closeRejectionModal();
+            }
+        }
+    </script>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

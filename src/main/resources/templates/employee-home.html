@@ -24,7 +24,7 @@
                     <h3 class="employeehome_card-title">Timesheets</h3>
                 </div>
                 <div class="employeehome_card-actions">
-                    <button class="employeehome_action-btn" onclick="viewTimesheets()">View All Timesheets</button>
+                    <a href="/employee/timesheets" class="employeehome_action-btn">View All Timesheets</a>
                     <a href="/timesheet" class="employeehome_action-btn">Add New Timesheet</a>
                     <button class="employeehome_action-btn employeehome_secondary" onclick="editTimesheet()">Edit Current Timesheet</button>
                 </div>
@@ -49,7 +49,7 @@
                     <h3 class="employeehome_card-title">Pay Information</h3>
                 </div>
                 <div class="employeehome_card-actions">
-                    <button class="employeehome_action-btn" onclick="viewPayCodes()">View Pay Codes</button>
+                    <a href="/employee/paycodes" class="employeehome_action-btn">View Pay Codes</a>
                 </div>
             </div>
         </div>
@@ -78,20 +78,8 @@
 
     <script>
         // Placeholder functions for button actions
-        function viewTimesheets() {
-            alert('View Timesheets - This will navigate to the timesheets list page');
-        }
-
-        function addTimesheet() {
-            alert('Add New Timesheet - This will open the timesheet creation form');
-        }
-
         function editTimesheet() {
             alert('Edit Timesheet - This will allow you to select and edit a timesheet');
-        }
-
-        function submitTimesheet() {
-            alert('Submit Timesheet - This will submit your current timesheet for approval');
         }
 
         function requestPTO() {
@@ -100,10 +88,6 @@
 
         function viewPTOBalance() {
             alert('View PTO Balance - This will show your available PTO hours');
-        }
-
-        function viewPayCodes() {
-            alert('View Pay Codes - This will display your available pay codes');
         }
     </script>
 

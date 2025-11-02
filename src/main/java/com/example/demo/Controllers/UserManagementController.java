@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpSession;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +16,10 @@ import java.util.List;
 public class UserManagementController {
 
     @GetMapping("/admin/users")
-    public String viewUsers(Model model) {
-        // Placeholder admin 
-        model.addAttribute("firstName", "Admin");
+    public String viewUsers(Model model, HttpSession session) {
+        // Get firstName from session for navigation
+        String firstName = (String) session.getAttribute("firstName");
+        model.addAttribute("firstName", firstName != null ? firstName : "Admin");
         
         // Dummy user data
         List<SystemUser> users = new ArrayList<>();
@@ -111,9 +114,10 @@ public class UserManagementController {
     }
 
     @GetMapping("/admin/users/edit")
-    public String editUserForm(@RequestParam int userId, Model model) {
-        // Placeholder admin data
-        model.addAttribute("firstName", "Admin");
+    public String editUserForm(@RequestParam int userId, Model model, HttpSession session) {
+        // Get firstName from session for navigation
+        String firstName = (String) session.getAttribute("firstName");
+        model.addAttribute("firstName", firstName != null ? firstName : "Admin");
         
         SystemUser user = new SystemUser(
             userId, 

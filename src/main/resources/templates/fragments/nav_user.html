@@ -1,6 +1,6 @@
 <!-- Nav bar for logged-in users -->
 <div class="nav" th:fragment="nav">
-    <a href="/employee/home" class="nav-link"><span th:text="${firstName}">User</span>'s Homepage</a>
+    <a href="/employee/home" class="nav-link"><span th:text="${firstName != null ? firstName : 'User'}">User</span>'s Homepage</a>
     <a href="/timesheet" class="nav-link">Timesheet</a>
-    <a href="/" class="nav-link">Logout</a> <!-- OBVIOUSLY will make it actually logout later -->
+    <a href="/" class="nav-link">Logout</a>
 </div>

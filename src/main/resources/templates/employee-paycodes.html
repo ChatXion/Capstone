@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay Codes</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/paycodes-styles.css}">
+</head>
+<body>
+    <!-- Navigation -->
+    <div th:replace="~{fragments/nav_user :: nav}"></div>
+
+    <div class="paycodes-container">
+        <div class="paycodes-header">
+            <h2>Pay Codes Reference</h2>
+            <p>View pay codes and rates for <span th:text="${organizationName}">your organization</span></p>
+        </div>
+
+        <div class="paycodes-info-card">
+            <div class="info-icon">ℹ️</div>
+            <div class="info-content">
+                <h4>About Pay Codes</h4>
+                <p>Pay codes are used to categorize different types of work and determine your hourly rate. When submitting timesheets, select the appropriate pay code for the work you performed. Overtime rates are typically 1.5x the regular rate.</p>
+            </div>
+        </div>
+
+        <!-- Group pay codes by category -->
+        <div class="paycodes-sections" th:if="${not #lists.isEmpty(payCodes)}">
+            
+            <!-- Human Resources -->
+            <div class="paycode-category" th:if="${#lists.size(payCodes.?[category == 'Human Resources'])} > 0">
+                <h3 class="category-title">
+                    <span class="category-icon">👥</span>
+                    Human Resources
+                </h3>
+                <div class="paycodes-grid">
+                    <div class="paycode-card" th:each="paycode : ${payCodes.?[category == 'Human Resources']}">
+                        <div class="paycode-header">
+                            <div class="paycode-code" th:text="${paycode.code}">HR001</div>
+                            <div class="paycode-rate" th:text="'$' + ${paycode.hourlyRate} + '/hr'">$25.00/hr</div>
+                        </div>
+                        <div class="paycode-name" th:text="${paycode.name}">HR Regular</div>
+                        <div class="paycode-description" th:text="${paycode.description}">Human Resources - Regular</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engineering -->
+            <div class="paycode-category" th:if="${#lists.size(payCodes.?[category == 'Engineering'])} > 0">
+                <h3 class="category-title">
+                    <span class="category-icon">⚙️</span>
+                    Engineering
+                </h3>
+                <div class="paycodes-grid">
+                    <div class="paycode-card" th:each="paycode : ${payCodes.?[category == 'Engineering']}">
+                        <div class="paycode-header">
+                            <div class="paycode-code" th:text="${paycode.code}">ENG001</div>
+                            <div class="paycode-rate" th:text="'$' + ${paycode.hourlyRate} + '/hr'">$40.00/hr</div>
+                        </div>
+                        <div class="paycode-name" th:text="${paycode.name}">Engineering Regular</div>
+                        <div class="paycode-description" th:text="${paycode.description}">Engineering - Regular</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Finance -->
+            <div class="paycode-category" th:if="${#lists.size(payCodes.?[category == 'Finance'])} > 0">
+                <h3 class="category-title">
+                    <span class="category-icon">💰</span>
+                    Finance
+                </h3>
+                <div class="paycodes-grid">
+                    <div class="paycode-card" th:each="paycode : ${payCodes.?[category == 'Finance']}">
+                        <div class="paycode-header">
+                            <div class="paycode-code" th:text="${paycode.code}">FIN001</div>
+                            <div class="paycode-rate" th:text="'$' + ${paycode.hourlyRate} + '/hr'">$35.00/hr</div>
+                        </div>
+                        <div class="paycode-name" th:text="${paycode.name}">Finance Regular</div>
+                        <div class="paycode-description" th:text="${paycode.description}">Finance - Regular</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marketing -->
+            <div class="paycode-category" th:if="${#lists.size(payCodes.?[category == 'Marketing'])} > 0">
+                <h3 class="category-title">
+                    <span class="category-icon">📢</span>
+                    Marketing
+                </h3>
+                <div class="paycodes-grid">
+                    <div class="paycode-card" th:each="paycode : ${payCodes.?[category == 'Marketing']}">
+                        <div class="paycode-header">
+                            <div class="paycode-code" th:text="${paycode.code}">MKT001</div>
+                            <div class="paycode-rate" th:text="'$' + ${paycode.hourlyRate} + '/hr'">$30.00/hr</div>
+                        </div>
+                        <div class="paycode-name" th:text="${paycode.name}">Marketing Regular</div>
+                        <div class="paycode-description" th:text="${paycode.description}">Marketing - Regular</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- General (any other categories) -->
+            <div class="paycode-category" th:if="${#lists.size(payCodes.?[category == 'General'])} > 0">
+                <h3 class="category-title">
+                    <span class="category-icon">📋</span>
+                    General
+                </h3>
+                <div class="paycodes-grid">
+                    <div class="paycode-card" th:each="paycode : ${payCodes.?[category == 'General']}">
+                        <div class="paycode-header">
+                            <div class="paycode-code" th:text="${paycode.code}">CODE</div>
+                            <div class="paycode-rate" th:text="'$' + ${paycode.hourlyRate} + '/hr'">$25.00/hr</div>
+                        </div>
+                        <div class="paycode-name" th:text="${paycode.name}">Pay Code Name</div>
+                        <div class="paycode-description" th:text="${paycode.description}">Description</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="no-paycodes" th:if="${#lists.isEmpty(payCodes)}">
+            <h3>No Pay Codes Available</h3>
+            <p>There are no pay codes configured for your organization at this time.</p>
+        </div>
+
+        <div class="paycodes-actions">
+            <a href="/employee/home" class="btn btn-secondary">Back to Home</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
