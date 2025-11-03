@@ -3,6 +3,7 @@ package com.example.demo.Entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -19,6 +20,11 @@ public class Employee extends User{
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
+
+    private double ptoBalance;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<PTORequest> ptoRequests;
     
     public Employee() {
     }
@@ -35,5 +41,8 @@ public class Employee extends User{
         return role;
     }
 
-    
+    public double getPtoBalance() {
+        return ptoBalance;
+    }
+
 }

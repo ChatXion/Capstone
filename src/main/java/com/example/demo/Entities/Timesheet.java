@@ -34,7 +34,7 @@ public class Timesheet {
     
     private int week;
     private String approvalStatus;
-    private String approvedBy; // maybe make into Admin?
+    private String approvedBy;
     private String rejectionReason;
 
     public Timesheet() {
