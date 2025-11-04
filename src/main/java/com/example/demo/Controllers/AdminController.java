@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.Entities.Admin;
-import com.example.demo.Repositories.AdminRepository;
+import com.example.demo.Services.AdminService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class AdminController {
 
-    private final AdminRepository adminRepository;
+    private final AdminService adminService;
 
-    public AdminController(AdminRepository adminRepository) {
-        this.adminRepository = adminRepository;
+    public AdminController(AdminService adminService) {
+        this.adminService = adminService;
     }
 
     @GetMapping("/admin/home")
@@ -32,8 +32,8 @@ public class AdminController {
             return "redirect:/login";
         }
         
-        // Fetch admin data from database
-        Optional<Admin> adminOpt = adminRepository.findById(userId);
+        // Fetch admin data using service
+        Optional<Admin> adminOpt = adminService.getAdmin(userId);
         
         if (adminOpt.isPresent()) {
             Admin admin = adminOpt.get();

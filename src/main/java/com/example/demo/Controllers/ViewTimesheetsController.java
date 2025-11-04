@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.example.demo.Entities.Employee;
 import com.example.demo.Entities.Timesheet;
 import com.example.demo.Entities.TimesheetEntry;
-import com.example.demo.Repositories.EmployeeRepository;
 import com.example.demo.Services.EmployeeService;
 
 import jakarta.servlet.http.HttpSession;
@@ -21,12 +20,9 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class ViewTimesheetsController {
 
-    private final EmployeeRepository employeeRepository;
     private final EmployeeService employeeService;
 
-    public ViewTimesheetsController(EmployeeRepository employeeRepository,
-                                   EmployeeService employeeService) {
-        this.employeeRepository = employeeRepository;
+    public ViewTimesheetsController(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
 
@@ -39,8 +35,8 @@ public class ViewTimesheetsController {
             return "redirect:/login";
         }
         
-        // Fetch employee data for navigation
-        Optional<Employee> employeeOpt = employeeRepository.findById(userId);
+        // Fetch employee data using service
+        Optional<Employee> employeeOpt = employeeService.getEmployee(userId);
         if (employeeOpt.isEmpty()) {
             return "redirect:/login";
         }
@@ -49,7 +45,7 @@ public class ViewTimesheetsController {
         model.addAttribute("firstName", employee.getFirstName());
         model.addAttribute("lastName", employee.getLastName());
         
-        // Fetch all timesheets for this employee
+        // Fetch all timesheets for this employee using service
         List<Timesheet> timesheets = employeeService.findAllTimesheets(userId);
         
         // Convert to display objects
@@ -108,8 +104,8 @@ public class ViewTimesheetsController {
             return "redirect:/login";
         }
         
-        // Fetch employee data for navigation
-        Optional<Employee> employeeOpt = employeeRepository.findById(userId);
+        // Fetch employee data using service
+        Optional<Employee> employeeOpt = employeeService.getEmployee(userId);
         if (employeeOpt.isEmpty()) {
             return "redirect:/login";
         }
@@ -117,7 +113,7 @@ public class ViewTimesheetsController {
         Employee employee = employeeOpt.get();
         model.addAttribute("firstName", employee.getFirstName());
         
-        // Fetch the specific timesheet
+        // Fetch the specific timesheet using service
         Optional<Timesheet> timesheetOpt = employeeService.getTimesheet(userId, id);
         
         if (timesheetOpt.isEmpty()) {

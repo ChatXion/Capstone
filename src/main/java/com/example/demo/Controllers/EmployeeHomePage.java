@@ -7,17 +7,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.demo.Entities.Employee;
-import com.example.demo.Repositories.EmployeeRepository;
+import com.example.demo.Services.EmployeeService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class EmployeeHomePage {
 
-    private final EmployeeRepository employeeRepository;
+    private final EmployeeService employeeService;
 
-    public EmployeeHomePage(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
+    public EmployeeHomePage(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
 
     @GetMapping("/employee/home")
@@ -30,8 +30,8 @@ public class EmployeeHomePage {
             return "redirect:/login";
         }
         
-        // Fetch employee data from database
-        Optional<Employee> employeeOpt = employeeRepository.findById(userId);
+        // Fetch employee data using service
+        Optional<Employee> employeeOpt = employeeService.getEmployee(userId);
         
         if (employeeOpt.isPresent()) {
             Employee employee = employeeOpt.get();
@@ -55,6 +55,11 @@ public class EmployeeHomePage {
             } else {
                 model.addAttribute("organization", "N/A");
             }
+            
+            // Get and add PTO balance
+            double ptoBalance = employeeService.getEmployeePTOBalance(userId);
+            model.addAttribute("ptoBalance", ptoBalance);
+            
         } else {
             // Employee not found, redirect to login
             return "redirect:/login";

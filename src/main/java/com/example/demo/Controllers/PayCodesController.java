@@ -11,21 +11,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.demo.Entities.Employee;
 import com.example.demo.Entities.PayCode;
-import com.example.demo.Repositories.EmployeeRepository;
-import com.example.demo.Repositories.PayCodeRepository;
+import com.example.demo.Services.EmployeeService;
+import com.example.demo.Services.PayCodeService;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class PayCodesController {
 
-    private final EmployeeRepository employeeRepository;
-    private final PayCodeRepository payCodeRepository;
+    private final EmployeeService employeeService;
+    private final PayCodeService payCodeService;
 
-    public PayCodesController(EmployeeRepository employeeRepository,
-                             PayCodeRepository payCodeRepository) {
-        this.employeeRepository = employeeRepository;
-        this.payCodeRepository = payCodeRepository;
+    public PayCodesController(EmployeeService employeeService,
+                             PayCodeService payCodeService) {
+        this.employeeService = employeeService;
+        this.payCodeService = payCodeService;
     }
 
     @GetMapping("/employee/paycodes")
@@ -37,8 +37,8 @@ public class PayCodesController {
             return "redirect:/login";
         }
         
-        // Fetch employee data for navigation
-        Optional<Employee> employeeOpt = employeeRepository.findById(userId);
+        // Fetch employee data using service
+        Optional<Employee> employeeOpt = employeeService.getEmployee(userId);
         if (employeeOpt.isEmpty()) {
             return "redirect:/login";
         }
@@ -52,28 +52,26 @@ public class PayCodesController {
             organizationId = employee.getOrganization().getId();
         }
         
-        // Fetch all pay codes for this organization
-        List<PayCode> payCodes = payCodeRepository.findAll();
+        // Fetch pay codes for this organization using service
+        List<PayCode> payCodes = new ArrayList<>();
+        if (organizationId != null) {
+            payCodes = payCodeService.getPayCodesByOrganization(organizationId);
+        }
         
-        // Filter by organization and convert to display objects
+        // Convert to display objects
         List<PayCodeDisplay> displayPayCodes = new ArrayList<>();
         for (PayCode payCode : payCodes) {
-            // Only include pay codes for this employee's organization
-            if (organizationId != null && payCode.getOrganization() != null 
-                && payCode.getOrganization().getId().equals(organizationId)) {
-                
-                PayCodeDisplay display = new PayCodeDisplay();
-                display.setCode(payCode.getCode());
-                display.setName(payCode.getName());
-                display.setDescription(payCode.getDescription());
-                display.setHourlyRate(payCode.getHourlyRate());
-                
-                // Determine category based on code pattern
-                String category = determineCategory(payCode.getCode(), payCode.getName());
-                display.setCategory(category);
-                
-                displayPayCodes.add(display);
-            }
+            PayCodeDisplay display = new PayCodeDisplay();
+            display.setCode(payCode.getCode());
+            display.setName(payCode.getName());
+            display.setDescription(payCode.getDescription());
+            display.setHourlyRate(payCode.getHourlyRate());
+            
+            // Determine category based on code pattern
+            String category = determineCategory(payCode.getCode(), payCode.getName());
+            display.setCategory(category);
+            
+            displayPayCodes.add(display);
         }
         
         model.addAttribute("payCodes", displayPayCodes);

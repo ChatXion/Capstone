@@ -26,7 +26,6 @@
                 <div class="employeehome_card-actions">
                     <a href="/employee/timesheets" class="employeehome_action-btn">View All Timesheets</a>
                     <a href="/timesheet" class="employeehome_action-btn">Add New Timesheet</a>
-                    <button class="employeehome_action-btn employeehome_secondary" onclick="editTimesheet()">Edit Current Timesheet</button>
                 </div>
             </div>
 
@@ -36,8 +35,13 @@
                     <div class="employeehome_card-icon" style="background-color: #e74c3c;">🏖️</div>
                     <h3 class="employeehome_card-title">Time Off</h3>
                 </div>
+                <div class="employeehome_pto-balance">
+                    <div class="employeehome_balance-display">
+                        <span class="employeehome_balance-label">Available PTO Balance:</span>
+                        <span class="employeehome_balance-value" th:text="${ptoBalance} + ' hours'">40.0 hours</span>
+                    </div>
+                </div>
                 <div class="employeehome_card-actions">
-                    <button class="employeehome_action-btn" onclick="viewPTOBalance()">View PTO Balance</button>
                     <button class="employeehome_action-btn employeehome_success" onclick="requestPTO()">Request Time Off</button>
                 </div>
             </div>
@@ -84,10 +88,6 @@
 
         function requestPTO() {
             alert('Request PTO - This will open the time off request form');
-        }
-
-        function viewPTOBalance() {
-            alert('View PTO Balance - This will show your available PTO hours');
         }
     </script>
 
