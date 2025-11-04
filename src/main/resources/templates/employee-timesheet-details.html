@@ -74,15 +74,24 @@
                             <td th:text="'$' + ${entry.hourlyRate}">$25.00</td>
                             <td th:text="'$' + ${#numbers.formatDecimal(entry.hoursWorked * entry.hourlyRate, 1, 2)}">$200.00</td>
                             <td th:if="${timesheet.approvalStatus == 'pending'}">
-                                <button class="btn-small btn-edit"
-                                        th:data-entry-id="${entry.id}"
-                                        th:data-date="${entry.date}"
-                                        th:data-hours="${entry.hoursWorked}"
-                                        th:data-paycode-id="${entry.payCodeId}"
-                                        th:data-paycode-name="${entry.payCodeName}"
-                                        onclick="openEditModal(this)">
-                                    Edit
-                                </button>
+                                <div class="action-buttons">
+                                    <button class="btn-small btn-edit"
+                                            th:data-entry-id="${entry.id}"
+                                            th:data-date="${entry.date}"
+                                            th:data-hours="${entry.hoursWorked}"
+                                            th:data-paycode-id="${entry.payCodeId}"
+                                            th:data-paycode-name="${entry.payCodeName}"
+                                            onclick="openEditModal(this)">
+                                        Edit
+                                    </button>
+                                    <button class="btn-small btn-delete"
+                                            th:data-entry-id="${entry.id}"
+                                            th:data-date="${#temporals.format(entry.date, 'MMM dd, yyyy')}"
+                                            th:data-hours="${entry.hoursWorked}"
+                                            onclick="openDeleteModal(this)">
+                                        Delete
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -155,8 +164,40 @@
         </div>
     </div>
 
-    <script th:if="${timesheet.approvalStatus == 'pending'}">
-        const timesheetId = [[${timesheet.id}]];
+    <!-- Delete Entry Modal -->
+    <div id="deleteEntryModal" class="modal" th:if="${timesheet.approvalStatus == 'pending'}">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Delete Time Entry</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this time entry?</p>
+                <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 4px; margin-top: 1rem;">
+                    <div class="info-row">
+                        <span class="info-label">Date:</span>
+                        <span class="info-value" id="deleteEntryDate">Oct 01, 2023</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Hours:</span>
+                        <span class="info-value" id="deleteEntryHours">8.0</span>
+                    </div>
+                </div>
+                <p style="color: #e74c3c; font-weight: 600; margin-top: 1rem;">This action cannot be undone.</p>
+                <form id="deleteEntryForm" method="post">
+                    <input type="hidden" id="deleteEntryId" name="entryId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" class="btn-confirm-delete" onclick="submitDeleteForm()">Delete Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:if="${timesheet.approvalStatus == 'pending'}" th:inline="javascript">
+        /*<![CDATA[*/
+        const timesheetId = /*[[${timesheet.id}]]*/ 0;
+        /*]]>*/
         
         function openEditModal(button) {
             const entryId = button.getAttribute('data-entry-id');
@@ -184,11 +225,39 @@
             document.getElementById('editEntryForm').submit();
         }
 
+        function openDeleteModal(button) {
+            const entryId = button.getAttribute('data-entry-id');
+            const date = button.getAttribute('data-date');
+            const hours = button.getAttribute('data-hours');
+            
+            document.getElementById('deleteEntryId').value = entryId;
+            document.getElementById('deleteEntryDate').textContent = date;
+            document.getElementById('deleteEntryHours').textContent = hours;
+            
+            // Set the form action with the actual entry ID
+            const form = document.getElementById('deleteEntryForm');
+            form.action = '/employee/timesheets/' + timesheetId + '/entry/' + entryId + '/delete';
+            
+            document.getElementById('deleteEntryModal').style.display = 'block';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteEntryModal').style.display = 'none';
+        }
+
+        function submitDeleteForm() {
+            document.getElementById('deleteEntryForm').submit();
+        }
+
         // Close modal when clicking outside
         window.onclick = function(event) {
-            const modal = document.getElementById('editEntryModal');
-            if (event.target == modal) {
+            const editModal = document.getElementById('editEntryModal');
+            const deleteModal = document.getElementById('deleteEntryModal');
+            if (event.target == editModal) {
                 closeEditModal();
+            }
+            if (event.target == deleteModal) {
+                closeDeleteModal();
             }
         }
     </script>

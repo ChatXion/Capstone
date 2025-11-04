@@ -100,4 +100,18 @@ public class EmployeeService {
             }
         }
     }
+    
+    @Transactional
+    public void deleteTimesheetEntry(Long entryId) {
+        Optional<TimesheetEntry> entryOpt = timesheetEntryRepository.findById(entryId);
+        
+        if (entryOpt.isPresent()) {
+            TimesheetEntry entry = entryOpt.get();
+            
+            // Only allow deleting if the timesheet is pending
+            if (entry.getTimesheet() != null && "pending".equals(entry.getTimesheet().getApprovalStatus())) {
+                timesheetEntryRepository.delete(entry);
+            }
+        }
+    }
 }

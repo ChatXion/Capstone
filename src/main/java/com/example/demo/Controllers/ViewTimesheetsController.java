@@ -209,6 +209,31 @@ public class ViewTimesheetsController {
         return "redirect:/employee/timesheets/" + id;
     }
     
+    @PostMapping("/employee/timesheets/{id}/entry/{entryId}/delete")
+    public String deleteTimesheetEntry(
+            @PathVariable Long id,
+            @PathVariable Long entryId,
+            HttpSession session) {
+        
+        // Get employee ID from session
+        Long userId = (Long) session.getAttribute("userId");
+        
+        if (userId == null) {
+            return "redirect:/login";
+        }
+        
+        // Verify timesheet belongs to employee and is pending
+        Optional<Timesheet> timesheetOpt = employeeService.getTimesheet(userId, id);
+        if (timesheetOpt.isEmpty() || !"pending".equals(timesheetOpt.get().getApprovalStatus())) {
+            return "redirect:/employee/timesheets/" + id;
+        }
+        
+        // Delete the entry
+        employeeService.deleteTimesheetEntry(entryId);
+        
+        return "redirect:/employee/timesheets/" + id;
+    }
+    
     // Display class for timesheets list
     public static class TimesheetDisplay {
         private Long id;
