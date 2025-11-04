@@ -62,6 +62,7 @@
                             <th>Hours Worked</th>
                             <th>Hourly Rate</th>
                             <th>Total Pay</th>
+                            <th th:if="${timesheet.approvalStatus == 'pending'}">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -72,13 +73,29 @@
                             <td th:text="${entry.hoursWorked}">8.0</td>
                             <td th:text="'$' + ${entry.hourlyRate}">$25.00</td>
                             <td th:text="'$' + ${#numbers.formatDecimal(entry.hoursWorked * entry.hourlyRate, 1, 2)}">$200.00</td>
+                            <td th:if="${timesheet.approvalStatus == 'pending'}">
+                                <button class="btn-small btn-edit"
+                                        th:data-entry-id="${entry.id}"
+                                        th:data-date="${entry.date}"
+                                        th:data-hours="${entry.hoursWorked}"
+                                        th:data-paycode-id="${entry.payCodeId}"
+                                        th:data-paycode-name="${entry.payCodeName}"
+                                        onclick="openEditModal(this)">
+                                    Edit
+                                </button>
+                            </td>
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr class="total-row">
                             <td colspan="3"><strong>Total:</strong></td>
                             <td><strong th:text="${timesheet.totalHours}">40.0</strong></td>
-                            <td colspan="2">
+                            <td colspan="2" th:if="${timesheet.approvalStatus != 'pending'}">
+                                <strong th:text="'$' + ${#numbers.formatDecimal(
+                                    #aggregates.sum(timesheet.entries.![hoursWorked * hourlyRate]), 1, 2
+                                )}">$1000.00</strong>
+                            </td>
+                            <td colspan="3" th:if="${timesheet.approvalStatus == 'pending'}">
                                 <strong th:text="'$' + ${#numbers.formatDecimal(
                                     #aggregates.sum(timesheet.entries.![hoursWorked * hourlyRate]), 1, 2
                                 )}">$1000.00</strong>
@@ -97,6 +114,84 @@
             <a href="/employee/timesheets" class="btn btn-secondary">Back to All Timesheets</a>
         </div>
     </div>
+
+    <!-- Edit Entry Modal -->
+    <div id="editEntryModal" class="modal" th:if="${timesheet.approvalStatus == 'pending'}">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Time Entry</h3>
+            </div>
+            <div class="modal-body">
+                <form id="editEntryForm" method="post">
+                    <input type="hidden" id="editEntryId" name="entryId">
+                    
+                    <div class="timesheet_form-group">
+                        <label for="editDate">Date</label>
+                        <input type="date" class="timesheet_form-control" id="editDate" name="date" required>
+                    </div>
+                    
+                    <div class="timesheet_form-group">
+                        <label for="editHours">Hours Worked</label>
+                        <input type="number" class="timesheet_form-control" id="editHours" name="hoursWorked" step="0.5" min="0" max="24" required>
+                    </div>
+                    
+                    <div class="timesheet_form-group">
+                        <label for="editPayCode">Pay Code</label>
+                        <select class="timesheet_form-control" id="editPayCode" name="payCodeId" required>
+                            <option value="">Select Pay Code</option>
+                            <option th:each="payCode : ${payCodes}" 
+                                    th:value="${payCode.id}" 
+                                    th:text="${payCode.code + ' - ' + payCode.name}">
+                                CODE - Name
+                            </option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                <button type="button" class="btn-confirm" onclick="submitEditForm()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:if="${timesheet.approvalStatus == 'pending'}">
+        const timesheetId = [[${timesheet.id}]];
+        
+        function openEditModal(button) {
+            const entryId = button.getAttribute('data-entry-id');
+            const date = button.getAttribute('data-date');
+            const hours = button.getAttribute('data-hours');
+            const payCodeId = button.getAttribute('data-paycode-id');
+            
+            document.getElementById('editEntryId').value = entryId;
+            document.getElementById('editDate').value = date;
+            document.getElementById('editHours').value = hours;
+            document.getElementById('editPayCode').value = payCodeId;
+            
+            // Set the form action with the actual entry ID
+            const form = document.getElementById('editEntryForm');
+            form.action = '/employee/timesheets/' + timesheetId + '/entry/' + entryId + '/edit';
+            
+            document.getElementById('editEntryModal').style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editEntryModal').style.display = 'none';
+        }
+
+        function submitEditForm() {
+            document.getElementById('editEntryForm').submit();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('editEntryModal');
+            if (event.target == modal) {
+                closeEditModal();
+            }
+        }
+    </script>
 
     <!-- Footer -->
     <div th:replace="~{fragments/footer :: footer}"></div>

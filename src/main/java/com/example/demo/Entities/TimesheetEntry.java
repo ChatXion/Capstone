@@ -38,9 +38,17 @@ public class TimesheetEntry {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 
     public Timesheet getTimesheet() {
         return timesheet;
+    }
+
+    public void setTimesheet(Timesheet timesheet) {
+        this.timesheet = timesheet;
     }
 
 
@@ -48,14 +56,26 @@ public class TimesheetEntry {
         return payCode;
     }
 
+    public void setPayCode(PayCode payCode) {
+        this.payCode = payCode;
+    }
+
 
     public double getHoursWorked() {
         return hoursWorked;
     }
 
+    public void setHoursWorked(double hoursWorked) {
+        this.hoursWorked = hoursWorked;
+    }
+
 
     public LocalDate getDate() {
         return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
     
     

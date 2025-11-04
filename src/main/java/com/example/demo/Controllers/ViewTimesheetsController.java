@@ -9,11 +9,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.Entities.Employee;
+import com.example.demo.Entities.PayCode;
 import com.example.demo.Entities.Timesheet;
 import com.example.demo.Entities.TimesheetEntry;
 import com.example.demo.Services.EmployeeService;
+import com.example.demo.Services.PayCodeService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -21,9 +25,11 @@ import jakarta.servlet.http.HttpSession;
 public class ViewTimesheetsController {
 
     private final EmployeeService employeeService;
+    private final PayCodeService payCodeService;
 
-    public ViewTimesheetsController(EmployeeService employeeService) {
+    public ViewTimesheetsController(EmployeeService employeeService, PayCodeService payCodeService) {
         this.employeeService = employeeService;
+        this.payCodeService = payCodeService;
     }
 
     @GetMapping("/employee/timesheets")
@@ -138,10 +144,12 @@ public class ViewTimesheetsController {
         if (timesheet.getEntries() != null) {
             for (TimesheetEntry entry : timesheet.getEntries()) {
                 TimesheetEntryDisplay entryDisplay = new TimesheetEntryDisplay();
+                entryDisplay.setId(entry.getId());
                 entryDisplay.setDate(entry.getDate());
                 entryDisplay.setHoursWorked(entry.getHoursWorked());
                 
                 if (entry.getPayCode() != null) {
+                    entryDisplay.setPayCodeId(entry.getPayCode().getId());
                     entryDisplay.setPayCodeName(entry.getPayCode().getName());
                     entryDisplay.setPayCodeCode(entry.getPayCode().getCode());
                     entryDisplay.setHourlyRate(entry.getPayCode().getHourlyRate());
@@ -157,7 +165,48 @@ public class ViewTimesheetsController {
         
         model.addAttribute("timesheet", display);
         
+        // Get employee's organization ID and fetch pay codes if timesheet is pending
+        if ("pending".equals(timesheet.getApprovalStatus())) {
+            Long organizationId = null;
+            if (employee.getOrganization() != null) {
+                organizationId = employee.getOrganization().getId();
+            }
+            
+            if (organizationId != null) {
+                List<PayCode> payCodes = payCodeService.getPayCodesByOrganization(organizationId);
+                model.addAttribute("payCodes", payCodes);
+            }
+        }
+        
         return "employee-timesheet-details";
+    }
+    
+    @PostMapping("/employee/timesheets/{id}/entry/{entryId}/edit")
+    public String editTimesheetEntry(
+            @PathVariable Long id,
+            @PathVariable Long entryId,
+            @RequestParam LocalDate date,
+            @RequestParam double hoursWorked,
+            @RequestParam Long payCodeId,
+            HttpSession session) {
+        
+        // Get employee ID from session
+        Long userId = (Long) session.getAttribute("userId");
+        
+        if (userId == null) {
+            return "redirect:/login";
+        }
+        
+        // Verify timesheet belongs to employee and is pending
+        Optional<Timesheet> timesheetOpt = employeeService.getTimesheet(userId, id);
+        if (timesheetOpt.isEmpty() || !"pending".equals(timesheetOpt.get().getApprovalStatus())) {
+            return "redirect:/employee/timesheets/" + id;
+        }
+        
+        // Update the entry
+        employeeService.updateTimesheetEntry(entryId, date, hoursWorked, payCodeId);
+        
+        return "redirect:/employee/timesheets/" + id;
     }
     
     // Display class for timesheets list
@@ -203,18 +252,26 @@ public class ViewTimesheetsController {
     
     // Display class for timesheet entries
     public static class TimesheetEntryDisplay {
+        private Long id;
         private LocalDate date;
         private double hoursWorked;
+        private Long payCodeId;
         private String payCodeName;
         private String payCodeCode;
         private java.math.BigDecimal hourlyRate;
         
         // Getters and Setters
+        public Long getId() { return id; }
+        public void setId(Long id) { this.id = id; }
+        
         public LocalDate getDate() { return date; }
         public void setDate(LocalDate date) { this.date = date; }
         
         public double getHoursWorked() { return hoursWorked; }
         public void setHoursWorked(double hoursWorked) { this.hoursWorked = hoursWorked; }
+        
+        public Long getPayCodeId() { return payCodeId; }
+        public void setPayCodeId(Long payCodeId) { this.payCodeId = payCodeId; }
         
         public String getPayCodeName() { return payCodeName; }
         public void setPayCodeName(String payCodeName) { this.payCodeName = payCodeName; }
