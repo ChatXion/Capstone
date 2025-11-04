@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTO Requests</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- Navigation -->
+    <div th:replace="~{fragments/nav_user :: nav}"></div>
+
+    <div class="timesheets-container">
+        <div class="timesheets-header">
+            <h2>Paid Time Off (PTO)</h2>
+            <p>Manage your time off requests and view your PTO balance</p>
+        </div>
+
+        <!-- PTO Balance Card -->
+        <div class="employeehome_card" style="margin-bottom: 2rem;">
+            <div class="employeehome_pto-balance">
+                <div class="employeehome_balance-display">
+                    <span class="employeehome_balance-label">Available PTO Balance:</span>
+                    <span class="employeehome_balance-value" th:text="${ptoBalance} + ' hours'">40.0 hours</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div th:if="${param.error}" style="background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
+            <strong>Error:</strong> <span th:text="${param.error}">Error message</span>
+        </div>
+
+        <!-- New Request Button -->
+        <div class="timesheets-actions">
+            <button class="btn btn-primary" onclick="openNewRequestModal()">
+                <span>➕</span> New PTO Request
+            </button>
+        </div>
+
+        <!-- PTO Requests Table -->
+        <div class="timesheets-table-container">
+            <table class="timesheets-table" th:if="${not #lists.isEmpty(ptoRequests)}">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Hours</th>
+                        <th>Status</th>
+                        <th>Submitted</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="request : ${ptoRequests}">
+                        <td>
+                            <span class="type-badge"
+                                  th:text="${request.requestType}"
+                                  th:classappend="${request.requestType == 'Vacation' ? 'type-vacation' : (request.requestType == 'Sick Leave' ? 'type-sick' : 'type-personal')}">
+                                Vacation
+                            </span>
+                        </td>
+                        <td th:text="${#temporals.format(request.startDate, 'MMM dd, yyyy')}">Nov 10, 2025</td>
+                        <td th:text="${#temporals.format(request.endDate, 'MMM dd, yyyy')}">Nov 15, 2025</td>
+                        <td th:text="${request.hoursRequested}">40.0</td>
+                        <td>
+                            <span class="status-badge"
+                                  th:text="${request.approvalStatus}"
+                                  th:classappend="${request.approvalStatus == 'approved' ? 'status-approved' : (request.approvalStatus == 'rejected' ? 'status-denied' : 'status-pending')}">
+                                Pending
+                            </span>
+                        </td>
+                        <td th:text="${#temporals.format(request.submittedDate, 'MMM dd, yyyy')}">Oct 20, 2025</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-small btn-view"
+                                        th:data-request-id="${request.id}"
+                                        th:data-type="${request.requestType}"
+                                        th:data-start="${#temporals.format(request.startDate, 'MMM dd, yyyy')}"
+                                        th:data-end="${#temporals.format(request.endDate, 'MMM dd, yyyy')}"
+                                        th:data-hours="${request.hoursRequested}"
+                                        th:data-reason="${request.reason}"
+                                        th:data-status="${request.approvalStatus}"
+                                        th:data-submitted="${#temporals.format(request.submittedDate, 'MMM dd, yyyy')}"
+                                        th:data-approved-by="${request.approvedBy}"
+                                        th:data-rejection="${request.rejectionReason}"
+                                        onclick="viewRequestDetails(this)">
+                                    View
+                                </button>
+                                <button th:if="${request.approvalStatus == 'pending'}"
+                                        class="btn-small btn-edit"
+                                        th:data-request-id="${request.id}"
+                                        th:data-type="${request.requestType}"
+                                        th:data-start="${request.startDate}"
+                                        th:data-end="${request.endDate}"
+                                        th:data-reason="${request.reason}"
+                                        onclick="openEditRequestModal(this)">
+                                    Edit
+                                </button>
+                                <button th:if="${request.approvalStatus == 'pending'}"
+                                        class="btn-small btn-delete"
+                                        th:data-request-id="${request.id}"
+                                        th:data-type="${request.requestType}"
+                                        th:data-start="${#temporals.format(request.startDate, 'MMM dd, yyyy')}"
+                                        th:data-end="${#temporals.format(request.endDate, 'MMM dd, yyyy')}"
+                                        onclick="openDeleteRequestModal(this)">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="no-timesheets" th:if="${#lists.isEmpty(ptoRequests)}">
+                <h3>No PTO Requests Found</h3>
+                <p>You haven't submitted any time off requests yet.</p>
+                <button class="btn btn-primary" onclick="openNewRequestModal()">Create Your First Request</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Request Modal -->
+    <div id="newRequestModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>New PTO Request</h3>
+            </div>
+            <div class="modal-body">
+                <form id="newRequestForm" method="post" th:action="@{/employee/pto/create}">
+                    <div class="timesheet_form-group">
+                        <label for="newRequestType">Request Type</label>
+                        <select class="timesheet_form-control" id="newRequestType" name="requestType" required>
+                            <option value="">Select Type</option>
+                            <option value="Vacation">Vacation</option>
+                            <option value="Sick Leave">Sick Leave</option>
+                            <option value="Personal">Personal</option>
+                        </select>
+                    </div>
+                    
+                    <div class="timesheet_form-group">
+                        <label for="newStartDate">Start Date</label>
+                        <input type="date" class="timesheet_form-control" id="newStartDate" name="startDate" required onchange="calculateHours()">
+                    </div>
+                    
+                    <div class="timesheet_form-group">
+                        <label for="newEndDate">End Date</label>
+                        <input type="date" class="timesheet_form-control" id="newEndDate" name="endDate" required onchange="calculateHours()">
+                    </div>
+                    
+                    <div class="timesheet_form-group">
+                        <label>Hours Requested</label>
+                        <input type="text" class="timesheet_form-control" id="calculatedHours" readonly style="background-color: #f8f9fa;">
+                        <small style="color: #7f8c8d; font-size: 0.9rem;">Calculated as 8 hours per day</small>
+                    </div>
+                    
+                    <div class="timesheet_form-group">
+                        <label for="newReason">Reason</label>
+                        <textarea class="timesheet_form-control" id="newReason" name="reason" rows="3" placeholder="Optional: Provide a reason for your request"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeNewRequestModal()">Cancel</button>
+                <button type="button" class="btn-confirm" onclick="submitNewRequest()">Submit Request</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Request Modal -->
+    <div id="editRequestModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit PTO Request</h3>
+            </div>
+            <div class="modal-body">
+                <form id="editRequestForm" method="post">
+                    <div class="timesheet_form-group">
+                        <label for="editRequestType">Request Type</label>
+                        <select class="timesheet_form-control" id="editRequestType" name="requestType" required>
+                            <option value="Vacation">Vacation</option>
+                            <option value="Sick Leave">Sick Leave</option>
+                            <option value="Personal">Personal</option>
+                        </select>
+                    </div>
+                    
+                    <div class="timesheet_form-group">
+                        <label for="editStartDate">Start Date</label>
+                        <input type="date" class="timesheet_form-control" id="editStartDate" name="startDate" required onchange="calculateEditHours()">
+                    </div>
+                    
+                    <div class="timesheet_form-group">
+                        <label for="editEndDate">End Date</label>
+                        <input type="date" class="timesheet_form-control" id="editEndDate" name="endDate" required onchange="calculateEditHours()">
+                    </div>
+                    
+                    <div class="timesheet_form-group">
+                        <label>Hours Requested</label>
+                        <input type="text" class="timesheet_form-control" id="editCalculatedHours" readonly style="background-color: #f8f9fa;">
+                        <small style="color: #7f8c8d; font-size: 0.9rem;">Calculated as 8 hours per day</small>
+                    </div>
+                    
+                    <div class="timesheet_form-group">
+                        <label for="editReason">Reason</label>
+                        <textarea class="timesheet_form-control" id="editReason" name="reason" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeEditRequestModal()">Cancel</button>
+                <button type="button" class="btn-confirm" onclick="submitEditRequest()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Request Modal -->
+    <div id="viewRequestModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>PTO Request Details</h3>
+            </div>
+            <div class="modal-body" id="viewRequestBody">
+                <!-- Details populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeViewRequestModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Request Modal -->
+    <div id="deleteRequestModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Delete PTO Request</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this PTO request?</p>
+                <div style="background-color: #f8f9fa; padding: 1rem; border-radius: 4px; margin-top: 1rem;">
+                    <div class="info-row">
+                        <span class="info-label">Type:</span>
+                        <span class="info-value" id="deleteRequestType">Vacation</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Dates:</span>
+                        <span class="info-value" id="deleteRequestDates">Nov 10 - Nov 15</span>
+                    </div>
+                </div>
+                <p style="color: #e74c3c; font-weight: 600; margin-top: 1rem;">This action cannot be undone.</p>
+                <form id="deleteRequestForm" method="post">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeDeleteRequestModal()">Cancel</button>
+                <button type="button" class="btn-confirm-delete" onclick="submitDeleteRequest()">Delete Request</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // New Request Modal
+        function openNewRequestModal() {
+            document.getElementById('newRequestModal').style.display = 'block';
+        }
+
+        function closeNewRequestModal() {
+            document.getElementById('newRequestModal').style.display = 'none';
+            document.getElementById('newRequestForm').reset();
+            document.getElementById('calculatedHours').value = '';
+        }
+
+        function submitNewRequest() {
+            document.getElementById('newRequestForm').submit();
+        }
+
+        function calculateHours() {
+            const startDate = document.getElementById('newStartDate').value;
+            const endDate = document.getElementById('newEndDate').value;
+            
+            if (startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const days = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+                const hours = days * 8;
+                document.getElementById('calculatedHours').value = hours + ' hours (' + days + ' days)';
+            }
+        }
+
+        // Edit Request Modal
+        function openEditRequestModal(button) {
+            const requestId = button.getAttribute('data-request-id');
+            const type = button.getAttribute('data-type');
+            const startDate = button.getAttribute('data-start');
+            const endDate = button.getAttribute('data-end');
+            const reason = button.getAttribute('data-reason');
+            
+            document.getElementById('editRequestType').value = type;
+            document.getElementById('editStartDate').value = startDate;
+            document.getElementById('editEndDate').value = endDate;
+            document.getElementById('editReason').value = reason || '';
+            
+            calculateEditHours();
+            
+            const form = document.getElementById('editRequestForm');
+            form.action = '/employee/pto/' + requestId + '/edit';
+            
+            document.getElementById('editRequestModal').style.display = 'block';
+        }
+
+        function closeEditRequestModal() {
+            document.getElementById('editRequestModal').style.display = 'none';
+        }
+
+        function submitEditRequest() {
+            document.getElementById('editRequestForm').submit();
+        }
+
+        function calculateEditHours() {
+            const startDate = document.getElementById('editStartDate').value;
+            const endDate = document.getElementById('editEndDate').value;
+            
+            if (startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const days = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+                const hours = days * 8;
+                document.getElementById('editCalculatedHours').value = hours + ' hours (' + days + ' days)';
+            }
+        }
+
+        // View Request Modal
+        function viewRequestDetails(button) {
+            const body = document.getElementById('viewRequestBody');
+            const status = button.getAttribute('data-status');
+            
+            let html = `
+                <div class="info-row">
+                    <span class="info-label">Request Type:</span>
+                    <span class="info-value">${button.getAttribute('data-type')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Start Date:</span>
+                    <span class="info-value">${button.getAttribute('data-start')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">End Date:</span>
+                    <span class="info-value">${button.getAttribute('data-end')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Hours Requested:</span>
+                    <span class="info-value">${button.getAttribute('data-hours')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Status:</span>
+                    <span class="info-value">${status}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Submitted Date:</span>
+                    <span class="info-value">${button.getAttribute('data-submitted')}</span>
+                </div>
+            `;
+            
+            if (button.getAttribute('data-approved-by')) {
+                html += `
+                    <div class="info-row">
+                        <span class="info-label">Approved By:</span>
+                        <span class="info-value">${button.getAttribute('data-approved-by')}</span>
+                    </div>
+                `;
+            }
+            
+            if (button.getAttribute('data-rejection')) {
+                html += `
+                    <div class="info-row" style="background-color: #fee; padding: 1rem; border-radius: 4px; margin-top: 1rem;">
+                        <span class="info-label">Rejection Reason:</span>
+                        <span class="info-value rejection-text">${button.getAttribute('data-rejection')}</span>
+                    </div>
+                `;
+            }
+            
+            const reason = button.getAttribute('data-reason');
+            if (reason && reason !== 'null') {
+                html += `
+                    <div class="info-row">
+                        <span class="info-label">Reason:</span>
+                        <span class="info-value">${reason}</span>
+                    </div>
+                `;
+            }
+            
+            body.innerHTML = html;
+            document.getElementById('viewRequestModal').style.display = 'block';
+        }
+
+        function closeViewRequestModal() {
+            document.getElementById('viewRequestModal').style.display = 'none';
+        }
+
+        // Delete Request Modal
+        function openDeleteRequestModal(button) {
+            const requestId = button.getAttribute('data-request-id');
+            const type = button.getAttribute('data-type');
+            const startDate = button.getAttribute('data-start');
+            const endDate = button.getAttribute('data-end');
+            
+            document.getElementById('deleteRequestType').textContent = type;
+            document.getElementById('deleteRequestDates').textContent = startDate + ' - ' + endDate;
+            
+            const form = document.getElementById('deleteRequestForm');
+            form.action = '/employee/pto/' + requestId + '/delete';
+            
+            document.getElementById('deleteRequestModal').style.display = 'block';
+        }
+
+        function closeDeleteRequestModal() {
+            document.getElementById('deleteRequestModal').style.display = 'none';
+        }
+
+        function submitDeleteRequest() {
+            document.getElementById('deleteRequestForm').submit();
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const modals = ['newRequestModal', 'editRequestModal', 'viewRequestModal', 'deleteRequestModal'];
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
