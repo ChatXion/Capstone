@@ -44,32 +44,64 @@ public class Timesheet {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Employee getEmployee() {
         return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     public List<TimesheetEntry> getEntries() {
         return entries;
     }
 
+    public void setEntries(List<TimesheetEntry> entries) {
+        this.entries = entries;
+    }
+
     public Organization getOrganization() {
         return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
     public int getWeek() {
         return week;
     }
 
+    public void setWeek(int week) {
+        this.week = week;
+    }
+
     public String getApprovalStatus() {
         return approvalStatus;
+    }
+
+    public void setApprovalStatus(String approvalStatus) {
+        this.approvalStatus = approvalStatus;
     }
 
     public String getApprovedBy() {
         return approvedBy;
     }
 
+    public void setApprovedBy(String approvedBy) {
+        this.approvedBy = approvedBy;
+    }
+
     public String getRejectionReason() {
         return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
     }
 
     

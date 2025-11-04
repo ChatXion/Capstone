@@ -10,18 +10,75 @@
     <div th:replace="~{fragments/nav_user :: nav}"></div>
     <div class="timesheet_container">
         <h2 class="timesheet_h2">Timesheet Entry</h2>
+        
+        <!-- Error message display -->
+        <div th:if="${error}" style="background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 4px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
+            <strong>Error:</strong> <span th:text="${error}">Error message</span>
+        </div>
+        
         <form action="#" th:action="@{/timesheet}" th:object="${timesheetEntry}" method="post">
             <div class="timesheet_form-group">
                 <label for="timesheet_date">Date</label>
-                <input type="date" class="timesheet_form-control" id="timesheet_date" th:field="*{date}" required>
+                <input type="date" class="timesheet_form-control" id="timesheet_date" th:field="*{date}" required onchange="calculateWeek()">
+            </div>
+            <div class="timesheet_form-group">
+                <label for="timesheet_week">Week Number</label>
+                <input type="number" class="timesheet_form-control" id="timesheet_week" th:field="*{week}" min="1" max="52" readonly required>
+                <small style="color: #7f8c8d; font-size: 0.9rem;">Automatically calculated from the date</small>
             </div>
             <div class="timesheet_form-group">
                 <label for="timesheet_hours">Hours Worked</label>
                 <input type="number" class="timesheet_form-control" id="timesheet_hours" th:field="*{hours}" step="0.5" min="0" max="24" required>
             </div>
+            <div class="timesheet_form-group">
+                <label for="timesheet_paycode">Pay Code</label>
+                <select class="timesheet_form-control" id="timesheet_paycode" th:field="*{payCodeId}" required>
+                    <option value="">Select a pay code</option>
+                    <option th:each="payCode : ${payCodes}" 
+                            th:value="${payCode.id}" 
+                            th:text="${payCode.code + ' - ' + payCode.name + ' ($' + payCode.hourlyRate + '/hr)'}">
+                        CODE - Name ($XX.XX/hr)
+                    </option>
+                </select>
+            </div>
             <button type="submit" class="timesheet_btn timesheet_btn-primary">Submit</button>
+            <a href="/employee/home" class="timesheet_btn" style="background-color: #95a5a6; margin-left: 10px;">Cancel</a>
         </form>
     </div>
+    
+    <script>
+        function calculateWeek() {
+            const dateInput = document.getElementById('timesheet_date');
+            const weekInput = document.getElementById('timesheet_week');
+            
+            if (!dateInput.value) {
+                weekInput.value = '';
+                return;
+            }
+            
+            const selectedDate = new Date(dateInput.value + 'T00:00:00');
+            
+            // Get the first day of the year
+            const startOfYear = new Date(selectedDate.getFullYear(), 0, 1);
+            
+            // Calculate the number of days since the start of the year
+            const daysSinceStart = Math.floor((selectedDate - startOfYear) / (24 * 60 * 60 * 1000));
+            
+            // Calculate the week number (ISO week date standard)
+            // Adjust for the day of the week that the year started on
+            const startDayOfWeek = startOfYear.getDay();
+            const adjustedDays = daysSinceStart + startDayOfWeek;
+            const weekNumber = Math.ceil(adjustedDays / 7);
+            
+            weekInput.value = weekNumber;
+        }
+        
+        // Calculate week on page load if date is already set
+        window.addEventListener('DOMContentLoaded', function() {
+            calculateWeek();
+        });
+    </script>
+    
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
