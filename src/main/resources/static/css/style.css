@@ -1628,3 +1628,210 @@ body#timesheet_body {
     box-shadow: 0 4px 8px rgba(39, 174, 96, 0.4);
     transform: translateY(-1px);
 }
+.timesheet_container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    margin-bottom: 100px; /* Account for footer */
+}
+.timesheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.timesheet-header h2 { margin: 0; color: #007acc; }
+.timesheet-period-selector { 
+    display: flex; .timesheet_container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    margin-bottom: 100px; /* Account for footer */
+}
+.timesheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.timesheet-header h2 { margin: 0; color: #007acc; }
+.timesheet-period-selector { 
+    display: flex; 
+    align-items: center; 
+    gap: 0.5rem; 
+    flex-wrap: wrap;
+}
+.timesheet-period-selector label { font-weight: 600; }
+.timesheet-period-selector input {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+.timesheet-actions { display: flex; gap: 1rem; }
+.timesheet-table-container { overflow-x: auto; }
+.timesheet-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.timesheet-table th, .timesheet-table td {
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    text-align: center;
+}
+.timesheet-table thead { background-color: #007acc; color: white; }
+.timesheet-table th { font-weight: 600; }
+.timesheet-table tbody tr:hover { background-color: #f1f1f1; }
+.timesheet-table td.cell-paycode {
+    text-align: left;
+    width: 250px;
+    font-weight: 600;
+}
+.timesheet-table td.cell-total { font-weight: bold; }
+.timesheet-table tfoot { background-color: #f8f9fa; font-weight: bold; }
+.timesheet-table tfoot td { font-size: 1.1rem; }
+.paycode-selector { cursor: pointer; color: #007acc; }
+.paycode-selector:hover { text-decoration: underline; }
+.hour-input {
+    width: 60px;
+    padding: 0.5rem;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+.hour-input:focus { border-color: #007acc; outline: none; }
+.paycode-modal { z-index: 2000; }
+.paycode-modal-content { margin: 10% auto; }
+.modal-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.modal-close:hover { color: #333; }
+#paycode-search-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+}
+#paycode-results-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+#paycode-results-list li {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+#paycode-results-list li:hover { background-color: #f1f1f1; }
+    align-items: center; 
+    gap: 0.5rem; 
+    flex-wrap: wrap;
+}
+.timesheet-period-selector label { font-weight: 600; }
+.timesheet-period-selector input {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+.timesheet-actions { display: flex; gap: 1rem; }
+.timesheet-table-container { overflow-x: auto; }
+.timesheet-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.timesheet-table th, .timesheet-table td {
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    text-align: center;
+}
+.timesheet-table thead { background-color: #007acc; color: white; }
+.timesheet-table th { font-weight: 600; }
+.timesheet-table tbody tr:hover { background-color: #f1f1f1; }
+.timesheet-table td.cell-paycode {
+    text-align: left;
+    width: 250px;
+    font-weight: 600;
+}
+.timesheet-table td.cell-total { font-weight: bold; }
+.timesheet-table tfoot { background-color: #f8f9fa; font-weight: bold; }
+.timesheet-table tfoot td { font-size: 1.1rem; }
+.paycode-selector { cursor: pointer; color: #007acc; }
+.paycode-selector:hover { text-decoration: underline; }
+.hour-input {
+    width: 60px;
+    padding: 0.5rem;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+.hour-input:focus { border-color: #007acc; outline: none; }
+.paycode-modal { z-index: 2000; }
+.paycode-modal-content { margin: 10% auto; }
+.modal-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.modal-close:hover { color: #333; }
+#paycode-search-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+}
+#paycode-results-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+#paycode-results-list li {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+#paycode-results-list li:hover { background-color: #f1f1f1; }

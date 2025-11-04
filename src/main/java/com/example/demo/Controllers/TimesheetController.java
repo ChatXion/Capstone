@@ -1,184 +1,193 @@
 package com.example.demo.Controllers;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.demo.Entities.Employee;
 import com.example.demo.Entities.PayCode;
-import com.example.demo.Services.EmployeeService;
-import com.example.demo.Services.PayCodeService;
-import com.example.demo.Services.TimesheetService;
+import com.example.demo.Entities.Timesheet;
+import com.example.demo.Entities.TimesheetEntry;
+import com.example.demo.Repositories.EmployeeRepository;
+import com.example.demo.Repositories.PayCodeRepository;
+import com.example.demo.Repositories.TimesheetRepository;
+import com.example.demo.Repositories.TimesheetEntryRepository;
 
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Controller
 public class TimesheetController {
 
-    private final EmployeeService employeeService;
-    private final PayCodeService payCodeService;
-    private final TimesheetService timesheetService;
+    // --- DTO Classes for Form Binding ---
 
-    public TimesheetController(EmployeeService employeeService, 
-                              PayCodeService payCodeService,
-                              TimesheetService timesheetService) {
-        this.employeeService = employeeService;
-        this.payCodeService = payCodeService;
-        this.timesheetService = timesheetService;
+    /**
+     * DTO for the form itself
+     */
+    public static class TimesheetFormDTO {
+        private String payPeriodStart;
+        private List<TimesheetEntryDTO> entries = new ArrayList<>();
+        public String getPayPeriodStart() { return payPeriodStart; }
+        public void setPayPeriodStart(String payPeriodStart) { this.payPeriodStart = payPeriodStart; }
+        public List<TimesheetEntryDTO> getEntries() { return entries; }
+        public void setEntries(List<TimesheetEntryDTO> entries) { this.entries = entries; }
     }
 
+    /**
+     * DTO for a single row in the form
+     */
+    public static class TimesheetEntryDTO {
+        private Long payCodeId;
+        private Map<String, Double> hours;
+        public Long getPayCodeId() { return payCodeId; }
+        public void setPayCodeId(Long payCodeId) { this.payCodeId = payCodeId; }
+        public Map<String, Double> getHours() { return hours; }
+        public void setHours(Map<String, Double> hours) { this.hours = hours; }
+    }
+
+    /**
+     * Safe DTO for sending PayCode data to the template.
+     * This avoids the "LazyInitializationException" and "Incomplete Chunk" errors.
+     */
+    public static class PayCodeDTO {
+        private Long id;
+        private String name;
+        private String code;
+
+        public PayCodeDTO(Long id, String name, String code) {
+            this.id = id;
+            this.name = name;
+            this.code = code;
+        }
+        // Getters are needed for the JSON serializer
+        public Long getId() { return id; }
+        public String getName() { return name; }
+        public String getCode() { return code; }
+    }
+
+
+    // --- Injected Repositories ---
+    @Autowired private EmployeeRepository employeeRepository;
+    @Autowired private PayCodeRepository payCodeRepository;
+    @Autowired private TimesheetRepository timesheetRepository;
+    @Autowired private TimesheetEntryRepository timesheetEntryRepository;
+
+
+    /**
+     * GET /timesheet
+     * Displays the new timesheet grid page.
+     * Fetches all pay codes and converts them to DTOs.
+     */
     @GetMapping("/timesheet")
     public String timesheetForm(Model model, HttpSession session) {
-        // Get employee ID from session
-        Long userId = (Long) session.getAttribute("userId");
-        
-        if (userId == null) {
-            return "redirect:/login";
-        }
-        
-        // Fetch employee data
-        Optional<Employee> employeeOpt = employeeService.getEmployee(userId);
-        if (employeeOpt.isEmpty()) {
-            return "redirect:/login";
-        }
-        
-        Employee employee = employeeOpt.get();
-        
-        // Get firstName from session for navigation
         String firstName = (String) session.getAttribute("firstName");
         model.addAttribute("firstName", firstName != null ? firstName : "User");
+
+        model.addAttribute("timesheetForm", new TimesheetFormDTO());
+
+        // --- THIS IS THE FIX ---
+        // 1. Fetch all PayCode entities
+        Iterable<PayCode> payCodeEntities = payCodeRepository.findAll();
         
-        // Get pay codes for this employee's organization
-        Long organizationId = null;
-        if (employee.getOrganization() != null) {
-            organizationId = employee.getOrganization().getId();
+        // 2. Convert them to "safe" DTOs
+        List<PayCodeDTO> payCodeDTOs = new ArrayList<>();
+        for (PayCode pc : payCodeEntities) {
+            payCodeDTOs.add(new PayCodeDTO(pc.getId(), pc.getName(), pc.getCode()));
         }
+
+        // 3. Add the DTO list to the model.
+        // The template (timesheet.html) is expecting a model attribute named "payCodes".
+        model.addAttribute("payCodes", payCodeDTOs);
+        // --- END OF FIX ---
         
-        if (organizationId != null) {
-            List<PayCode> payCodes = payCodeService.getPayCodesByOrganization(organizationId);
-            model.addAttribute("payCodes", payCodes);
-        }
-        
-        // Create a new form object
-        TimesheetEntryForm form = new TimesheetEntryForm();
-        model.addAttribute("timesheetEntry", form);
-        
-        return "timesheet";
+        return "timesheet"; 
     }
 
+    /**
+     * POST /timesheet
+     * Handles the submission of the entire timesheet grid.
+     */
     @PostMapping("/timesheet")
-    public String timesheetSubmit(@ModelAttribute("timesheetEntry") TimesheetEntryForm timesheetEntry, 
-                                  HttpSession session,
-                                  Model model) {
-        // Get employee ID from session
+    public String timesheetSubmit(@ModelAttribute TimesheetFormDTO timesheetForm, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
-        
         if (userId == null) {
-            return "redirect:/login";
+            return "redirect:/login"; 
         }
-        
-        // Get firstName from session for navigation
-        String firstName = (String) session.getAttribute("firstName");
-        model.addAttribute("firstName", firstName != null ? firstName : "User");
-        
-        // Fetch employee data
-        Optional<Employee> employeeOpt = employeeService.getEmployee(userId);
+
+        Optional<Employee> employeeOpt = employeeRepository.findById(userId);
         if (employeeOpt.isEmpty()) {
-            return "redirect:/login";
+            return "redirect:/login"; 
         }
-        
         Employee employee = employeeOpt.get();
-        
-        // Get pay codes for the form (needed if we return to form on error)
-        Long organizationId = null;
-        if (employee.getOrganization() != null) {
-            organizationId = employee.getOrganization().getId();
-        }
-        
-        List<PayCode> payCodes = null;
-        if (organizationId != null) {
-            payCodes = payCodeService.getPayCodesByOrganization(organizationId);
-            model.addAttribute("payCodes", payCodes);
-        }
-        
-        // Validate the form data
-        if (timesheetEntry.getWeek() == null || timesheetEntry.getDate() == null || 
-            timesheetEntry.getHours() == null || timesheetEntry.getPayCodeId() == null) {
-            model.addAttribute("error", "All fields are required.");
-            return "timesheet";
-        }
-        
+
+        LocalDate payPeriodStartDate;
         try {
-            // Save the timesheet entry using the service
-            timesheetService.createTimesheetEntry(
-                userId, 
-                timesheetEntry.getWeek(),
-                timesheetEntry.getDate(), 
-                timesheetEntry.getHours(), 
-                timesheetEntry.getPayCodeId()
-            );
-            
-            System.out.println("Timesheet submitted - Week: " + timesheetEntry.getWeek() + 
-                             ", Date: " + timesheetEntry.getDate() + 
-                             ", Hours: " + timesheetEntry.getHours() +
-                             ", PayCode ID: " + timesheetEntry.getPayCodeId());
-            
-            return "redirect:/employee/timesheets";
-            
-        } catch (Exception e) {
-            System.err.println("Error creating timesheet entry: " + e.getMessage());
-            e.printStackTrace();
-            model.addAttribute("error", "Error creating timesheet entry: " + e.getMessage());
-            return "timesheet";
+            payPeriodStartDate = LocalDate.parse(timesheetForm.getPayPeriodStart());
+        } catch (DateTimeParseException e) {
+            return "redirect:/timesheet?error=invalidDate";
         }
+
+        Timesheet newTimesheet = new Timesheet();
+        newTimesheet.setEmployee(employee);
+        newTimesheet.setOrganization(employee.getOrganization());
+        newTimesheet.setApprovalStatus("Pending");
+        // You can calculate and set the week number here if needed
+        // newTimesheet.setWeek(yourWeekCalculationLogic);
+        
+        Timesheet savedTimesheet = timesheetRepository.save(newTimesheet);
+
+        for (TimesheetEntryDTO entryDTO : timesheetForm.getEntries()) {
+            
+            if (entryDTO.getPayCodeId() == null || entryDTO.getHours() == null) {
+                continue; // Skip empty rows
+            }
+
+            PayCode payCode = payCodeRepository.findById(entryDTO.getPayCodeId()).orElse(null);
+            if (payCode == null) {
+                continue; // Skip if paycode ID is invalid
+            }
+
+            for (Map.Entry<String, Double> dayEntry : entryDTO.getHours().entrySet()) {
+                String dayName = dayEntry.getKey(); 
+                Double hours = dayEntry.getValue();
+                
+                if (hours != null && hours > 0) {
+                    TimesheetEntry newEntry = new TimesheetEntry();
+                    newEntry.setTimesheet(savedTimesheet);
+                    newEntry.setPayCode(payCode);
+                    newEntry.setHoursWorked(hours);
+                    newEntry.setDate(calculateDateFromDay(payPeriodStartDate, dayName));
+                    
+                    timesheetEntryRepository.save(newEntry);
+                }
+            }
+        }
+
+        return "redirect:/employee/home"; // Redirect on success
     }
-    
-    // Form object to hold timesheet entry data
-    public static class TimesheetEntryForm {
-        private Integer week;
-        private LocalDate date;
-        private Double hours;
-        private Long payCodeId;
-        
-        public TimesheetEntryForm() {
+
+    /**
+     * Helper function to determine the LocalDate for an entry
+     */
+    private LocalDate calculateDateFromDay(LocalDate startDate, String dayName) {
+        int daysToAdd = 0;
+        switch (dayName.toLowerCase()) {
+            case "sun": daysToAdd = 0; break;
+            case "mon": daysToAdd = 1; break;
+            case "tue": daysToAdd = 2; break;
+            case "wed": daysToAdd = 3; break;
+            case "thu": daysToAdd = 4; break;
+            case "fri": daysToAdd = 5; break;
+            case "sat": daysToAdd = 6; break;
         }
-        
-        public Integer getWeek() {
-            return week;
-        }
-        
-        public void setWeek(Integer week) {
-            this.week = week;
-        }
-        
-        public LocalDate getDate() {
-            return date;
-        }
-        
-        public void setDate(LocalDate date) {
-            this.date = date;
-        }
-        
-        public Double getHours() {
-            return hours;
-        }
-        
-        public void setHours(Double hours) {
-            this.hours = hours;
-        }
-        
-        public Long getPayCodeId() {
-            return payCodeId;
-        }
-        
-        public void setPayCodeId(Long payCodeId) {
-            this.payCodeId = payCodeId;
-        }
+        return startDate.plusDays(daysToAdd);
     }
 }
