@@ -138,7 +138,7 @@ public class TimesheetController {
         Timesheet newTimesheet = new Timesheet();
         newTimesheet.setEmployee(employee);
         newTimesheet.setOrganization(employee.getOrganization());
-        newTimesheet.setApprovalStatus("Pending");
+        newTimesheet.setApprovalStatus("pending");  // FIXED: Changed from "Pending" to "pending"
         // You can calculate and set the week number here if needed
         // newTimesheet.setWeek(yourWeekCalculationLogic);
         
