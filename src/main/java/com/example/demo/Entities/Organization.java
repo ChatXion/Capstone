@@ -32,6 +32,9 @@ public class Organization {
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
     private List<Role> roles = new ArrayList<>();
     
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
+    private List<InviteCode> inviteCodes = new ArrayList<>();
+
     public Organization() {
     }
 
