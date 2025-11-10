@@ -19,11 +19,13 @@ public class InviteCode {
 
     @ManyToOne
     @JoinColumn(name = "organization_id")
-    Organization organization;
+    private Organization organization;
 
     @OneToOne
     @JoinColumn(name = "role_id")
-    Role assigningRole;
+    private Role assigningRole;
+
+    private String code;
 
     public InviteCode() {
     }
@@ -50,6 +52,14 @@ public class InviteCode {
 
     public void setAssigningRole(Role assigningRole) {
         this.assigningRole = assigningRole;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
     
 
