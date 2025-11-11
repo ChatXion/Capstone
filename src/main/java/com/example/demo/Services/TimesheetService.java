@@ -107,4 +107,40 @@ public class TimesheetService {
         
         return timesheetRepository.save(newTimesheet);
     }
+    
+    @Transactional
+    public void approveTimesheet(Long timesheetId, String approvedBy) {
+        Optional<Timesheet> timesheetOpt = timesheetRepository.findById(timesheetId);
+        
+        if (timesheetOpt.isPresent()) {
+            Timesheet timesheet = timesheetOpt.get();
+            
+            // Only approve if currently pending
+            if ("pending".equals(timesheet.getApprovalStatus())) {
+                timesheet.setApprovalStatus("approved");
+                timesheet.setApprovedBy(approvedBy);
+                timesheet.setRejectionReason(null); // Clear any previous rejection reason
+                
+                timesheetRepository.save(timesheet);
+            }
+        }
+    }
+    
+    @Transactional
+    public void denyTimesheet(Long timesheetId, String rejectionReason, String deniedBy) {
+        Optional<Timesheet> timesheetOpt = timesheetRepository.findById(timesheetId);
+        
+        if (timesheetOpt.isPresent()) {
+            Timesheet timesheet = timesheetOpt.get();
+            
+            // Only deny if currently pending
+            if ("pending".equals(timesheet.getApprovalStatus())) {
+                timesheet.setApprovalStatus("rejected");
+                timesheet.setRejectionReason(rejectionReason);
+                timesheet.setApprovedBy(deniedBy); // Track who denied it
+                
+                timesheetRepository.save(timesheet);
+            }
+        }
+    }
 }

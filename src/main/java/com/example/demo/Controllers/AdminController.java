@@ -1,5 +1,6 @@
 package com.example.demo.Controllers;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
@@ -9,6 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.Entities.Admin;
+import com.example.demo.Entities.Employee;
+import com.example.demo.Entities.Organization;
+import com.example.demo.Entities.Role;
+import com.example.demo.Repositories.EmployeeRepository;
+import com.example.demo.Repositories.OrganizationRepository;
+import com.example.demo.Repositories.RoleRepository;
 import com.example.demo.Services.AdminService;
 
 import jakarta.servlet.http.HttpSession;
@@ -17,9 +24,18 @@ import jakarta.servlet.http.HttpSession;
 public class AdminController {
 
     private final AdminService adminService;
+    private final EmployeeRepository employeeRepository;
+    private final OrganizationRepository organizationRepository;
+    private final RoleRepository roleRepository;
 
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService,
+                          EmployeeRepository employeeRepository,
+                          OrganizationRepository organizationRepository,
+                          RoleRepository roleRepository) {
         this.adminService = adminService;
+        this.employeeRepository = employeeRepository;
+        this.organizationRepository = organizationRepository;
+        this.roleRepository = roleRepository;
     }
 
     @GetMapping("/admin/home")
@@ -64,6 +80,14 @@ public class AdminController {
         // Get firstName from session for navigation
         String firstName = (String) session.getAttribute("firstName");
         model.addAttribute("firstName", firstName != null ? firstName : "Admin");
+        
+        // Fetch all organizations and roles for dropdowns
+        List<Organization> organizations = organizationRepository.findAll();
+        List<Role> roles = roleRepository.findAll();
+        
+        model.addAttribute("organizations", organizations);
+        model.addAttribute("roles", roles);
+        
         return "create-user";
     }
 
@@ -72,14 +96,36 @@ public class AdminController {
             @RequestParam String firstName,
             @RequestParam String lastName,
             @RequestParam String email,
-            @RequestParam String phone,
-            @RequestParam String userType,
-            @RequestParam String organization,
-            @RequestParam String role,
-            @RequestParam String tempPassword) {
+            @RequestParam String password,
+            @RequestParam Double ptoBalance,
+            @RequestParam Long organizationId,
+            @RequestParam Long roleId) {
         
-        System.out.println("Creating user: " + firstName + " " + lastName + " (" + email + ")");
+        // Create new employee
+        Employee newEmployee = new Employee();
+        newEmployee.setFirstName(firstName);
+        newEmployee.setLastName(lastName);
+        newEmployee.setEmail(email);
+        newEmployee.setPassword(password);
+        newEmployee.setPtoBalance(ptoBalance);
         
-        return "redirect:/admin/home";
+        // Set organization
+        Optional<Organization> orgOpt = organizationRepository.findById(organizationId);
+        if (orgOpt.isPresent()) {
+            newEmployee.setOrganization(orgOpt.get());
+        }
+        
+        // Set role
+        Optional<Role> roleOpt = roleRepository.findById(roleId);
+        if (roleOpt.isPresent()) {
+            newEmployee.setRole(roleOpt.get());
+        }
+        
+        // Save to database
+        employeeRepository.save(newEmployee);
+        
+        System.out.println("Created user: " + firstName + " " + lastName + " (" + email + ")");
+        
+        return "redirect:/admin/users";
     }
 }
