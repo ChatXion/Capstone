@@ -1,19 +1,25 @@
 package com.example.demo.Controllers;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import jakarta.servlet.http.HttpSession;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.demo.Entities.RegistrationRequest;
+import com.example.demo.Services.RegistrationService;
+
+import jakarta.servlet.http.HttpSession;
+
 @Controller
-public class RegistrationController {
+    public class RegistrationController {
+    private final RegistrationService service;
+    public RegistrationController(RegistrationService service) { this.service = service; }
 
     @GetMapping("/admin/registrations")
     public String viewRegistrations(Model model, HttpSession session) {
@@ -84,6 +90,34 @@ public class RegistrationController {
         return "admin-registrations";
     }
 
+    @ModelAttribute("registration")
+    public RegistrationRequest registrationRequest() {
+        return new RegistrationRequest();
+    }
+    @GetMapping("/register")
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("registration", new RegistrationRequest()); // <- ensure object present
+        return "registration";
+    }
+    @PostMapping("/register")
+    public String submitRegistration(@ModelAttribute("registration") RegistrationRequest registration, Model model) {
+        System.out.println("DEBUG: submitRegistration called -> email=" + registration.getEmail() + ", invite=" + registration.getInvitationCode());
+        try {
+            // actually persist the request
+            RegistrationRequest saved = service.create(registration);
+            System.out.println("DEBUG: saved registration id=" + saved.getId());
+            return "redirect:/register?submitted";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("registration", registration);
+            return "registration";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Unexpected error: " + e.getMessage());
+            model.addAttribute("registration", registration);
+            return "registration";
+        }
+    }
     @PostMapping("/admin/registrations/approve")
     public String approveRegistration(@RequestParam int registrationId) {
         

@@ -2,6 +2,9 @@ package com.example.demo.Controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
+import com.example.demo.Entities.RegistrationRequest;
 
 @Controller
 public class WebController {
@@ -15,6 +18,10 @@ public class WebController {
     @GetMapping("/login")
     public String login() {
         return "login";
+    }
+    @ModelAttribute("registration")
+    public RegistrationRequest registrationRequest() {
+        return new RegistrationRequest();
     }
 
     @GetMapping("/registration")
