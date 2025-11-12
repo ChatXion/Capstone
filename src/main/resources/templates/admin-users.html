@@ -14,6 +14,11 @@
         <div class="users-header">
             <h2>User Management</h2>
             <p>View, edit, and manage all system users</p>
+            <div style="margin-top: 1rem;">
+                <a href="/admin/create-user" class="btn" style="background-color: #27ae60; color: white; padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 4px; display: inline-block;">
+                    ➕ Create New User
+                </a>
+            </div>
         </div>
 
         <!-- Filters Section -->
@@ -65,63 +70,38 @@
                         <th>Employee ID</th>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Phone</th>
-                        <th>User Type</th>
+                        <th>Organization</th>
                         <th>Role</th>
-                        <th>Department</th>
-                        <th>Status</th>
-                        <th>Hire Date</th>
+                        <th>PTO Balance</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="usersTableBody">
                     <tr th:each="user : ${users}">
-                        <td th:text="${user.employeeId}">12345</td>
+                        <td th:text="${user.id}">1</td>
                         <td th:text="${user.firstName + ' ' + user.lastName}">John Doe</td>
                         <td th:text="${user.email}">john.doe@company.com</td>
-                        <td th:text="${user.phone}">555-0201</td>
-                        <td>
-                            <span class="user-type-badge"
-                                  th:text="${user.userType}"
-                                  th:classappend="${user.userType == 'Admin' ? 'type-admin' : (user.userType == 'Manager' ? 'type-manager' : 'type-employee')}">
-                                Employee
-                            </span>
-                        </td>
-                        <td th:text="${user.role}">Developer</td>
-                        <td th:text="${user.department}">Engineering</td>
-                        <td>
-                            <span class="status-badge"
-                                  th:text="${user.status}"
-                                  th:classappend="${user.status == 'Active' ? 'status-active' : 'status-inactive'}">
-                                Active
-                            </span>
-                        </td>
-                        <td th:text="${#temporals.format(user.hireDate, 'MMM dd, yyyy')}">Jan 15, 2023</td>
+                        <td th:text="${user.organizationName != null ? user.organizationName : 'N/A'}">Company Co.</td>
+                        <td th:text="${user.roleName != null ? user.roleName : 'N/A'}">Developer</td>
+                        <td th:text="${user.ptoBalance}">80.0</td>
                         <td>
                             <div class="action-buttons">
                                 <button class="btn-small btn-view" 
                                         th:data-user-id="${user.id}"
-                                        th:data-employee-id="${user.employeeId}"
                                         th:data-name="${user.firstName + ' ' + user.lastName}"
                                         th:data-email="${user.email}"
-                                        th:data-phone="${user.phone}"
-                                        th:data-user-type="${user.userType}"
-                                        th:data-role="${user.role}"
-                                        th:data-department="${user.department}"
-                                        th:data-status="${user.status}"
-                                        th:data-hire-date="${#temporals.format(user.hireDate, 'MMM dd, yyyy')}"
+                                        th:data-org="${user.organizationName != null ? user.organizationName : 'N/A'}"
+                                        th:data-role="${user.roleName != null ? user.roleName : 'N/A'}"
+                                        th:data-pto="${user.ptoBalance}"
                                         onclick="viewUser(this)">
                                     View
                                 </button>
                                 <a th:href="@{/admin/users/edit(userId=${user.id})}" class="btn-small btn-edit">
                                     Edit
                                 </a>
-                                <button class="btn-small btn-timesheets" 
-                                        th:data-user-id="${user.id}"
-                                        th:data-name="${user.firstName + ' ' + user.lastName}"
-                                        onclick="viewTimesheets(this.getAttribute('data-user-id'), this.getAttribute('data-name'))">
+                                <a th:href="@{/admin/view-timesheets/{id}(id=${user.id})}" class="btn-small btn-timesheets">
                                     Timesheets
-                                </button>
+                                </a>
                                 <button class="btn-small btn-delete" 
                                         th:data-user-id="${user.id}"
                                         th:data-name="${user.firstName + ' ' + user.lastName}"
@@ -141,6 +121,7 @@
         </div>
     </div>
 
+    <!-- View User Details Modal -->
     <div id="viewModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -155,7 +136,7 @@
         </div>
     </div>
 
-
+    <!-- Delete User Modal -->
     <div id="deleteModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -176,14 +157,13 @@
     </div>
 
     <script>
-
         function viewUser(button) {
             const modalBody = document.getElementById('viewModalBody');
             
             modalBody.innerHTML = `
                 <div class="info-row">
                     <span class="info-label">Employee ID:</span>
-                    <span class="info-value">${button.getAttribute('data-employee-id')}</span>
+                    <span class="info-value">${button.getAttribute('data-user-id')}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Name:</span>
@@ -194,28 +174,16 @@
                     <span class="info-value">${button.getAttribute('data-email')}</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Phone:</span>
-                    <span class="info-value">${button.getAttribute('data-phone')}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">User Type:</span>
-                    <span class="info-value">${button.getAttribute('data-user-type')}</span>
+                    <span class="info-label">Organization:</span>
+                    <span class="info-value">${button.getAttribute('data-org')}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Role:</span>
                     <span class="info-value">${button.getAttribute('data-role')}</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Department:</span>
-                    <span class="info-value">${button.getAttribute('data-department')}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Status:</span>
-                    <span class="info-value">${button.getAttribute('data-status')}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Hire Date:</span>
-                    <span class="info-value">${button.getAttribute('data-hire-date')}</span>
+                    <span class="info-label">PTO Balance:</span>
+                    <span class="info-value">${button.getAttribute('data-pto')} hours</span>
                 </div>
             `;
             
@@ -236,12 +204,6 @@
             document.getElementById('deleteModal').style.display = 'none';
         }
 
-
-        function viewTimesheets(userId, userName) {
-            alert('View Timesheets for ' + userName + ' (User ID: ' + userId + ')\nThis will navigate to a page showing this user\'s timesheets.');
-
-        }
-
         function applyFilters() {
             const searchName = document.getElementById('searchName').value.toLowerCase();
             const filterUserType = document.getElementById('filterUserType').value;
@@ -252,16 +214,14 @@
             
             rows.forEach(row => {
                 const name = row.cells[1].textContent.toLowerCase();
-                const userType = row.cells[4].textContent.trim();
-                const department = row.cells[6].textContent.trim();
-                const status = row.cells[7].textContent.trim();
+                const org = row.cells[3].textContent.trim();
+                const role = row.cells[4].textContent.trim();
                 
                 const matchesName = !searchName || name.includes(searchName);
-                const matchesUserType = !filterUserType || userType === filterUserType;
-                const matchesDepartment = !filterDepartment || department === filterDepartment;
-                const matchesStatus = !filterStatus || status === filterStatus;
+                const matchesOrg = !filterDepartment || org === filterDepartment;
+                const matchesRole = !filterUserType || role === filterUserType;
                 
-                if (matchesName && matchesUserType && matchesDepartment && matchesStatus) {
+                if (matchesName && matchesOrg && matchesRole) {
                     row.style.display = '';
                 } else {
                     row.style.display = 'none';

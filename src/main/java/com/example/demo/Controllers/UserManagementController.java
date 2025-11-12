@@ -3,17 +3,37 @@ package com.example.demo.Controllers;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.demo.Entities.Employee;
+import com.example.demo.Entities.Organization;
+import com.example.demo.Entities.Role;
+import com.example.demo.Repositories.EmployeeRepository;
+import com.example.demo.Repositories.OrganizationRepository;
+import com.example.demo.Repositories.RoleRepository;
+
 import jakarta.servlet.http.HttpSession;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class UserManagementController {
+
+    private final EmployeeRepository employeeRepository;
+    private final OrganizationRepository organizationRepository;
+    private final RoleRepository roleRepository;
+
+    public UserManagementController(EmployeeRepository employeeRepository,
+                                   OrganizationRepository organizationRepository,
+                                   RoleRepository roleRepository) {
+        this.employeeRepository = employeeRepository;
+        this.organizationRepository = organizationRepository;
+        this.roleRepository = roleRepository;
+    }
 
     @GetMapping("/admin/users")
     public String viewUsers(Model model, HttpSession session) {
@@ -21,191 +41,201 @@ public class UserManagementController {
         String firstName = (String) session.getAttribute("firstName");
         model.addAttribute("firstName", firstName != null ? firstName : "Admin");
         
-        // Dummy user data
-        List<SystemUser> users = new ArrayList<>();
+        // Fetch all employees from database
+        List<Employee> employees = employeeRepository.findAll();
         
-        users.add(new SystemUser(
-            1, 
-            "12345",
-            "John", 
-            "Doe", 
-            "john.doe@company.com", 
-            "555-0201",
-            "Employee",
-            "Developer",
-            "Engineering",
-            "Active",
-            LocalDate.of(2023, 1, 15)
-        ));
+        // Convert to display objects
+        List<EmployeeDisplay> displayUsers = new ArrayList<>();
+        for (Employee employee : employees) {
+            EmployeeDisplay display = new EmployeeDisplay();
+            display.setId(employee.getId());
+            display.setFirstName(employee.getFirstName());
+            display.setLastName(employee.getLastName());
+            display.setEmail(employee.getEmail());
+            display.setPtoBalance(employee.getPtoBalance());
+            
+            // Get organization
+            if (employee.getOrganization() != null) {
+                display.setOrganizationId(employee.getOrganization().getId());
+                display.setOrganizationName(employee.getOrganization().getName());
+            }
+            
+            // Get role
+            if (employee.getRole() != null) {
+                display.setRoleId(employee.getRole().getId());
+                display.setRoleName(employee.getRole().getName());
+            }
+            
+            displayUsers.add(display);
+        }
         
-        users.add(new SystemUser(
-            2, 
-            "12346",
-            "Jane", 
-            "Smith", 
-            "jane.smith@company.com", 
-            "555-0202",
-            "Manager",
-            "Engineering Manager",
-            "Engineering",
-            "Active",
-            LocalDate.of(2022, 6, 1)
-        ));
-        
-        users.add(new SystemUser(
-            3, 
-            "12347",
-            "Michael", 
-            "Johnson", 
-            "michael.j@company.com", 
-            "555-0203",
-            "Employee",
-            "Designer",
-            "Design",
-            "Active",
-            LocalDate.of(2024, 3, 10)
-        ));
-        
-        users.add(new SystemUser(
-            4, 
-            "12348",
-            "Emily", 
-            "Davis", 
-            "emily.davis@company.com", 
-            "555-0204",
-            "Employee",
-            "QA Engineer",
-            "Quality Assurance",
-            "Active",
-            LocalDate.of(2023, 9, 20)
-        ));
-        
-        users.add(new SystemUser(
-            5, 
-            "12349",
-            "Robert", 
-            "Wilson", 
-            "r.wilson@company.com", 
-            "555-0205",
-            "Admin",
-            "System Administrator",
-            "IT",
-            "Active",
-            LocalDate.of(2021, 11, 5)
-        ));
-        
-        users.add(new SystemUser(
-            6, 
-            "12350",
-            "Sarah", 
-            "Martinez", 
-            "sarah.m@company.com", 
-            "555-0206",
-            "Employee",
-            "Marketing Specialist",
-            "Marketing",
-            "Inactive",
-            LocalDate.of(2024, 2, 14)
-        ));
-        
-        model.addAttribute("users", users);
+        model.addAttribute("users", displayUsers);
         
         return "admin-users";
     }
 
     @GetMapping("/admin/users/edit")
-    public String editUserForm(@RequestParam int userId, Model model, HttpSession session) {
+    public String editUserForm(@RequestParam Long userId, Model model, HttpSession session) {
         // Get firstName from session for navigation
         String firstName = (String) session.getAttribute("firstName");
         model.addAttribute("firstName", firstName != null ? firstName : "Admin");
         
-        SystemUser user = new SystemUser(
-            userId, 
-            "12345",
-            "John", 
-            "Doe", 
-            "john.doe@company.com", 
-            "555-0201",
-            "Employee",
-            "Developer",
-            "Engineering",
-            "Active",
-            LocalDate.of(2023, 1, 15)
-        );
+        // Fetch employee from database
+        Optional<Employee> employeeOpt = employeeRepository.findById(userId);
+        if (employeeOpt.isEmpty()) {
+            return "redirect:/admin/users";
+        }
         
-        model.addAttribute("user", user);
+        Employee employee = employeeOpt.get();
+        
+        // Create display object
+        EmployeeDisplay display = new EmployeeDisplay();
+        display.setId(employee.getId());
+        display.setFirstName(employee.getFirstName());
+        display.setLastName(employee.getLastName());
+        display.setEmail(employee.getEmail());
+        display.setPtoBalance(employee.getPtoBalance());
+        
+        if (employee.getOrganization() != null) {
+            display.setOrganizationId(employee.getOrganization().getId());
+            display.setOrganizationName(employee.getOrganization().getName());
+        }
+        
+        if (employee.getRole() != null) {
+            display.setRoleId(employee.getRole().getId());
+            display.setRoleName(employee.getRole().getName());
+        }
+        
+        model.addAttribute("user", display);
+        
+        // Fetch all organizations and roles for dropdowns
+        List<Organization> organizations = organizationRepository.findAll();
+        List<Role> roles = roleRepository.findAll();
+        
+        model.addAttribute("organizations", organizations);
+        model.addAttribute("roles", roles);
         
         return "admin-edit-user";
     }
 
     @PostMapping("/admin/users/edit")
     public String editUser(
-            @RequestParam int userId,
+            @RequestParam Long userId,
             @RequestParam String firstName,
             @RequestParam String lastName,
             @RequestParam String email,
-            @RequestParam String phone,
-            @RequestParam String userType,
-            @RequestParam String role,
-            @RequestParam String department,
-            @RequestParam String status) {
+            @RequestParam(required = false) String password,
+            @RequestParam Double ptoBalance,
+            @RequestParam Long organizationId,
+            @RequestParam Long roleId) {
         
-
-        System.out.println("Updating user ID: " + userId);
+        // Fetch employee from database
+        Optional<Employee> employeeOpt = employeeRepository.findById(userId);
+        if (employeeOpt.isEmpty()) {
+            return "redirect:/admin/users";
+        }
+        
+        Employee employee = employeeOpt.get();
+        
+        // Update employee fields
+        employee.setFirstName(firstName);
+        employee.setLastName(lastName);
+        employee.setEmail(email);
+        employee.setPtoBalance(ptoBalance);
+        
+        // Update password only if provided
+        if (password != null && !password.trim().isEmpty()) {
+            employee.setPassword(password);
+        }
+        
+        // Update organization
+        Optional<Organization> orgOpt = organizationRepository.findById(organizationId);
+        if (orgOpt.isPresent()) {
+            employee.setOrganization(orgOpt.get());
+        }
+        
+        // Update role
+        Optional<Role> roleOpt = roleRepository.findById(roleId);
+        if (roleOpt.isPresent()) {
+            employee.setRole(roleOpt.get());
+        }
+        
+        // Save to database
+        employeeRepository.save(employee);
+        
+        System.out.println("Updated user ID: " + userId);
         System.out.println("New name: " + firstName + " " + lastName);
         
         return "redirect:/admin/users";
     }
 
     @PostMapping("/admin/users/delete")
-    public String deleteUser(@RequestParam int userId) {
-
-        System.out.println("Deleting user ID: " + userId);
+    public String deleteUser(@RequestParam Long userId) {
+        
+        // Delete employee from database
+        employeeRepository.deleteById(userId);
+        
+        System.out.println("Deleted user ID: " + userId);
         
         return "redirect:/admin/users";
     }
 
+    @GetMapping("/admin/users/{userId}/timesheets")
+    public String viewEmployeeTimesheets(@PathVariable Long userId, Model model, HttpSession session) {
+        // Get admin firstName from session for navigation
+        String firstName = (String) session.getAttribute("firstName");
+        model.addAttribute("firstName", firstName != null ? firstName : "Admin");
+        
+        return "redirect:/admin/view-timesheets/" + userId;
+    }
 
-    public static class SystemUser {
-        private int id;
-        private String employeeId;
+    // Display class for employees - matches database columns only
+    public static class EmployeeDisplay {
+        private Long id;
         private String firstName;
         private String lastName;
         private String email;
-        private String phone;
-        private String userType;
-        private String role;
-        private String department;
-        private String status;
-        private LocalDate hireDate;
-
-        public SystemUser(int id, String employeeId, String firstName, String lastName, 
-                         String email, String phone, String userType, String role, 
-                         String department, String status, LocalDate hireDate) {
-            this.id = id;
-            this.employeeId = employeeId;
-            this.firstName = firstName;
-            this.lastName = lastName;
-            this.email = email;
-            this.phone = phone;
-            this.userType = userType;
-            this.role = role;
-            this.department = department;
-            this.status = status;
-            this.hireDate = hireDate;
-        }
-
-        // Getters
-        public int getId() { return id; }
-        public String getEmployeeId() { return employeeId; }
+        private Double ptoBalance;
+        private Long organizationId;
+        private String organizationName;
+        private Long roleId;
+        private String roleName;
+        
+        // Getters and Setters
+        public Long getId() { return id; }
+        public void setId(Long id) { this.id = id; }
+        
+        // Computed properties for template compatibility
+        public String getEmployeeId() { return id != null ? String.valueOf(id) : null; }
+        public String getPhone() { return "N/A"; }
+        public String getUserType() { return "Employee"; }
+        public String getDepartment() { return organizationName != null ? organizationName : "N/A"; }
+        public String getRole() { return roleName; }  // Alias for roleName
+        public String getStatus() { return "Active"; }
+        public java.time.LocalDate getHireDate() { return null; }
+        
         public String getFirstName() { return firstName; }
+        public void setFirstName(String firstName) { this.firstName = firstName; }
+        
         public String getLastName() { return lastName; }
+        public void setLastName(String lastName) { this.lastName = lastName; }
+        
         public String getEmail() { return email; }
-        public String getPhone() { return phone; }
-        public String getUserType() { return userType; }
-        public String getRole() { return role; }
-        public String getDepartment() { return department; }
-        public String getStatus() { return status; }
-        public LocalDate getHireDate() { return hireDate; }
+        public void setEmail(String email) { this.email = email; }
+        
+        public Double getPtoBalance() { return ptoBalance; }
+        public void setPtoBalance(Double ptoBalance) { this.ptoBalance = ptoBalance; }
+        
+        public Long getOrganizationId() { return organizationId; }
+        public void setOrganizationId(Long organizationId) { this.organizationId = organizationId; }
+        
+        public String getOrganizationName() { return organizationName; }
+        public void setOrganizationName(String organizationName) { this.organizationName = organizationName; }
+        
+        public Long getRoleId() { return roleId; }
+        public void setRoleId(Long roleId) { this.roleId = roleId; }
+        
+        public String getRoleName() { return roleName; }
+        public void setRoleName(String roleName) { this.roleName = roleName; }
     }
 }
