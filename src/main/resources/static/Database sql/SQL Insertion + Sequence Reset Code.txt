@@ -1024,4 +1024,74 @@ VALUES
 (7, 13, '2023-12-05', '2023-12-06', 'approved'),
 (8, 16, '2023-11-20', '2023-11-21', 'rejected'),
 (9, 17, '2023-10-30', '2023-10-30', 'approved'),
-(10, 20, '2023-12-15', '2023-12-15', 'pending');
+(10, 20, '2023-12-15', '2023-12-15', 'pending'),
+(11, 3, '2023-11-22', '2023-11-24', 'approved'),
+(12, 4, '2023-12-18', '2023-12-22', 'pending'),
+(13, 7, '2023-11-08', '2023-11-10', 'approved'),
+(14, 8, '2023-12-11', '2023-12-15', 'approved'),
+(15, 10, '2023-10-27', '2023-10-27', 'rejected'),
+(16, 11, '2023-12-20', '2023-12-29', 'pending'),
+(17, 14, '2023-11-13', '2023-11-14', 'approved'),
+(18, 15, '2023-12-26', '2023-12-28', 'approved'),
+(19, 18, '2023-11-06', '2023-11-07', 'rejected'),
+(20, 19, '2023-12-04', '2023-12-08', 'approved'),
+(21, 1, '2023-12-22', '2023-12-22', 'pending'),
+(22, 2, '2024-01-02', '2024-01-05', 'pending'),
+(23, 3, '2023-12-14', '2023-12-15', 'approved'),
+(24, 5, '2024-01-15', '2024-01-19', 'pending'),
+(25, 6, '2023-11-17', '2023-11-17', 'approved'),
+(26, 9, '2023-12-01', '2023-12-01', 'rejected'),
+(27, 12, '2024-01-08', '2024-01-12', 'pending'),
+(28, 13, '2023-11-29', '2023-12-01', 'approved'),
+(29, 16, '2023-12-27', '2023-12-29', 'approved'),
+(30, 20, '2024-01-22', '2024-01-26', 'pending');
+
+
+--
+-- Reset Sequences --
+--
+
+-- Reset organizations sequence
+SELECT setval('organization_id_seq', (SELECT COALESCE(MAX(id), 1) FROM organizations));
+
+-- Reset roles sequence
+SELECT setval('role_id_seq', (SELECT COALESCE(MAX(id), 1) FROM roles));
+
+-- Reset paycodes sequence
+SELECT setval('paycodes_id_seq', (SELECT COALESCE(MAX(id), 1) FROM paycodes));
+
+-- Reset admins and employees sequence (uses user_id_seq)
+-- **MODIFIED:** Added +1 to ensure the next ID is higher than the current MAX(id)
+SELECT setval('user_id_seq', (SELECT GREATEST(
+    COALESCE((SELECT MAX(id) FROM admins), 0),
+    COALESCE((SELECT MAX(id) FROM employees), 0)
+) + 1));
+
+-- Reset timesheets sequence
+SELECT setval('timesheets_id_seq', (SELECT COALESCE(MAX(id), 1) FROM timesheets));
+
+-- Reset timesheet_entries sequence
+SELECT setval('timesheet_entries_id_seq', (SELECT COALESCE(MAX(id), 1) FROM timesheet_entries));
+
+-- Reset pto_requests sequence
+SELECT setval('pto_requests_id_seq', (SELECT COALESCE(MAX(id), 1) FROM pto_requests));
+
+-- Verify the sequences are set correctly
+SELECT 'Sequences have been reset!' as status;
+
+SELECT 'organization_id_seq' as sequence_name, last_value FROM organization_id_seq
+UNION ALL
+SELECT 'role_id_seq', last_value FROM role_id_seq
+UNION ALL
+SELECT 'paycodes_id_seq', last_value FROM paycodes_id_seq
+UNION ALL
+SELECT 'user_id_seq', last_value FROM user_id_seq
+UNION ALL
+SELECT 'timesheets_id_seq', last_value FROM timesheets_id_seq
+UNION ALL
+SELECT 'timesheet_entries_id_seq', last_value FROM timesheet_entries_id_seq
+UNION ALL
+SELECT 'pto_requests_id_seq', last_value FROM pto_requests_id_seq
+ORDER BY sequence_name;
+
+UPDATE timesheets SET approval_status = 'pending' WHERE approval_status = 'Pending';

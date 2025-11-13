@@ -1,3 +1,40 @@
-<div class="footer" th:fragment="footer">
-    <p>Express Time Card &copy; 2025</p>
+<div class="footer" th:fragment="footer" id="footer" style="display: none;">
+    <p>
+        <span th:if="${organization != null}" th:text="${organization}">Organization</span>
+        <span th:if="${organization != null}"> | </span>
+        <span id="current-time"></span>
+        <span> | </span>
+        <span>Express Time Card &copy; 2025</span>
+    </p>
+    
+    <script th:inline="javascript">
+        // Show footer when scrolled to bottom
+        window.addEventListener('scroll', function() {
+            const footer = document.getElementById('footer');
+            const scrollPosition = window.innerHeight + window.scrollY;
+            const documentHeight = document.documentElement.scrollHeight;
+            
+            // Show footer when within 50px of bottom
+            if (scrollPosition >= documentHeight - 50) {
+                footer.style.display = 'block';
+            } else {
+                footer.style.display = 'none';
+            }
+        });
+        
+        // Update current time every second
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            document.getElementById('current-time').textContent = timeString;
+        }
+        
+        // Initialize time and update every second
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
 </div>

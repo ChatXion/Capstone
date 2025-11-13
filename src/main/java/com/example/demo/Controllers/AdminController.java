@@ -29,9 +29,9 @@ public class AdminController {
     private final RoleRepository roleRepository;
 
     public AdminController(AdminService adminService,
-                          EmployeeRepository employeeRepository,
-                          OrganizationRepository organizationRepository,
-                          RoleRepository roleRepository) {
+            EmployeeRepository employeeRepository,
+            OrganizationRepository organizationRepository,
+            RoleRepository roleRepository) {
         this.adminService = adminService;
         this.employeeRepository = employeeRepository;
         this.organizationRepository = organizationRepository;
@@ -42,25 +42,25 @@ public class AdminController {
     public String adminHome(Model model, HttpSession session) {
         // Get admin ID from session
         Long userId = (Long) session.getAttribute("userId");
-        
+
         if (userId == null) {
             // If no user in session, redirect to login
             return "redirect:/login";
         }
-        
+
         // Fetch admin data using service
         Optional<Admin> adminOpt = adminService.getAdmin(userId);
-        
+
         if (adminOpt.isPresent()) {
             Admin admin = adminOpt.get();
-            
+
             // Add admin data to model
             model.addAttribute("firstName", admin.getFirstName());
             model.addAttribute("lastName", admin.getLastName());
             model.addAttribute("adminId", admin.getId());
             model.addAttribute("email", admin.getEmail());
             model.addAttribute("role", "Administrator");
-            
+
             // Add organization information if available
             if (admin.getOrganization() != null) {
                 model.addAttribute("organization", admin.getOrganization().getName());
@@ -71,25 +71,25 @@ public class AdminController {
             // Admin not found, redirect to login
             return "redirect:/login";
         }
-        
+
         return "admin-home";
     }
 
     @GetMapping("/admin/create-user")
-    public String createUserForm(Model model, HttpSession session) {
-        // Get firstName from session for navigation
-        String firstName = (String) session.getAttribute("firstName");
-        model.addAttribute("firstName", firstName != null ? firstName : "Admin");
-        
-        // Fetch all organizations and roles for dropdowns
-        List<Organization> organizations = organizationRepository.findAll();
-        List<Role> roles = roleRepository.findAll();
-        
-        model.addAttribute("organizations", organizations);
-        model.addAttribute("roles", roles);
-        
-        return "create-user";
-    }
+public String createUserForm(Model model, HttpSession session) {
+    String firstName = (String) session.getAttribute("firstName");
+    model.addAttribute("firstName", firstName != null ? firstName : "Admin");
+
+    // Fetch organizations and roles for dropdowns
+    List<Organization> organizations = organizationRepository.findAll();
+    List<Role> roles = roleRepository.findAll();
+
+    model.addAttribute("organizations", organizations);
+    model.addAttribute("roles", roles);
+
+    return "create-user";
+}
+
 
     @PostMapping("/admin/create-user")
     public String createUser(
@@ -100,32 +100,30 @@ public class AdminController {
             @RequestParam Double ptoBalance,
             @RequestParam Long organizationId,
             @RequestParam Long roleId) {
-        
-        // Create new employee
-        Employee newEmployee = new Employee();
-        newEmployee.setFirstName(firstName);
-        newEmployee.setLastName(lastName);
-        newEmployee.setEmail(email);
-        newEmployee.setPassword(password);
-        newEmployee.setPtoBalance(ptoBalance);
-        
+
+        // Create new Employee entity
+        Employee employee = new Employee();
+        employee.setFirstName(firstName);
+        employee.setLastName(lastName);
+        employee.setEmail(email);
+        employee.setPassword(password);
+        employee.setPtoBalance(ptoBalance);
+
         // Set organization
         Optional<Organization> orgOpt = organizationRepository.findById(organizationId);
-        if (orgOpt.isPresent()) {
-            newEmployee.setOrganization(orgOpt.get());
-        }
-        
+        orgOpt.ifPresent(employee::setOrganization);
+
         // Set role
         Optional<Role> roleOpt = roleRepository.findById(roleId);
-        if (roleOpt.isPresent()) {
-            newEmployee.setRole(roleOpt.get());
-        }
-        
+        roleOpt.ifPresent(employee::setRole);
+
         // Save to database
-        employeeRepository.save(newEmployee);
-        
-        System.out.println("Created user: " + firstName + " " + lastName + " (" + email + ")");
-        
+        employeeRepository.save(employee);
+
+        System.out.println("Created new user: " + firstName + " " + lastName + " (ID: " + employee.getId() + ")");
+
         return "redirect:/admin/users";
     }
+
+
 }

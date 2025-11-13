@@ -32,11 +32,11 @@ public class Role {
 
     @ManyToMany
     @JoinTable(
-        name = "role_paycode",                                  // Name of the join table
+        name = "role_Paycode",                                  // Name of the join table
         joinColumns = @JoinColumn(name = "role_id"),            // Foreign key for Role
-        inverseJoinColumns = @JoinColumn(name = "paycode_id")   // Foreign key for PayCode
+        inverseJoinColumns = @JoinColumn(name = "Paycode_id")   // Foreign key for Paycode
     )
-    private List<PayCode> payCodes = new ArrayList<>();
+    private List<Paycode> Paycodes = new ArrayList<>();
 
     public Role() {
     }
@@ -57,8 +57,8 @@ public class Role {
         return employees;
     }
 
-    public List<PayCode> getPayCodes() {
-        return payCodes;
+    public List<Paycode> getPaycodes() {
+        return Paycodes;
     }
 
     

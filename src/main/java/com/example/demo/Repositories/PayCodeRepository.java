@@ -3,8 +3,8 @@ package com.example.demo.Repositories;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.demo.Entities.PayCode;
+import com.example.demo.Entities.Paycode;
 
 @Repository
-public interface PayCodeRepository extends JpaRepository<PayCode, Long>{
+public interface PayCodeRepository extends JpaRepository<Paycode, Long>{
 }

@@ -6,34 +6,34 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.example.demo.Entities.PayCode;
+import com.example.demo.Entities.Paycode;
 import com.example.demo.Repositories.PayCodeRepository;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class PayCodeService {
-    private final PayCodeRepository payCodeRepository;
+    private final PayCodeRepository PayCodeRepository;
 
-    public PayCodeService(PayCodeRepository payCodeRepository) {
-        this.payCodeRepository = payCodeRepository;
+    public PayCodeService(PayCodeRepository PaycodeRepository) {
+        this.PayCodeRepository = PaycodeRepository;
     }
     
     @Transactional
-    public Optional<PayCode> getPayCode(Long payCodeId) {
-        return payCodeRepository.findById(payCodeId);
+    public Optional<Paycode> getPaycode(Long PaycodeId) {
+        return PayCodeRepository.findById(PaycodeId);
     }
     
     @Transactional
-    public List<PayCode> getAllPayCodes() {
-        return payCodeRepository.findAll();
+    public List<Paycode> getAllPaycodes() {
+        return PayCodeRepository.findAll();
     }
     
     @Transactional
-    public List<PayCode> getPayCodesByOrganization(Long organizationId) {
-        return payCodeRepository.findAll().stream()
-            .filter(payCode -> payCode.getOrganization() != null 
-                && payCode.getOrganization().getId().equals(organizationId))
+    public List<Paycode> getPaycodesByOrganization(Long organizationId) {
+        return PayCodeRepository.findAll().stream()
+            .filter(Paycode -> Paycode.getOrganization() != null 
+                && Paycode.getOrganization().getId().equals(organizationId))
             .collect(Collectors.toList());
     }
 }

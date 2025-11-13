@@ -61,15 +61,15 @@ public class PTOController {
         for (PTORequest request : ptoRequests) {
             PTORequestDisplay display = new PTORequestDisplay();
             display.setId(request.getId());
-            display.setRequestType(request.getRequestType());
+            display.setRequestType(request.getRequestType()); // Will return "PTO" default
             display.setStartDate(request.getStartDate());
             display.setEndDate(request.getEndDate());
             display.setHoursRequested(request.getHoursRequested());
-            display.setReason(request.getReason());
+            display.setReason(request.getReason()); // Will return "" default
             display.setApprovalStatus(request.getApprovalStatus());
-            display.setSubmittedDate(request.getSubmittedDate());
-            display.setApprovedBy(request.getApprovedBy());
-            display.setRejectionReason(request.getRejectionReason());
+            display.setSubmittedDate(request.getSubmittedDate()); // Calculated
+            display.setApprovedBy(request.getApprovedBy()); // Will return "" default
+            display.setRejectionReason(request.getRejectionReason()); // Will return "" default
             
             displayRequests.add(display);
         }
@@ -81,10 +81,10 @@ public class PTOController {
     
     @PostMapping("/employee/pto/create")
     public String createPTORequest(
-            @RequestParam String requestType,
+            @RequestParam(required = false) String requestType,  // Not used, but keep for form compatibility
             @RequestParam LocalDate startDate,
             @RequestParam LocalDate endDate,
-            @RequestParam String reason,
+            @RequestParam(required = false) String reason,  // Not used, but keep for form compatibility
             HttpSession session,
             Model model) {
         
@@ -95,7 +95,8 @@ public class PTOController {
         }
         
         try {
-            ptoService.createPTORequest(userId, requestType, startDate, endDate, reason);
+            // Call simplified method that only needs dates
+            ptoService.createPTORequest(userId, startDate, endDate);
             return "redirect:/employee/pto";
         } catch (Exception e) {
             System.err.println("Error creating PTO request: " + e.getMessage());
@@ -107,10 +108,10 @@ public class PTOController {
     @PostMapping("/employee/pto/{id}/edit")
     public String editPTORequest(
             @PathVariable Long id,
-            @RequestParam String requestType,
+            @RequestParam(required = false) String requestType,  // Not used, but keep for form compatibility
             @RequestParam LocalDate startDate,
             @RequestParam LocalDate endDate,
-            @RequestParam String reason,
+            @RequestParam(required = false) String reason,  // Not used, but keep for form compatibility
             HttpSession session) {
         
         Long userId = (Long) session.getAttribute("userId");
@@ -120,7 +121,8 @@ public class PTOController {
         }
         
         try {
-            ptoService.updatePTORequest(id, requestType, startDate, endDate, reason, userId);
+            // Call simplified method with only dates
+            ptoService.updatePTORequest(id, startDate, endDate, userId);
         } catch (Exception e) {
             System.err.println("Error updating PTO request: " + e.getMessage());
             return "redirect:/employee/pto?error=" + e.getMessage();

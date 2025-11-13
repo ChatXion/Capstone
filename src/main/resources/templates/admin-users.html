@@ -14,53 +14,48 @@
         <div class="users-header">
             <h2>User Management</h2>
             <p>View, edit, and manage all system users</p>
-            <div style="margin-top: 1rem;">
-                <a href="/admin/create-user" class="btn" style="background-color: #27ae60; color: white; padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 4px; display: inline-block;">
-                    ➕ Create New User
-                </a>
-            </div>
         </div>
 
-        <!-- Filters Section -->
-        <div class="filters-section">
-            <div class="filters-grid">
-                <div class="filter-group">
-                    <label for="searchName">Search by Name</label>
-                    <input type="text" id="searchName" placeholder="Enter name...">
+        <!-- Improved Filters Section -->
+        <div class="filters-section" style="background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                <div style="order: -1;"> <a href="/admin/create-user" class="btn" style="background-color: #27ae60; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 4px; display: inline-block; white-space: nowrap; height: 38px; line-height: 25px;">
+                        ➕ Create New User
+                    </a>
                 </div>
-                <div class="filter-group">
-                    <label for="filterUserType">User Type</label>
-                    <select id="filterUserType">
-                        <option value="">All Types</option>
-                        <option value="Employee">Employee</option>
-                        <option value="Manager">Manager</option>
-                        <option value="Admin">Admin</option>
+
+                <div style="flex: 1; min-width: 180px;">
+                    <input type="text" id="searchName" placeholder="🔍 Search by name..." 
+                           style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;"
+                           oninput="applyFilters()">
+                </div>
+                <div style="flex: 1; min-width: 180px;">
+                    <input type="text" id="searchEmail" placeholder="📧 Search by email..." 
+                           style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;"
+                           oninput="applyFilters()">
+                </div>
+                <div style="flex: 0.8; min-width: 150px;">
+                    <select id="filterOrganization" 
+                            style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;"
+                            onchange="applyFilters()">
+                        <option value="">🏢 All Organizations</option>
+                        <option th:each="org : ${organizations}" th:value="${org}" th:text="${org}">Organization</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <label for="filterDepartment">Department</label>
-                    <select id="filterDepartment">
-                        <option value="">All Departments</option>
-                        <option value="Engineering">Engineering</option>
-                        <option value="Design">Design</option>
-                        <option value="Marketing">Marketing</option>
-                        <option value="Quality Assurance">Quality Assurance</option>
-                        <option value="IT">IT</option>
+                <div style="flex: 0.8; min-width: 150px;">
+                    <select id="filterRole" 
+                            style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;"
+                            onchange="applyFilters()">
+                        <option value="">👤 All Roles</option>
+                        <option th:each="role : ${roles}" th:value="${role}" th:text="${role}">Role</option>
                     </select>
                 </div>
-                <div class="filter-group">
-                    <label for="filterStatus">Status</label>
-                    <select id="filterStatus">
-                        <option value="">All Status</option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                    </select>
-                </div>
+                <button class="btn-clear" onclick="clearFilters()" 
+                        style="padding: 0.5rem 1rem; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; white-space: nowrap;">
+                    Clear All
+                </button>
             </div>
-            <div class="filter-buttons">
-                <button class="btn-filter" onclick="applyFilters()">Apply Filters</button>
-                <button class="btn-clear" onclick="clearFilters()">Clear</button>
-            </div>
+            <div id="filterStatus" style="margin-top: 0.5rem; font-size: 0.85rem; color: #6c757d;"></div>
         </div>
 
         <div class="users-table-container">
@@ -206,39 +201,55 @@
 
         function applyFilters() {
             const searchName = document.getElementById('searchName').value.toLowerCase();
-            const filterUserType = document.getElementById('filterUserType').value;
-            const filterDepartment = document.getElementById('filterDepartment').value;
-            const filterStatus = document.getElementById('filterStatus').value;
+            const searchEmail = document.getElementById('searchEmail').value.toLowerCase();
+            const filterOrganization = document.getElementById('filterOrganization').value;
+            const filterRole = document.getElementById('filterRole').value;
             
             const rows = document.querySelectorAll('#usersTableBody tr');
+            let visibleCount = 0;
             
             rows.forEach(row => {
                 const name = row.cells[1].textContent.toLowerCase();
+                const email = row.cells[2].textContent.toLowerCase();
                 const org = row.cells[3].textContent.trim();
                 const role = row.cells[4].textContent.trim();
                 
                 const matchesName = !searchName || name.includes(searchName);
-                const matchesOrg = !filterDepartment || org === filterDepartment;
-                const matchesRole = !filterUserType || role === filterUserType;
+                const matchesEmail = !searchEmail || email.includes(searchEmail);
+                const matchesOrg = !filterOrganization || org === filterOrganization;
+                const matchesRole = !filterRole || role === filterRole;
                 
-                if (matchesName && matchesOrg && matchesRole) {
+                if (matchesName && matchesEmail && matchesOrg && matchesRole) {
                     row.style.display = '';
+                    visibleCount++;
                 } else {
                     row.style.display = 'none';
                 }
             });
+            
+            // Update filter status
+            const statusDiv = document.getElementById('filterStatus');
+            const totalCount = rows.length;
+            
+            if (visibleCount < totalCount) {
+                statusDiv.textContent = `Showing ${visibleCount} of ${totalCount} users`;
+            } else {
+                statusDiv.textContent = '';
+            }
         }
 
         function clearFilters() {
             document.getElementById('searchName').value = '';
-            document.getElementById('filterUserType').value = '';
-            document.getElementById('filterDepartment').value = '';
-            document.getElementById('filterStatus').value = '';
+            document.getElementById('searchEmail').value = '';
+            document.getElementById('filterOrganization').value = '';
+            document.getElementById('filterRole').value = '';
             
             const rows = document.querySelectorAll('#usersTableBody tr');
             rows.forEach(row => {
                 row.style.display = '';
             });
+            
+            document.getElementById('filterStatus').textContent = '';
         }
 
         // Close modals when clicking outside

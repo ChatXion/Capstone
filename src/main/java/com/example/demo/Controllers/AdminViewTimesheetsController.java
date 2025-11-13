@@ -1,5 +1,6 @@
 package com.example.demo.Controllers;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.Entities.Employee;
-import com.example.demo.Entities.PayCode;
+import com.example.demo.Entities.Paycode;
 import com.example.demo.Entities.Timesheet;
 import com.example.demo.Entities.TimesheetEntry;
 import com.example.demo.Services.EmployeeService;
@@ -26,14 +27,14 @@ import jakarta.servlet.http.HttpSession;
 public class AdminViewTimesheetsController {
 
     private final EmployeeService employeeService;
-    private final PayCodeService payCodeService;
+    private final PayCodeService PaycodeService;
     private final TimesheetService timesheetService;
 
     public AdminViewTimesheetsController(EmployeeService employeeService, 
-                                        PayCodeService payCodeService,
+                                        PayCodeService PayCodeService,
                                         TimesheetService timesheetService) {
         this.employeeService = employeeService;
-        this.payCodeService = payCodeService;
+        this.PaycodeService = PayCodeService;
         this.timesheetService = timesheetService;
     }
 
@@ -153,11 +154,11 @@ public class AdminViewTimesheetsController {
                 entryDisplay.setDate(entry.getDate());
                 entryDisplay.setHoursWorked(entry.getHoursWorked());
                 
-                if (entry.getPayCode() != null) {
-                    entryDisplay.setPayCodeId(entry.getPayCode().getId());
-                    entryDisplay.setPayCodeName(entry.getPayCode().getName());
-                    entryDisplay.setPayCodeCode(entry.getPayCode().getCode());
-                    entryDisplay.setHourlyRate(entry.getPayCode().getHourlyRate());
+                if (entry.getPaycode() != null) {
+                    entryDisplay.setPaycodeId(entry.getPaycode().getId());
+                    entryDisplay.setPaycodeName(entry.getPaycode().getName());
+                    entryDisplay.setPaycodeCode(entry.getPaycode().getCode());
+                    entryDisplay.setHourlyRate(BigDecimal.valueOf(entry.getPaycode().getHourlyRate()));
                 }
                 
                 entryDisplays.add(entryDisplay);
@@ -178,8 +179,8 @@ public class AdminViewTimesheetsController {
             }
             
             if (organizationId != null) {
-                List<PayCode> payCodes = payCodeService.getPayCodesByOrganization(organizationId);
-                model.addAttribute("payCodes", payCodes);
+                List<Paycode> Paycodes = PaycodeService.getPaycodesByOrganization(organizationId);
+                model.addAttribute("Paycodes", Paycodes);
             }
         }
         
@@ -193,7 +194,7 @@ public class AdminViewTimesheetsController {
             @PathVariable Long entryId,
             @RequestParam LocalDate date,
             @RequestParam double hoursWorked,
-            @RequestParam Long payCodeId,
+            @RequestParam Long PaycodeId,
             HttpSession session) {
         
         // Verify timesheet belongs to employee and is pending
@@ -203,7 +204,7 @@ public class AdminViewTimesheetsController {
         }
         
         // Update the entry
-        employeeService.updateTimesheetEntry(entryId, date, hoursWorked, payCodeId);
+        employeeService.updateTimesheetEntry(entryId, date, hoursWorked, PaycodeId);
         
         return "redirect:/admin/view-timesheets/" + employeeId + "/" + timesheetId;
     }

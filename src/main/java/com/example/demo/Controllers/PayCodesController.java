@@ -10,7 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.demo.Entities.Employee;
-import com.example.demo.Entities.PayCode;
+import com.example.demo.Entities.Paycode;
 import com.example.demo.Services.EmployeeService;
 import com.example.demo.Services.PayCodeService;
 
@@ -20,16 +20,16 @@ import jakarta.servlet.http.HttpSession;
 public class PayCodesController {
 
     private final EmployeeService employeeService;
-    private final PayCodeService payCodeService;
+    private final PayCodeService PayCodeService;
 
     public PayCodesController(EmployeeService employeeService,
-                             PayCodeService payCodeService) {
+                             PayCodeService PayCodeService) {
         this.employeeService = employeeService;
-        this.payCodeService = payCodeService;
+        this.PayCodeService = PayCodeService;
     }
 
-    @GetMapping("/employee/paycodes")
-    public String viewPayCodes(Model model, HttpSession session) {
+    @GetMapping("/employee/Paycodes")
+    public String viewPaycodes(Model model, HttpSession session) {
         // Get employee ID from session
         Long userId = (Long) session.getAttribute("userId");
         
@@ -53,32 +53,32 @@ public class PayCodesController {
         }
         
         // Fetch pay codes for this organization using service
-        List<PayCode> payCodes = new ArrayList<>();
+        List<Paycode> Paycodes = new ArrayList<>();
         if (organizationId != null) {
-            payCodes = payCodeService.getPayCodesByOrganization(organizationId);
+            Paycodes = PayCodeService.getPaycodesByOrganization(organizationId);
         }
         
         // Convert to display objects
-        List<PayCodeDisplay> displayPayCodes = new ArrayList<>();
-        for (PayCode payCode : payCodes) {
-            PayCodeDisplay display = new PayCodeDisplay();
-            display.setCode(payCode.getCode());
-            display.setName(payCode.getName());
-            display.setDescription(payCode.getDescription());
-            display.setHourlyRate(payCode.getHourlyRate());
+        List<PaycodeDisplay> displayPaycodes = new ArrayList<>();
+        for (Paycode Paycode : Paycodes) {
+            PaycodeDisplay display = new PaycodeDisplay();
+            display.setCode(Paycode.getCode());
+            display.setName(Paycode.getName());
+            display.setDescription(Paycode.getDescription());
+            display.setHourlyRate(BigDecimal.valueOf(Paycode.getHourlyRate()));
             
             // Determine category based on code pattern
-            String category = determineCategory(payCode.getCode(), payCode.getName());
+            String category = determineCategory(Paycode.getCode(), Paycode.getName());
             display.setCategory(category);
             
-            displayPayCodes.add(display);
+            displayPaycodes.add(display);
         }
         
-        model.addAttribute("payCodes", displayPayCodes);
+        model.addAttribute("Paycodes", displayPaycodes);
         model.addAttribute("organizationName", 
             employee.getOrganization() != null ? employee.getOrganization().getName() : "Your Organization");
         
-        return "employee-paycodes";
+        return "employee-Paycodes";
     }
     
     private String determineCategory(String code, String name) {
@@ -96,7 +96,7 @@ public class PayCodesController {
     }
     
     // Display class for pay codes
-    public static class PayCodeDisplay {
+    public static class PaycodeDisplay {
         private String code;
         private String name;
         private String description;

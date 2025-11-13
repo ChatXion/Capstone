@@ -27,7 +27,7 @@ public class Organization {
     private List<Admin> admins = new ArrayList<>();
 
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
-    private List<PayCode> payCodes = new ArrayList<>();
+    private List<Paycode> Paycodes = new ArrayList<>();
 
     @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
     private List<Role> roles = new ArrayList<>();
@@ -58,8 +58,8 @@ public class Organization {
         return admins;
     }
 
-    public List<PayCode> getPayCodes() {
-        return payCodes;
+    public List<Paycode> getPaycodes() {
+        return Paycodes;
     }
 
     public List<Role> getRoles() {

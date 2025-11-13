@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.Entities.Employee;
-import com.example.demo.Entities.PayCode;
+import com.example.demo.Entities.Paycode;
 import com.example.demo.Entities.Timesheet;
 import com.example.demo.Entities.TimesheetEntry;
 import com.example.demo.Repositories.EmployeeRepository;
@@ -23,16 +23,16 @@ public class TimesheetService {
     private final TimesheetRepository timesheetRepository;
     private final TimesheetEntryRepository timesheetEntryRepository;
     private final EmployeeRepository employeeRepository;
-    private final PayCodeRepository payCodeRepository;
+    private final PayCodeRepository PayCodeRepository;
 
     public TimesheetService(TimesheetRepository timesheetRepository, 
                             TimesheetEntryRepository timesheetEntryRepository,
                             EmployeeRepository employeeRepository,
-                            PayCodeRepository payCodeRepository) {
+                            PayCodeRepository PayCodeRepository) {
         this.timesheetRepository = timesheetRepository;
         this.timesheetEntryRepository = timesheetEntryRepository;
         this.employeeRepository = employeeRepository;
-        this.payCodeRepository = payCodeRepository;
+        this.PayCodeRepository = PayCodeRepository;
     }
 
     
@@ -56,7 +56,7 @@ public class TimesheetService {
     
     @Transactional
     public void createTimesheetEntry(Long employeeId, Integer week, LocalDate date, 
-                                     Double hours, Long payCodeId) {
+                                     Double hours, Long PaycodeId) {
         // Get the employee
         Optional<Employee> employeeOpt = employeeRepository.findById(employeeId);
         if (employeeOpt.isEmpty()) {
@@ -66,12 +66,12 @@ public class TimesheetService {
         Employee employee = employeeOpt.get();
         
         // Get the pay code
-        Optional<PayCode> payCodeOpt = payCodeRepository.findById(payCodeId);
-        if (payCodeOpt.isEmpty()) {
-            throw new IllegalArgumentException("Pay code not found with ID: " + payCodeId);
+        Optional<Paycode> PaycodeOpt = PayCodeRepository.findById(PaycodeId);
+        if (PaycodeOpt.isEmpty()) {
+            throw new IllegalArgumentException("Pay code not found with ID: " + PaycodeId);
         }
         
-        PayCode payCode = payCodeOpt.get();
+        Paycode Paycode = PaycodeOpt.get();
         
         // Find or create timesheet for this employee and week
         Timesheet timesheet = findOrCreateTimesheet(employee, week);
@@ -80,7 +80,7 @@ public class TimesheetService {
         TimesheetEntry entry = new TimesheetEntry();
         entry.setDate(date);
         entry.setHoursWorked(hours);
-        entry.setPayCode(payCode);
+        entry.setPaycode(Paycode);
         entry.setTimesheet(timesheet);
         
         // Save the entry
@@ -103,7 +103,6 @@ public class TimesheetService {
         newTimesheet.setEmployee(employee);
         newTimesheet.setWeek(week);
         newTimesheet.setApprovalStatus("pending");
-        newTimesheet.setOrganization(employee.getOrganization());
         
         return timesheetRepository.save(newTimesheet);
     }
@@ -143,4 +142,14 @@ public class TimesheetService {
             }
         }
     }
+
+    @Transactional
+public List<Timesheet> getAllPendingTimesheets() {
+    return timesheetRepository.findByApprovalStatus("pending");
+}
+
+@Transactional
+public List<Timesheet> getPendingTimesheets(Long organizationId) {
+    return timesheetRepository.findByOrganizationIdAndApprovalStatus(organizationId, "pending");
+}
 }

@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.Entities.Employee;
-import com.example.demo.Entities.PayCode;
+import com.example.demo.Entities.Paycode;
 import com.example.demo.Entities.Timesheet;
 import com.example.demo.Entities.TimesheetEntry;
 import com.example.demo.Repositories.EmployeeRepository;
@@ -22,14 +22,14 @@ public class EmployeeService {
     
     private final EmployeeRepository employeeRepository;
     private final TimesheetEntryRepository timesheetEntryRepository;
-    private final PayCodeRepository payCodeRepository;
+    private final PayCodeRepository PayCodeRepository;
 
     public EmployeeService(EmployeeRepository employeeRepository, 
                           TimesheetEntryRepository timesheetEntryRepository,
-                          PayCodeRepository payCodeRepository) {
+                          PayCodeRepository PayCodeRepository) {
         this.employeeRepository = employeeRepository;
         this.timesheetEntryRepository = timesheetEntryRepository;
-        this.payCodeRepository = payCodeRepository;
+        this.PayCodeRepository = PayCodeRepository;
     }
 
     @Transactional
@@ -84,18 +84,18 @@ public class EmployeeService {
     }
 
     @Transactional
-    public void updateTimesheetEntry(Long entryId, LocalDate date, double hoursWorked, Long payCodeId) {
+    public void updateTimesheetEntry(Long entryId, LocalDate date, double hoursWorked, Long PaycodeId) {
         Optional<TimesheetEntry> entryOpt = timesheetEntryRepository.findById(entryId);
-        Optional<PayCode> payCodeOpt = payCodeRepository.findById(payCodeId);
+        Optional<Paycode> PaycodeOpt = PayCodeRepository.findById(PaycodeId);
         
-        if (entryOpt.isPresent() && payCodeOpt.isPresent()) {
+        if (entryOpt.isPresent() && PaycodeOpt.isPresent()) {
             TimesheetEntry entry = entryOpt.get();
             
             // Only allow editing if the timesheet is pending
             if (entry.getTimesheet() != null && "pending".equals(entry.getTimesheet().getApprovalStatus())) {
                 entry.setDate(date);
                 entry.setHoursWorked(hoursWorked);
-                entry.setPayCode(payCodeOpt.get());
+                entry.setPaycode(PaycodeOpt.get());
                 timesheetEntryRepository.save(entry);
             }
         }

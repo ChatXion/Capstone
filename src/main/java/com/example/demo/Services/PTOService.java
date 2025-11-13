@@ -44,8 +44,17 @@ public class PTOService {
     }
     
     @Transactional
-    public void createPTORequest(Long employeeId, String requestType, LocalDate startDate, 
-                                LocalDate endDate, String reason) {
+    public List<PTORequest> getPendingPTORequests(Long organizationId) {
+        return ptoRequestRepository.findByOrganizationIdAndApprovalStatus(organizationId, "pending");
+    }
+    
+    @Transactional
+    public List<PTORequest> getAllPendingPTORequests() {
+        return ptoRequestRepository.findByApprovalStatus("pending");
+    }
+    
+    @Transactional
+    public void createPTORequest(Long employeeId, LocalDate startDate, LocalDate endDate) {
         // Get the employee
         Optional<Employee> employeeOpt = employeeRepository.findById(employeeId);
         if (employeeOpt.isEmpty()) {
@@ -67,20 +76,15 @@ public class PTOService {
         // Create the PTO request
         PTORequest request = new PTORequest();
         request.setEmployee(employee);
-        request.setRequestType(requestType);
         request.setStartDate(startDate);
         request.setEndDate(endDate);
-        request.setReason(reason);
-        request.setHoursRequested(hoursRequested);
-        request.setSubmittedDate(LocalDate.now());
         request.setApprovalStatus("pending");
         
         ptoRequestRepository.save(request);
     }
     
     @Transactional
-    public void updatePTORequest(Long requestId, String requestType, LocalDate startDate, 
-                                LocalDate endDate, String reason, Long employeeId) {
+    public void updatePTORequest(Long requestId, LocalDate startDate, LocalDate endDate, Long employeeId) {
         Optional<PTORequest> requestOpt = ptoRequestRepository.findById(requestId);
         
         if (requestOpt.isPresent()) {
@@ -100,11 +104,8 @@ public class PTOService {
                                                      " hours, Available: " + request.getEmployee().getPtoBalance() + " hours");
                 }
                 
-                request.setRequestType(requestType);
                 request.setStartDate(startDate);
                 request.setEndDate(endDate);
-                request.setReason(reason);
-                request.setHoursRequested(hoursRequested);
                 
                 ptoRequestRepository.save(request);
             }
@@ -123,6 +124,55 @@ public class PTOService {
                 request.getEmployee().getId().equals(employeeId)) {
                 ptoRequestRepository.delete(request);
             }
+        }
+    }
+    
+    @Transactional
+    public void approvePTORequest(Long requestId) {
+        Optional<PTORequest> requestOpt = ptoRequestRepository.findById(requestId);
+        
+        if (requestOpt.isPresent()) {
+            PTORequest request = requestOpt.get();
+            
+            if ("pending".equalsIgnoreCase(request.getApprovalStatus())) {
+                Employee employee = request.getEmployee();
+                
+                // Calculate hours and deduct PTO balance
+                double hoursRequested = request.getHoursRequested();
+                double newBalance = employee.getPtoBalance() - hoursRequested;
+                if (newBalance < 0) {
+                    throw new IllegalStateException("Insufficient PTO balance for approval");
+                }
+                
+                employee.setPtoBalance(newBalance);
+                employeeRepository.save(employee);
+                
+                // Approve request
+                request.setApprovalStatus("approved");
+                ptoRequestRepository.save(request);
+            } else {
+                throw new IllegalStateException("PTO request must be in pending status to approve");
+            }
+        } else {
+            throw new IllegalArgumentException("PTO request not found with ID: " + requestId);
+        }
+    }
+    
+    @Transactional
+    public void denyPTORequest(Long requestId) {
+        Optional<PTORequest> requestOpt = ptoRequestRepository.findById(requestId);
+        
+        if (requestOpt.isPresent()) {
+            PTORequest request = requestOpt.get();
+            
+            if ("pending".equalsIgnoreCase(request.getApprovalStatus())) {
+                request.setApprovalStatus("rejected");
+                ptoRequestRepository.save(request);
+            } else {
+                throw new IllegalStateException("PTO request must be in pending status to deny");
+            }
+        } else {
+            throw new IllegalArgumentException("PTO request not found with ID: " + requestId);
         }
     }
 }

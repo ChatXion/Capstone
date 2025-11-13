@@ -12,45 +12,56 @@
     <div class="hero">
         <h1>Create New User</h1>
         <form class="registration_registration-form" action="#" th:action="@{/admin/create-user}" method="post">
+            
             <div class="registration_form-group">
-                <label for="create_firstName">First Name</label>
-                <input type="text" id="create_firstName" name="firstName" required>
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" required>
             </div>
+            
             <div class="registration_form-group">
-                <label for="create_lastName">Last Name</label>
-                <input type="text" id="create_lastName" name="lastName" required>
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" required>
             </div>
+            
             <div class="registration_form-group">
-                <label for="create_email">Email</label>
-                <input type="email" id="create_email" name="email" required>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
             </div>
+            
             <div class="registration_form-group">
-                <label for="create_phone">Phone</label>
-                <input type="tel" id="create_phone" name="phone" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
             </div>
+            
             <div class="registration_form-group">
-                <label for="create_userType">User Type</label>
-                <select id="create_userType" name="userType" required style="padding: 0.7rem 1rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; width: 100%;">
-                    <option value="">Select User Type</option>
-                    <option value="employee">Employee</option>
-                    <option value="admin">Administrator</option>
-                    <option value="manager">Manager</option>
+                <label for="ptoBalance">PTO Balance (Hours)</label>
+                <input type="number" step="0.5" id="ptoBalance" name="ptoBalance" value="80.0" required>
+            </div>
+            
+            <div class="registration_form-group">
+                <label for="organizationId">Organization</label>
+                <select id="organizationId" name="organizationId" required 
+                        style="padding: 0.7rem 1rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; width: 100%;">
+                    <option value="">Select Organization</option>
+                    <option th:each="org : ${organizations}" 
+                            th:value="${org.id}" 
+                            th:text="${org.name}">Organization Name</option>
                 </select>
             </div>
+            
             <div class="registration_form-group">
-                <label for="create_organization">Organization</label>
-                <input type="text" id="create_organization" name="organization" required>
+                <label for="roleId">Role/Position</label>
+                <select id="roleId" name="roleId" required 
+                        style="padding: 0.7rem 1rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; width: 100%;">
+                    <option value="">Select Role</option>
+                    <option th:each="role : ${roles}" 
+                            th:value="${role.id}" 
+                            th:text="${role.name}">Role Name</option>
+                </select>
             </div>
-            <div class="registration_form-group">
-                <label for="create_role">Role/Position</label>
-                <input type="text" id="create_role" name="role" required>
-            </div>
-            <div class="registration_form-group">
-                <label for="create_tempPassword">Temporary Password</label>
-                <input type="password" id="create_tempPassword" name="tempPassword" required>
-            </div>
+            
             <button type="submit" class="btn btn-primary">Create User</button>
-            <a href="/admin/home" class="btn" style="background-color: #95a5a6; margin-top: 10px;">Cancel</a>
+            <a href="/admin/users" class="btn" style="background-color: #95a5a6; margin-top: 10px;">Cancel</a>
         </form>
     </div>
     

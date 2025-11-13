@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.demo.Entities.Employee;
-import com.example.demo.Entities.PayCode;
+import com.example.demo.Entities.Paycode;
 import com.example.demo.Entities.Timesheet;
 import com.example.demo.Entities.TimesheetEntry;
 import com.example.demo.Repositories.EmployeeRepository;
@@ -45,24 +45,24 @@ public class TimesheetController {
      * DTO for a single row in the form
      */
     public static class TimesheetEntryDTO {
-        private Long payCodeId;
+        private Long paycodeId;
         private Map<String, Double> hours;
-        public Long getPayCodeId() { return payCodeId; }
-        public void setPayCodeId(Long payCodeId) { this.payCodeId = payCodeId; }
+        public Long getPaycodeId() { return paycodeId; }
+        public void setPaycodeId(Long paycodeId) { this.paycodeId = paycodeId; }
         public Map<String, Double> getHours() { return hours; }
         public void setHours(Map<String, Double> hours) { this.hours = hours; }
     }
 
     /**
-     * Safe DTO for sending PayCode data to the template.
+     * Safe DTO for sending Paycode data to the template.
      * This avoids the "LazyInitializationException" and "Incomplete Chunk" errors.
      */
-    public static class PayCodeDTO {
+    public static class PaycodeDTO {
         private Long id;
         private String name;
         private String code;
 
-        public PayCodeDTO(Long id, String name, String code) {
+        public PaycodeDTO(Long id, String name, String code) {
             this.id = id;
             this.name = name;
             this.code = code;
@@ -76,7 +76,7 @@ public class TimesheetController {
 
     // --- Injected Repositories ---
     @Autowired private EmployeeRepository employeeRepository;
-    @Autowired private PayCodeRepository payCodeRepository;
+    @Autowired private PayCodeRepository paycodeRepository;
     @Autowired private TimesheetRepository timesheetRepository;
     @Autowired private TimesheetEntryRepository timesheetEntryRepository;
 
@@ -94,18 +94,18 @@ public class TimesheetController {
         model.addAttribute("timesheetForm", new TimesheetFormDTO());
 
         // --- THIS IS THE FIX ---
-        // 1. Fetch all PayCode entities
-        Iterable<PayCode> payCodeEntities = payCodeRepository.findAll();
+        // 1. Fetch all Paycode entities
+        Iterable<Paycode> paycodeEntities = paycodeRepository.findAll();
         
         // 2. Convert them to "safe" DTOs
-        List<PayCodeDTO> payCodeDTOs = new ArrayList<>();
-        for (PayCode pc : payCodeEntities) {
-            payCodeDTOs.add(new PayCodeDTO(pc.getId(), pc.getName(), pc.getCode()));
+        List<PaycodeDTO> paycodeDTOs = new ArrayList<>();
+        for (Paycode pc : paycodeEntities) {
+            paycodeDTOs.add(new PaycodeDTO(pc.getId(), pc.getName(), pc.getCode()));
         }
 
         // 3. Add the DTO list to the model.
-        // The template (timesheet.html) is expecting a model attribute named "payCodes".
-        model.addAttribute("payCodes", payCodeDTOs);
+        // The template (timesheet.html) is expecting a model attribute named "paycodes".
+        model.addAttribute("paycodes", paycodeDTOs);
         // --- END OF FIX ---
         
         return "timesheet"; 
@@ -137,7 +137,8 @@ public class TimesheetController {
 
         Timesheet newTimesheet = new Timesheet();
         newTimesheet.setEmployee(employee);
-        newTimesheet.setOrganization(employee.getOrganization());
+        // REMOVED: newTimesheet.setOrganization(employee.getOrganization());
+        // The Timesheet entity doesn't have an organization field in your schema
         newTimesheet.setApprovalStatus("pending");  
         // newTimesheet.setWeek(yourWeekCalculationLogic);
         
@@ -145,12 +146,12 @@ public class TimesheetController {
 
         for (TimesheetEntryDTO entryDTO : timesheetForm.getEntries()) {
             
-            if (entryDTO.getPayCodeId() == null || entryDTO.getHours() == null) {
+            if (entryDTO.getPaycodeId() == null || entryDTO.getHours() == null) {
                 continue; // Skip empty rows
             }
 
-            PayCode payCode = payCodeRepository.findById(entryDTO.getPayCodeId()).orElse(null);
-            if (payCode == null) {
+            Paycode paycode = paycodeRepository.findById(entryDTO.getPaycodeId()).orElse(null);
+            if (paycode == null) {
                 continue; // Skip if paycode ID is invalid
             }
 
@@ -161,7 +162,7 @@ public class TimesheetController {
                 if (hours != null && hours > 0) {
                     TimesheetEntry newEntry = new TimesheetEntry();
                     newEntry.setTimesheet(savedTimesheet);
-                    newEntry.setPayCode(payCode);
+                    newEntry.setPaycode(paycode);
                     newEntry.setHoursWorked(hours);
                     newEntry.setDate(calculateDateFromDay(payPeriodStartDate, dayName));
                     
