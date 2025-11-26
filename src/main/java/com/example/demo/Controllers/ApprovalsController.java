@@ -6,156 +6,180 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.demo.Entities.Admin;
 import com.example.demo.Entities.PTORequest;
 import com.example.demo.Entities.Timesheet;
+import com.example.demo.Repositories.AdminRepository;
+import com.example.demo.Repositories.PTORequestRepository;
+import com.example.demo.Repositories.TimesheetRepository;
 import com.example.demo.Services.PTOService;
 import com.example.demo.Services.TimesheetService;
 
 import jakarta.servlet.http.HttpSession;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class ApprovalsController {
 
     private final TimesheetService timesheetService;
     private final PTOService ptoService;
+    private final AdminRepository adminRepository;
+    private final TimesheetRepository timesheetRepository;
+    private final PTORequestRepository ptoRequestRepository;
 
-    public ApprovalsController(TimesheetService timesheetService, PTOService ptoService) {
+    public ApprovalsController(
+            TimesheetService timesheetService,
+            PTOService ptoService,
+            AdminRepository adminRepository,
+            TimesheetRepository timesheetRepository,
+            PTORequestRepository ptoRequestRepository) {
         this.timesheetService = timesheetService;
         this.ptoService = ptoService;
+        this.adminRepository = adminRepository;
+        this.timesheetRepository = timesheetRepository;
+        this.ptoRequestRepository = ptoRequestRepository;
     }
 
     @GetMapping("/admin/approvals")
-    public String viewApprovals(Model model, HttpSession session) {
-        // Get admin info from session
-        Long userId = (Long) session.getAttribute("userId");
+    public String showApprovals(Model model, HttpSession session) {
+        Long adminId = (Long) session.getAttribute("userId");
         String firstName = (String) session.getAttribute("firstName");
-        model.addAttribute("firstName", firstName != null ? firstName : "Admin");
-        
-        // Fetch pending timesheets from database
-        List<Timesheet> pendingTimesheets = timesheetService.getAllPendingTimesheets();
-        List<TimesheetApproval> timesheets = new ArrayList<>();
-        
-        for (Timesheet ts : pendingTimesheets) {
-            if (ts.getEmployee() != null) {
-                TimesheetApproval approval = new TimesheetApproval(
+
+        if (adminId == null) {
+            return "redirect:/login";
+        }
+
+        // Get admin to access their organization
+        Optional<Admin> adminOpt = adminRepository.findById(adminId);
+        if (adminOpt.isEmpty()) {
+            return "redirect:/login";
+        }
+        Admin admin = adminOpt.get();
+        Long organizationId = admin.getOrganization().getId();
+
+        // 1. Fetch pending Timesheet Entities
+        List<Timesheet> timesheetEntities = timesheetRepository
+                .findByApprovalStatusAndEmployeeOrganizationId("pending", organizationId);
+
+        // 2. Map Timesheet Entities to TimesheetApproval DTOs
+        List<TimesheetApproval> timesheets = timesheetEntities.stream()
+                .map(ts -> new TimesheetApproval(
                     ts.getId().intValue(),
-                    ts.getEmployee().getId().toString(),
+                    ts.getEmployee().getId().toString(), 
                     ts.getEmployee().getFirstName() + " " + ts.getEmployee().getLastName(),
-                    ts.getStartDate() != null ? ts.getStartDate() : LocalDate.now().minusDays(7),
-                    ts.getEndDate() != null ? ts.getEndDate() : LocalDate.now(),
+                    // StartDate and EndDate should be available as they're calculated fields
+                    ts.getStartDate(),
+                    ts.getEndDate(),
+                    // FIX 1: ts.getTotalHours() returns a primitive double, 
+                    // so remove the null check and .doubleValue().
                     ts.getTotalHours(),
                     ts.getApprovalStatus(),
-                    ts.getSubmittedDate() != null ? ts.getSubmittedDate() : LocalDate.now(),
+                    // Null check is needed because Timesheet::getSubmittedDate can return null
+                    (ts.getSubmittedDate() != null ? ts.getSubmittedDate() : LocalDate.now()),
                     ts.getNotes()
-                );
-                timesheets.add(approval);
-            }
-        }
-        
-        // Fetch pending PTO requests from database
-        List<PTORequest> pendingPTORequests = ptoService.getAllPendingPTORequests();
-        List<PTORequestDisplay> ptoRequests = new ArrayList<>();
-        
-        for (PTORequest pto : pendingPTORequests) {
-            if (pto.getEmployee() != null && pto.getStartDate() != null && pto.getEndDate() != null) {
-                // Calculate days from dates
-                long daysBetween = ChronoUnit.DAYS.between(pto.getStartDate(), pto.getEndDate()) + 1;
-                double daysRequested = daysBetween;
+                ))
+                .collect(java.util.stream.Collectors.toList());
+
+        // 3. Fetch pending PTO Entities
+        List<PTORequest> ptoEntities = ptoRequestRepository
+                .findByApprovalStatusAndEmployeeOrganizationId("pending", organizationId);
+
+        // 4. Map PTO Entities to PTORequestDisplay DTOs
+        List<PTORequestDisplay> ptoRequests = ptoEntities.stream()
+            .map(pto -> {
+                // FIX 2: The PTORequest entity is missing getDaysRequested(), 
+                // so we must calculate the days directly from the dates.
+                long days = 0;
+                if (pto.getStartDate() != null && pto.getEndDate() != null) {
+                    days = java.time.temporal.ChronoUnit.DAYS.between(pto.getStartDate(), pto.getEndDate()) + 1;
+                }
                 
-                // Estimate submitted date (e.g., 1 week before start date)
-                LocalDate submittedDate = pto.getStartDate().minusDays(7);
-                
-                PTORequestDisplay ptoDisplay = new PTORequestDisplay(
+                return new PTORequestDisplay(
                     pto.getId().intValue(),
                     pto.getEmployee().getId().toString(),
                     pto.getEmployee().getFirstName() + " " + pto.getEmployee().getLastName(),
-                    "PTO", // Default request type since not in DB
+                    pto.getRequestType(),
                     pto.getStartDate(),
                     pto.getEndDate(),
-                    daysRequested,
+                    // Pass calculated days, cast to double as the DTO expects
+                    (double) days, 
                     pto.getApprovalStatus(),
-                    submittedDate,
-                    "" // Empty reason since not in DB
+                    // FIX 3: pto.getSubmittedDate() already returns LocalDate, 
+                    // so remove the redundant .toLocalDate() call.
+                    pto.getSubmittedDate(), 
+                    pto.getReason()
                 );
-                ptoRequests.add(ptoDisplay);
-            }
-        }
-        
+            })
+            .collect(java.util.stream.Collectors.toList());
+
+
+        // 5. Add the MAPPED DTO lists to the model using the CORRECT keys
         model.addAttribute("timesheets", timesheets);
         model.addAttribute("ptoRequests", ptoRequests);
-        
+        model.addAttribute("firstName", firstName != null ? firstName : "Admin");
+
         return "admin-approvals";
     }
 
     @PostMapping("/admin/approvals/timesheet/approve")
     public String approveTimesheet(@RequestParam int timesheetId, HttpSession session) {
-        // Get admin name from session
         String firstName = (String) session.getAttribute("firstName");
         String approverName = firstName != null ? firstName : "Admin";
-        
+
         try {
-            // Approve the timesheet using the service
             timesheetService.approveTimesheet((long) timesheetId, approverName);
             System.out.println("Successfully approved timesheet ID: " + timesheetId + " by " + approverName);
         } catch (Exception e) {
             System.err.println("Error approving timesheet ID " + timesheetId + ": " + e.getMessage());
         }
-        
+
         return "redirect:/admin/approvals";
     }
 
     @PostMapping("/admin/approvals/timesheet/deny")
-    public String denyTimesheet(@RequestParam int timesheetId, 
-                               @RequestParam(required = false) String reason,
-                               HttpSession session) {
-        // Get admin name from session
+    public String denyTimesheet(@RequestParam int timesheetId,
+            @RequestParam(required = false) String reason,
+            HttpSession session) {
         String firstName = (String) session.getAttribute("firstName");
         String denierName = firstName != null ? firstName : "Admin";
-        
+
         String rejectionReason = (reason != null && !reason.trim().isEmpty()) ? reason : "Not approved";
-        
+
         try {
-            // Deny the timesheet using the service
             timesheetService.denyTimesheet((long) timesheetId, rejectionReason, denierName);
             System.out.println("Successfully denied timesheet ID: " + timesheetId + " - Reason: " + rejectionReason);
         } catch (Exception e) {
             System.err.println("Error denying timesheet ID " + timesheetId + ": " + e.getMessage());
         }
-        
+
         return "redirect:/admin/approvals";
     }
 
     @PostMapping("/admin/approvals/pto/approve")
     public String approvePTO(@RequestParam int ptoId, HttpSession session) {
         try {
-            // Approve the PTO request using the service
-            // Note: Since we don't store approved_by in the DB, we just approve without tracking approver
             ptoService.approvePTORequest((long) ptoId);
             System.out.println("Successfully approved PTO request ID: " + ptoId);
         } catch (Exception e) {
             System.err.println("Error approving PTO request ID " + ptoId + ": " + e.getMessage());
         }
-        
+
         return "redirect:/admin/approvals";
     }
 
     @PostMapping("/admin/approvals/pto/deny")
-    public String denyPTO(@RequestParam int ptoId, 
-                         @RequestParam(required = false) String reason) {
+    public String denyPTO(@RequestParam int ptoId,
+            @RequestParam(required = false) String reason) {
         try {
-            // Deny the PTO request using the service
-            // Note: Since we don't store rejection_reason in the DB, we just deny without storing reason
             ptoService.denyPTORequest((long) ptoId);
             System.out.println("Successfully denied PTO request ID: " + ptoId);
         } catch (Exception e) {
             System.err.println("Error denying PTO request ID " + ptoId + ": " + e.getMessage());
         }
-        
+
         return "redirect:/admin/approvals";
     }
 
@@ -171,9 +195,9 @@ public class ApprovalsController {
         private LocalDate submittedDate;
         private String notes;
 
-        public TimesheetApproval(int id, String employeeId, String employeeName, 
-                               LocalDate startDate, LocalDate endDate, double totalHours,
-                               String status, LocalDate submittedDate, String notes) {
+        public TimesheetApproval(int id, String employeeId, String employeeName,
+                LocalDate startDate, LocalDate endDate, double totalHours,
+                String status, LocalDate submittedDate, String notes) {
             this.id = id;
             this.employeeId = employeeId;
             this.employeeName = employeeName;
@@ -186,15 +210,41 @@ public class ApprovalsController {
         }
 
         // Getters
-        public int getId() { return id; }
-        public String getEmployeeId() { return employeeId; }
-        public String getEmployeeName() { return employeeName; }
-        public LocalDate getStartDate() { return startDate; }
-        public LocalDate getEndDate() { return endDate; }
-        public double getTotalHours() { return totalHours; }
-        public String getStatus() { return status; }
-        public LocalDate getSubmittedDate() { return submittedDate; }
-        public String getNotes() { return notes; }
+        public int getId() {
+            return id;
+        }
+
+        public String getEmployeeId() {
+            return employeeId;
+        }
+
+        public String getEmployeeName() {
+            return employeeName;
+        }
+
+        public LocalDate getStartDate() {
+            return startDate;
+        }
+
+        public LocalDate getEndDate() {
+            return endDate;
+        }
+
+        public double getTotalHours() {
+            return totalHours;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public LocalDate getSubmittedDate() {
+            return submittedDate;
+        }
+
+        public String getNotes() {
+            return notes;
+        }
     }
 
     public static class PTORequestDisplay {
@@ -209,10 +259,10 @@ public class ApprovalsController {
         private LocalDate submittedDate;
         private String reason;
 
-        public PTORequestDisplay(int id, String employeeId, String employeeName, 
-                         String requestType, LocalDate startDate, LocalDate endDate,
-                         double daysRequested, String status, LocalDate submittedDate, 
-                         String reason) {
+        public PTORequestDisplay(int id, String employeeId, String employeeName,
+                String requestType, LocalDate startDate, LocalDate endDate,
+                double daysRequested, String status, LocalDate submittedDate,
+                String reason) {
             this.id = id;
             this.employeeId = employeeId;
             this.employeeName = employeeName;
@@ -226,15 +276,44 @@ public class ApprovalsController {
         }
 
         // Getters
-        public int getId() { return id; }
-        public String getEmployeeId() { return employeeId; }
-        public String getEmployeeName() { return employeeName; }
-        public String getRequestType() { return requestType; }
-        public LocalDate getStartDate() { return startDate; }
-        public LocalDate getEndDate() { return endDate; }
-        public double getDaysRequested() { return daysRequested; }
-        public String getStatus() { return status; }
-        public LocalDate getSubmittedDate() { return submittedDate; }
-        public String getReason() { return reason; }
+        public int getId() {
+            return id;
+        }
+
+        public String getEmployeeId() {
+            return employeeId;
+        }
+
+        public String getEmployeeName() {
+            return employeeName;
+        }
+
+        public String getRequestType() {
+            return requestType;
+        }
+
+        public LocalDate getStartDate() {
+            return startDate;
+        }
+
+        public LocalDate getEndDate() {
+            return endDate;
+        }
+
+        public double getDaysRequested() {
+            return daysRequested;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public LocalDate getSubmittedDate() {
+            return submittedDate;
+        }
+
+        public String getReason() {
+            return reason;
+        }
     }
 }

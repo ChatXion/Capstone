@@ -1,5 +1,6 @@
 package com.example.demo.Repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,5 +10,6 @@ import com.example.demo.Entities.Employee;
 
 @Repository
 public interface EmployeeRepository extends UserRepository<Employee> {
-    // Optional<Employee> findByEmail(String email);
+    Optional<Employee> findByEmail(String email);
+    List<Employee> findByOrganizationId(Long organizationId);
 }

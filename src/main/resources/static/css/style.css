@@ -212,6 +212,20 @@ body#timesheet_body {
     background-color: #c0392b;
 }
 
+.btn-secondary {
+    background-color: #95a5a6;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+}
+
 
 /*ANIMATIONS*/
 
@@ -448,12 +462,24 @@ body#timesheet_body {
     background-color: #7f8c8d;
 }
 
-.employeehome_action-btn.success {
+.action-btn.success {
     background-color: #27ae60;
 }
 
 .employeehome_action-btn.success:hover {
     background-color: #229954;
+}
+
+.employeehome_action-btn.employeehome_success {
+    background-color: #27ae60;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(39, 174, 96, 0.3);
+}
+
+.employeehome_action-btn.employeehome_success:hover {
+    background-color: #229954;
+    box-shadow: 0 4px 8px rgba(39, 174, 96, 0.4);
+    transform: translateY(-1px);
 }
 
 .employeehome_info-section {
@@ -490,17 +516,225 @@ body#timesheet_body {
     font-weight: 600;
 }
 
+.employeehome_pto-balance {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-/*TIMESHEET PAGE*/
+.employeehome_balance-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.employeehome_balance-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.employeehome_balance-value {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    line-height: 1;
+}
+
+
+/*TIMESHEET PAGE - NEW ENTRY*/
 
 .timesheet_container {
-    max-width: 800px;
+    max-width: 1400px;
     margin: 2rem auto;
-    padding: 2rem;
-    background-color: white;
+    padding: 0 2rem;
+    margin-bottom: 100px;
+}
+
+.timesheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+.timesheet-header h2 {
+    margin: 0;
+    color: #007acc;
+}
+
+.timesheet-period-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.timesheet-period-selector label {
+    font-weight: 600;
+}
+
+.timesheet-period-selector input {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.week-display {
+    background-color: #e3f2fd;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: #1976d2;
+}
+
+.timesheet-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.timesheet-table-container {
+    overflow-x: auto;
+}
+
+.timesheet-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.timesheet-table th,
+.timesheet-table td {
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.timesheet-table thead {
+    background-color: #007acc;
+    color: white;
+}
+
+.timesheet-table th {
+    font-weight: 600;
+}
+
+.timesheet-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.timesheet-table td.cell-paycode {
+    text-align: left;
+    width: 250px;
+    font-weight: 600;
+}
+
+.timesheet-table td.cell-total {
+    font-weight: bold;
+}
+
+.timesheet-table tfoot {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.timesheet-table tfoot td {
+    font-size: 1.1rem;
+}
+
+.paycode-selector {
+    cursor: pointer;
+    color: #007acc;
+}
+
+.paycode-selector:hover {
+    text-decoration: underline;
+}
+
+.hour-input {
+    width: 60px;
+    padding: 0.5rem;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.hour-input:focus {
+    border-color: #007acc;
+    outline: none;
+}
+
+.paycode-modal {
+    z-index: 2000;
+}
+
+.paycode-modal-content {
+    margin: 10% auto;
+}
+
+#paycode-search-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+}
+
+#paycode-results-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#paycode-results-list li {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+#paycode-results-list li:hover {
+    background-color: #f1f1f1;
+}
+
+.info-message {
+    background-color: #e3f2fd;
+    border-left: 4px solid #1976d2;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.info-message p {
+    margin: 0;
+    color: #1565c0;
+}
+
+
+/*TIMESHEET PAGE - OLD STYLES (for other timesheet pages)*/
 
 .timesheet_h2 {
     color: #2c3e50;
@@ -1007,6 +1241,18 @@ body#timesheet_body {
     transition: background-color 0.2s;
 }
 
+.modal-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
 .info-row {
     display: flex;
     justify-content: space-between;
@@ -1024,62 +1270,7 @@ body#timesheet_body {
 }
 
 
-/*RESPONSIVE DESIGN*/
-
-@media (max-width: 768px) {
-    .tabs {
-        flex-direction: column;
-    }
-
-    .header-content {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .pending-summary {
-        width: 100%;
-        justify-content: space-around;
-    }
-
-    .approvals-table {
-        font-size: 0.85rem;
-    }
-
-    .approvals-table th,
-    .approvals-table td {
-        padding: 0.5rem;
-    }
-
-    .users-table,
-    .registrations-table {
-        font-size: 0.85rem;
-    }
-
-    .users-table th,
-    .users-table td,
-    .registrations-table th,
-    .registrations-table td {
-        padding: 0.5rem;
-    }
-
-    .action-buttons {
-        flex-direction: column;
-    }
-}
-
-@media (max-width: 600px) {
-    .hero {
-        padding: 40px 10px;
-        font-size: 1em;
-    }
-
-    .btn {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-}
-
-/* TIMESHEETS LIST PAGE STYLES */
+/*TIMESHEETS LIST PAGE STYLES*/
 
 .timesheets-container {
     max-width: 1400px;
@@ -1166,7 +1357,8 @@ body#timesheet_body {
     margin-top: 1.5rem;
 }
 
-/* TIMESHEET DETAILS PAGE STYLES */
+
+/*TIMESHEET DETAILS PAGE STYLES*/
 
 .timesheet-details-container {
     max-width: 1200px;
@@ -1194,20 +1386,6 @@ body#timesheet_body {
 .header-actions {
     display: flex;
     gap: 1rem;
-}
-
-.btn-secondary {
-    background-color: #95a5a6;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 4px;
-    text-decoration: none;
-    display: inline-block;
-    transition: background-color 0.2s;
-}
-
-.btn-secondary:hover {
-    background-color: #7f8c8d;
 }
 
 .timesheet-summary-card {
@@ -1331,42 +1509,8 @@ body#timesheet_body {
     gap: 1rem;
 }
 
-/* RESPONSIVE DESIGN FOR TIMESHEETS */
 
-@media (max-width: 768px) {
-    .timesheets-table,
-    .entries-table {
-        font-size: 0.85rem;
-    }
-
-    .timesheets-table th,
-    .timesheets-table td,
-    .entries-table th,
-    .entries-table td {
-        padding: 0.5rem;
-    }
-
-    .summary-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .timesheet-details-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-
-    .header-actions {
-        width: 100%;
-    }
-
-    .header-actions .btn-secondary {
-        width: 100%;
-        text-align: center;
-    }
-}
-
-/* PAY CODES PAGE STYLES */
+/*PAY CODES PAGE STYLES*/
 
 .paycodes-container {
     max-width: 1200px;
@@ -1530,9 +1674,80 @@ body#timesheet_body {
     justify-content: center;
 }
 
-/* RESPONSIVE DESIGN */
+
+/*RESPONSIVE DESIGN*/
 
 @media (max-width: 768px) {
+    .tabs {
+        flex-direction: column;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pending-summary {
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    .approvals-table {
+        font-size: 0.85rem;
+    }
+
+    .approvals-table th,
+    .approvals-table td {
+        padding: 0.5rem;
+    }
+
+    .users-table,
+    .registrations-table {
+        font-size: 0.85rem;
+    }
+
+    .users-table th,
+    .users-table td,
+    .registrations-table th,
+    .registrations-table td {
+        padding: 0.5rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .timesheets-table,
+    .entries-table {
+        font-size: 0.85rem;
+    }
+
+    .timesheets-table th,
+    .timesheets-table td,
+    .entries-table th,
+    .entries-table td {
+        padding: 0.5rem;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .timesheet-details-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .header-actions .btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+
     .paycodes-container {
         padding: 0 1rem;
     }
@@ -1560,6 +1775,26 @@ body#timesheet_body {
         gap: 0.5rem;
         text-align: center;
     }
+
+    .employeehome_balance-value {
+        font-size: 2rem;
+    }
+
+    .employeehome_pto-balance {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero {
+        padding: 40px 10px;
+        font-size: 1em;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1575,263 +1810,3 @@ body#timesheet_body {
         padding: 1rem;
     }
 }
-
-.employeehome_pto-balance {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.employeehome_balance-display {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.employeehome_balance-label {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.95rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.employeehome_balance-value {
-    color: white;
-    font-size: 2.5rem;
-    font-weight: bold;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    line-height: 1;
-}
-
-@media (max-width: 768px) {
-    .employeehome_balance-value {
-        font-size: 2rem;
-    }
-    
-    .employeehome_pto-balance {
-        padding: 1rem;
-    }
-}
-
-.employeehome_action-btn.employeehome_success {
-    background-color: #27ae60;
-    font-weight: 600;
-    box-shadow: 0 2px 4px rgba(39, 174, 96, 0.3);
-}
-
-.employeehome_action-btn.employeehome_success:hover {
-    background-color: #229954;
-    box-shadow: 0 4px 8px rgba(39, 174, 96, 0.4);
-    transform: translateY(-1px);
-}
-.timesheet_container {
-    max-width: 1400px;
-    margin: 2rem auto;
-    padding: 0 2rem;
-    margin-bottom: 100px; /* Account for footer */
-}
-.timesheet-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    padding: 1.5rem;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-.timesheet-header h2 { margin: 0; color: #007acc; }
-.timesheet-period-selector { 
-    display: flex; .timesheet_container {
-    max-width: 1400px;
-    margin: 2rem auto;
-    padding: 0 2rem;
-    margin-bottom: 100px; /* Account for footer */
-}
-.timesheet-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    padding: 1.5rem;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-.timesheet-header h2 { margin: 0; color: #007acc; }
-.timesheet-period-selector { 
-    display: flex; 
-    align-items: center; 
-    gap: 0.5rem; 
-    flex-wrap: wrap;
-}
-.timesheet-period-selector label { font-weight: 600; }
-.timesheet-period-selector input {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-.timesheet-actions { display: flex; gap: 1rem; }
-.timesheet-table-container { overflow-x: auto; }
-.timesheet-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 900px;
-    background-color: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-.timesheet-table th, .timesheet-table td {
-    border: 1px solid #ddd;
-    padding: 0.75rem;
-    text-align: center;
-}
-.timesheet-table thead { background-color: #007acc; color: white; }
-.timesheet-table th { font-weight: 600; }
-.timesheet-table tbody tr:hover { background-color: #f1f1f1; }
-.timesheet-table td.cell-paycode {
-    text-align: left;
-    width: 250px;
-    font-weight: 600;
-}
-.timesheet-table td.cell-total { font-weight: bold; }
-.timesheet-table tfoot { background-color: #f8f9fa; font-weight: bold; }
-.timesheet-table tfoot td { font-size: 1.1rem; }
-.paycode-selector { cursor: pointer; color: #007acc; }
-.paycode-selector:hover { text-decoration: underline; }
-.hour-input {
-    width: 60px;
-    padding: 0.5rem;
-    text-align: center;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-.hour-input:focus { border-color: #007acc; outline: none; }
-.paycode-modal { z-index: 2000; }
-.paycode-modal-content { margin: 10% auto; }
-.modal-close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-.modal-close:hover { color: #333; }
-#paycode-search-input {
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-    box-sizing: border-box;
-}
-#paycode-results-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    max-height: 250px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-#paycode-results-list li {
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-}
-#paycode-results-list li:hover { background-color: #f1f1f1; }
-    align-items: center; 
-    gap: 0.5rem; 
-    flex-wrap: wrap;
-}
-.timesheet-period-selector label { font-weight: 600; }
-.timesheet-period-selector input {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-.timesheet-actions { display: flex; gap: 1rem; }
-.timesheet-table-container { overflow-x: auto; }
-.timesheet-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 900px;
-    background-color: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-.timesheet-table th, .timesheet-table td {
-    border: 1px solid #ddd;
-    padding: 0.75rem;
-    text-align: center;
-}
-.timesheet-table thead { background-color: #007acc; color: white; }
-.timesheet-table th { font-weight: 600; }
-.timesheet-table tbody tr:hover { background-color: #f1f1f1; }
-.timesheet-table td.cell-paycode {
-    text-align: left;
-    width: 250px;
-    font-weight: 600;
-}
-.timesheet-table td.cell-total { font-weight: bold; }
-.timesheet-table tfoot { background-color: #f8f9fa; font-weight: bold; }
-.timesheet-table tfoot td { font-size: 1.1rem; }
-.paycode-selector { cursor: pointer; color: #007acc; }
-.paycode-selector:hover { text-decoration: underline; }
-.hour-input {
-    width: 60px;
-    padding: 0.5rem;
-    text-align: center;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-.hour-input:focus { border-color: #007acc; outline: none; }
-.paycode-modal { z-index: 2000; }
-.paycode-modal-content { margin: 10% auto; }
-.modal-close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-.modal-close:hover { color: #333; }
-#paycode-search-input {
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-    box-sizing: border-box;
-}
-#paycode-results-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    max-height: 250px;
-    overflow-y: auto;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-#paycode-results-list li {
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-}
-#paycode-results-list li:hover { background-color: #f1f1f1; }

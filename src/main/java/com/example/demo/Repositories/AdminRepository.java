@@ -9,5 +9,5 @@ import com.example.demo.Entities.Admin;
 
 @Repository
 public interface AdminRepository extends UserRepository<Admin> {
-    // Optional<Admin> findByEmail(String email);
+       Optional<Admin> findByEmail(String email);
 }

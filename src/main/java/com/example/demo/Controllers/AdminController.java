@@ -13,6 +13,7 @@ import com.example.demo.Entities.Admin;
 import com.example.demo.Entities.Employee;
 import com.example.demo.Entities.Organization;
 import com.example.demo.Entities.Role;
+import com.example.demo.Repositories.AdminRepository;
 import com.example.demo.Repositories.EmployeeRepository;
 import com.example.demo.Repositories.OrganizationRepository;
 import com.example.demo.Repositories.RoleRepository;
@@ -27,48 +28,45 @@ public class AdminController {
     private final EmployeeRepository employeeRepository;
     private final OrganizationRepository organizationRepository;
     private final RoleRepository roleRepository;
+    private final AdminRepository adminRepository;
 
     public AdminController(AdminService adminService,
             EmployeeRepository employeeRepository,
             OrganizationRepository organizationRepository,
-            RoleRepository roleRepository) {
+            RoleRepository roleRepository,
+            AdminRepository adminRepository) {
         this.adminService = adminService;
         this.employeeRepository = employeeRepository;
         this.organizationRepository = organizationRepository;
         this.roleRepository = roleRepository;
+        this.adminRepository = adminRepository;
     }
 
     @GetMapping("/admin/home")
     public String adminHome(Model model, HttpSession session) {
-        // Get admin ID from session
         Long userId = (Long) session.getAttribute("userId");
 
         if (userId == null) {
-            // If no user in session, redirect to login
             return "redirect:/login";
         }
 
-        // Fetch admin data using service
         Optional<Admin> adminOpt = adminService.getAdmin(userId);
 
         if (adminOpt.isPresent()) {
             Admin admin = adminOpt.get();
 
-            // Add admin data to model
             model.addAttribute("firstName", admin.getFirstName());
             model.addAttribute("lastName", admin.getLastName());
             model.addAttribute("adminId", admin.getId());
             model.addAttribute("email", admin.getEmail());
             model.addAttribute("role", "Administrator");
 
-            // Add organization information if available
             if (admin.getOrganization() != null) {
                 model.addAttribute("organization", admin.getOrganization().getName());
             } else {
                 model.addAttribute("organization", "N/A");
             }
         } else {
-            // Admin not found, redirect to login
             return "redirect:/login";
         }
 
@@ -76,20 +74,18 @@ public class AdminController {
     }
 
     @GetMapping("/admin/create-user")
-public String createUserForm(Model model, HttpSession session) {
-    String firstName = (String) session.getAttribute("firstName");
-    model.addAttribute("firstName", firstName != null ? firstName : "Admin");
+    public String createUserForm(Model model, HttpSession session) {
+        String firstName = (String) session.getAttribute("firstName");
+        model.addAttribute("firstName", firstName != null ? firstName : "Admin");
 
-    // Fetch organizations and roles for dropdowns
-    List<Organization> organizations = organizationRepository.findAll();
-    List<Role> roles = roleRepository.findAll();
+        List<Organization> organizations = organizationRepository.findAll();
+        List<Role> roles = roleRepository.findAll();
 
-    model.addAttribute("organizations", organizations);
-    model.addAttribute("roles", roles);
+        model.addAttribute("organizations", organizations);
+        model.addAttribute("roles", roles);
 
-    return "create-user";
-}
-
+        return "create-user";
+    }
 
     @PostMapping("/admin/create-user")
     public String createUser(
@@ -101,7 +97,6 @@ public String createUserForm(Model model, HttpSession session) {
             @RequestParam Long organizationId,
             @RequestParam Long roleId) {
 
-        // Create new Employee entity
         Employee employee = new Employee();
         employee.setFirstName(firstName);
         employee.setLastName(lastName);
@@ -109,21 +104,17 @@ public String createUserForm(Model model, HttpSession session) {
         employee.setPassword(password);
         employee.setPtoBalance(ptoBalance);
 
-        // Set organization
         Optional<Organization> orgOpt = organizationRepository.findById(organizationId);
         orgOpt.ifPresent(employee::setOrganization);
 
-        // Set role
         Optional<Role> roleOpt = roleRepository.findById(roleId);
         roleOpt.ifPresent(employee::setRole);
 
-        // Save to database
         employeeRepository.save(employee);
 
         System.out.println("Created new user: " + firstName + " " + lastName + " (ID: " + employee.getId() + ")");
 
         return "redirect:/admin/users";
     }
-
 
 }
