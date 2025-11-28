@@ -1,5 +1,6 @@
 package com.example.demo.Entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,14 +18,17 @@ public class InviteCode {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "invite_code_id_seq")
     private Long id;
 
+    private String description;
+
     @ManyToOne
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "role_id")
     private Role assigningRole;
 
+    @Column(unique = true, nullable = false)
     private String code;
 
     public InviteCode() {
@@ -60,6 +64,14 @@ public class InviteCode {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
     
 

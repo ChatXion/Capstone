@@ -65,6 +65,14 @@ public class Organization {
     public List<Role> getRoles() {
         return roles;
     }
+
+    public List<InviteCode> getInviteCodes() {
+        return inviteCodes;
+    }
+
+    public void setInviteCodes(List<InviteCode> inviteCodes) {
+        this.inviteCodes = inviteCodes;
+    }
     
     
 }
