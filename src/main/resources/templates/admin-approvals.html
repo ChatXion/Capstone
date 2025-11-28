@@ -75,7 +75,6 @@
                                             th:data-end-date="${#temporals.format(timesheet.endDate, 'MMM dd, yyyy')}"
                                             th:data-total-hours="${timesheet.totalHours}"
                                             th:data-submitted-date="${#temporals.format(timesheet.submittedDate, 'MMM dd, yyyy')}"
-                                            th:data-notes="${timesheet.notes}"
                                             onclick="viewTimesheetDetails(this)">
                                         View
                                     </button>
@@ -148,7 +147,6 @@
                                             th:data-end-date="${#temporals.format(pto.endDate, 'MMM dd, yyyy')}"
                                             th:data-days-requested="${pto.daysRequested}"
                                             th:data-submitted-date="${#temporals.format(pto.submittedDate, 'MMM dd, yyyy')}"
-                                            th:data-reason="${pto.reason}"
                                             onclick="viewPTODetails(this)">
                                         View
                                     </button>
@@ -335,10 +333,6 @@
                     <span class="info-label">Submitted Date:</span>
                     <span class="info-value">${button.getAttribute('data-submitted-date')}</span>
                 </div>
-                <div class="info-row">
-                    <span class="info-label">Notes:</span>
-                    <span class="info-value">${button.getAttribute('data-notes')}</span>
-                </div>
             `;
             document.getElementById('viewTimesheetModal').style.display = 'block';
         }
@@ -347,7 +341,7 @@
             document.getElementById('viewTimesheetModal').style.display = 'none';
         }
 
-        // PTO view details
+        // PTO view details - MODIFIED: Removed reason field
         function viewPTODetails(button) {
             const body = document.getElementById('ptoDetailsBody');
             body.innerHTML = `
@@ -378,10 +372,6 @@
                 <div class="info-row">
                     <span class="info-label">Submitted Date:</span>
                     <span class="info-value">${button.getAttribute('data-submitted-date')}</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Reason:</span>
-                    <span class="info-value">${button.getAttribute('data-reason')}</span>
                 </div>
             `;
             document.getElementById('viewPTOModal').style.display = 'block';

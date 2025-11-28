@@ -1,120 +1,32 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Timesheet</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    <style>
-        /* These styles are specific to the new timesheet grid */
-        .timesheet_container {
-            max-width: 1400px;
-            margin-bottom: 100px;
-        }
-        .timesheet-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding: 1.5rem;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-        }
-        .timesheet-header h2 { margin: 0; color: #007acc; }
-        .timesheet-period-selector { display: flex; align-items: center; gap: 0.5rem; }
-        .timesheet-period-selector label { font-weight: 600; }
-        .timesheet-period-selector input {
-            padding: 0.5rem;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .timesheet-actions { display: flex; gap: 1rem; }
-        .timesheet-table-container { overflow-x: auto; }
-        .timesheet-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 900px;
-        }
-        .timesheet-table th, .timesheet-table td {
-            border: 1px solid #ddd;
-            padding: 0.75rem;
-            text-align: center;
-        }
-        .timesheet-table thead { background-color: #007acc; color: white; }
-        .timesheet-table th { font-weight: 600; }
-        .timesheet-table tbody tr:hover { background-color: #f1f1f1; }
-        .timesheet-table td.cell-paycode {
-            text-align: left;
-            width: 250px;
-            font-weight: 600;
-        }
-        .timesheet-table td.cell-total { font-weight: bold; }
-        .timesheet-table tfoot { background-color: #f8f9fa; font-weight: bold; }
-        .timesheet-table tfoot td { font-size: 1.1rem; }
-        .paycode-selector { cursor: pointer; color: #007acc; }
-        .paycode-selector:hover { text-decoration: underline; }
-        .hour-input {
-            width: 60px;
-            padding: 0.5rem;
-            text-align: center;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .hour-input:focus { border-color: #007acc; outline: none; }
-        .paycode-modal { z-index: 2000; }
-        .paycode-modal-content { margin: 10% auto; }
-        #paycode-search-input {
-            width: 100%;
-            padding: 0.75rem;
-            font-size: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-            box-sizing: border-box;
-        }
-        #paycode-results-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            max-height: 250px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        #paycode-results-list li {
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-        }
-        #paycode-results-list li:hover { background-color: #f1f1f1; }
-        .modal-close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .modal-close:hover { color: #333; }
-    </style>
 </head>
+
 <body>
     <div th:replace="~{fragments/nav_user :: nav}"></div>
-    
+
     <div class="timesheet_container">
         <form id="timesheetForm" th:action="@{/timesheet}" th:object="${timesheetForm}" method="post">
-            
+
             <div class="timesheet-header">
                 <div>
                     <h2>New Weekly Timesheet</h2>
                 </div>
                 <div class="timesheet-period-selector">
-                    <label for="payPeriodStart">Week Starting On (Sunday):</label>
-                    <input type="date" id="payPeriodStart" th:field="*{payPeriodStart}" required onchange="updateColumnHeaders()">
+                    <label for="dateSelector">Select Any Date in Week:</label>
+                    <input type="date" id="dateSelector" required onchange="calculateWeek()">
+                    <input type="hidden" id="payPeriodStart" th:field="*{payPeriodStart}">
+                </div>
+                <div class="week-display" id="weekDisplay" style="display: none;">
+                    Week: <span id="weekRange"></span>
                 </div>
                 <div class="timesheet-actions">
-                    <button type="button" class="btn" id="addRowBtn">Add Row</button>
                     <button type="submit" class="btn" style="background-color: #27ae60;">Submit Timesheet</button>
                 </div>
             </div>
@@ -135,7 +47,8 @@
                         </tr>
                     </thead>
                     <tbody id="timesheet-body">
-                        </tbody>
+                        <!-- Single row will be created here -->
+                    </tbody>
                     <tfoot>
                         <tr>
                             <td>Total</td>
@@ -163,7 +76,7 @@
             <div class="modal-body">
                 <input type="text" id="paycode-search-input" placeholder="Search by name or code...">
                 <ul id="paycode-results-list">
-                    </ul>
+                </ul>
             </div>
         </div>
     </div>
@@ -172,32 +85,82 @@
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-        const ALL_PAY_CODES = /*[[${payCodes}]]*/ [];
+        const ALL_PAY_CODES = /*[[${paycodes}]]*/ [];
         /*]]>*/
     </script>
 
     <script>
         // --- Global variables ---
-        let currentRowIndex = 0;
-        let currentPayCodeCell = null; // Stores which cell (td) opened the modal
-        
-        // References to DOM elements that will be assigned once loaded
-        let timesheetBody, addRowBtn, modal, modalClose, searchInput, resultsList;
+        let currentPayCodeCell = null;
+        let weekStartDate = null;
+
+        // References to DOM elements
+        let timesheetBody, modal, modalClose, searchInput, resultsList;
+
+        // --- Week Calculation Logic ---
+        function calculateWeek() {
+            const dateInput = document.getElementById('dateSelector');
+            const selectedDate = new Date(dateInput.value + 'T00:00:00');
+
+            if (!dateInput.value || isNaN(selectedDate.getTime())) {
+                document.getElementById('weekDisplay').style.display = 'none';
+                return;
+            }
+
+            const dayOfWeek = selectedDate.getDay();
+            const sunday = new Date(selectedDate);
+            sunday.setDate(selectedDate.getDate() - dayOfWeek);
+
+            const saturday = new Date(sunday);
+            saturday.setDate(sunday.getDate() + 6);
+
+            weekStartDate = sunday;
+
+            const payPeriodStartInput = document.getElementById('payPeriodStart');
+            payPeriodStartInput.value = formatDateForInput(sunday);
+
+            const formatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            document.getElementById('weekRange').textContent =
+                formatter.format(sunday) + ' - ' + formatter.format(saturday);
+            document.getElementById('weekDisplay').style.display = 'block';
+
+            updateColumnHeaders(sunday);
+        }
+
+        function formatDateForInput(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function updateColumnHeaders(startDate) {
+            const formatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+            const headers = document.querySelectorAll('.timesheet-table thead th[data-day]');
+
+            headers.forEach((th, index) => {
+                const currentDate = new Date(startDate);
+                currentDate.setDate(startDate.getDate() + index);
+
+                const day = th.dataset.day.charAt(0).toUpperCase() + th.dataset.day.slice(1);
+                th.textContent = `${day} (${formatter.format(currentDate)})`;
+            });
+        }
 
         // --- Pay Code Modal Logic ---
         function populatePayCodeList(filter = '') {
             resultsList.innerHTML = '';
             const lowerFilter = filter.toLowerCase();
-            
-            ALL_PAY_CODES.filter(pc => 
-                pc.name.toLowerCase().includes(lowerFilter) || 
+
+            ALL_PAY_CODES.filter(pc =>
+                pc.name.toLowerCase().includes(lowerFilter) ||
                 pc.code.toLowerCase().includes(lowerFilter)
             ).forEach(pc => {
                 const li = document.createElement('li');
                 li.textContent = `[${pc.code}] ${pc.name}`;
                 li.dataset.id = pc.id;
                 li.dataset.display = `[${pc.code}] ${pc.name}`;
-                li.addEventListener('click', () => selectPayCode(li.dataset.id, li.dataset.display));
+                li.onclick = function () { selectPayCode(this.dataset.id, this.dataset.display); };
                 resultsList.appendChild(li);
             });
         }
@@ -206,11 +169,15 @@
             currentPayCodeCell = cell;
             populatePayCodeList();
             modal.style.display = 'block';
-            searchInput.focus();
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
+            setTimeout(() => searchInput.focus(), 100);
         }
 
         function closePayCodeModal() {
             modal.style.display = 'none';
+            modal.style.visibility = 'hidden';
+            modal.style.opacity = '0';
             searchInput.value = '';
         }
 
@@ -223,23 +190,25 @@
         }
 
         // --- Timesheet Grid Logic ---
-        function createRow() {
+        function createSingleRow() {
             const tr = document.createElement('tr');
             const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
             // 1. Pay Code Cell
             const tdPayCode = document.createElement('td');
             tdPayCode.className = 'cell-paycode';
-            
+
             const payCodeSpan = document.createElement('span');
             payCodeSpan.className = 'paycode-selector';
             payCodeSpan.textContent = 'Click to select pay code';
-            payCodeSpan.onclick = () => openPayCodeModal(tdPayCode);
-            
+            payCodeSpan.style.cursor = 'pointer';
+            payCodeSpan.onclick = function () { openPayCodeModal(tdPayCode); };
+
             const hiddenPayCodeInput = document.createElement('input');
             hiddenPayCodeInput.type = 'hidden';
-            hiddenPayCodeInput.name = `entries[${currentRowIndex}].payCodeId`; 
-            
+            hiddenPayCodeInput.name = 'entries[0].paycodeId';
+            hiddenPayCodeInput.required = true;
+
             tdPayCode.appendChild(payCodeSpan);
             tdPayCode.appendChild(hiddenPayCodeInput);
             tr.appendChild(tdPayCode);
@@ -250,7 +219,7 @@
                 const input = document.createElement('input');
                 input.type = 'number';
                 input.className = 'hour-input';
-                input.name = `entries[${currentRowIndex}].hours[${day}]`;
+                input.name = `entries[0].hours[${day}]`;
                 input.min = '0';
                 input.step = '0.25';
                 input.placeholder = '0.0';
@@ -267,74 +236,89 @@
             tr.appendChild(tdTotal);
 
             timesheetBody.appendChild(tr);
-            currentRowIndex++;
         }
 
         function updateTotals() {
             let grandTotal = 0;
             const dayTotals = { sun: 0, mon: 0, tue: 0, wed: 0, thu: 0, fri: 0, sat: 0 };
 
-            timesheetBody.querySelectorAll('tr').forEach(tr => {
+            const row = timesheetBody.querySelector('tr');
+            if (row) {
                 let rowTotal = 0;
-                tr.querySelectorAll('.hour-input').forEach(input => {
+                row.querySelectorAll('.hour-input').forEach(input => {
                     const val = parseFloat(input.value) || 0;
                     rowTotal += val;
                     dayTotals[input.dataset.day] += val;
                 });
-                tr.querySelector('.row-total').textContent = rowTotal.toFixed(1);
+                row.querySelector('.row-total').textContent = rowTotal.toFixed(1);
                 grandTotal += rowTotal;
-            });
+            }
 
-            // Update footer totals
             Object.keys(dayTotals).forEach(day => {
                 document.getElementById(`total-${day}`).textContent = dayTotals[day].toFixed(1);
             });
             document.getElementById('total-all').textContent = grandTotal.toFixed(1);
         }
 
-        // --- Date Header Logic (NOW GLOBAL) ---
-        function updateColumnHeaders() {
-            const startDateInput = document.getElementById('payPeriodStart');
-            if (!startDateInput.value) return;
-
-            try {
-                const startDate = new Date(startDateInput.value + 'T00:00:00'); // Fix for timezone issues
-                const formatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
-                
-                const headers = document.querySelectorAll('.timesheet-table thead th[data-day]');
-                headers.forEach((th, index) => {
-                    const currentDate = new Date(startDate);
-                    currentDate.setDate(startDate.getDate() + index);
-                    
-                    const day = th.dataset.day.charAt(0).toUpperCase() + th.dataset.day.slice(1);
-                    th.textContent = `${day} (${formatter.format(currentDate)})`;
-                });
-            } catch (e) {
-                console.error("Invalid date selected");
+        // --- Form Validation ---
+        function validateForm() {
+            if (!weekStartDate) {
+                alert('Please select a date to determine the work week.');
+                return false;
             }
+
+            const payCodeInput = document.querySelector('input[name="entries[0].paycodeId"]');
+            if (!payCodeInput || !payCodeInput.value) {
+                alert('Please select a pay code for this timesheet.');
+                return false;
+            }
+
+            const hourInputs = document.querySelectorAll('.hour-input');
+            let hasHours = false;
+            hourInputs.forEach(input => {
+                if (parseFloat(input.value) > 0) {
+                    hasHours = true;
+                }
+            });
+
+            if (!hasHours) {
+                alert('Please enter at least one hour for this timesheet.');
+                return false;
+            }
+
+            return true;
         }
-        
+
         // --- Main execution ---
-        document.addEventListener('DOMContentLoaded', function() {
-            // Assign element references
+        document.addEventListener('DOMContentLoaded', function () {
             timesheetBody = document.getElementById('timesheet-body');
-            addRowBtn = document.getElementById('addRowBtn');
             modal = document.getElementById('paycodeModal');
             modalClose = document.getElementById('paycodeModalClose');
             searchInput = document.getElementById('paycode-search-input');
             resultsList = document.getElementById('paycode-results-list');
 
-            // Add event listeners
             modalClose.onclick = closePayCodeModal;
-            window.onclick = function(event) {
+            window.onclick = function (event) {
                 if (event.target == modal) closePayCodeModal();
             }
             searchInput.addEventListener('input', () => populatePayCodeList(searchInput.value));
-            addRowBtn.addEventListener('click', createRow);
-            
-            // Add one row by default
-            createRow();
+
+            document.getElementById('timesheetForm').addEventListener('submit', function (e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            createSingleRow();
+
+            const today = new Date();
+            document.getElementById('dateSelector').value = formatDateForInput(today);
+            calculateWeek();
         });
+
     </script>
+
 </body>
+
 </html>

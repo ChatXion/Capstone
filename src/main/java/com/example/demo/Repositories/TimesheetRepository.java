@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+
 import java.util.List;
 
 @Repository
@@ -26,4 +27,12 @@ public interface TimesheetRepository extends JpaRepository<Timesheet, Long> {
         @Param("employeeId") Long employeeId, 
         @Param("status") String status
     );
+
+    Timesheet findByEmployeeIdAndWeekAndApprovalStatus(Long employeeId, Integer week, String approvalStatus);
+    
+    // Filter by organization
+    List<Timesheet> findByEmployeeOrganizationId(Long organizationId);
+    
+    // Filter by status and organization
+    List<Timesheet> findByApprovalStatusAndEmployeeOrganizationId(String approvalStatus, Long organizationId);
 }

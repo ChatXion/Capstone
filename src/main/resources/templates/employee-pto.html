@@ -80,7 +80,6 @@
                                         th:data-start="${#temporals.format(request.startDate, 'MMM dd, yyyy')}"
                                         th:data-end="${#temporals.format(request.endDate, 'MMM dd, yyyy')}"
                                         th:data-hours="${request.hoursRequested}"
-                                        th:data-reason="${request.reason}"
                                         th:data-status="${request.approvalStatus}"
                                         th:data-submitted="${#temporals.format(request.submittedDate, 'MMM dd, yyyy')}"
                                         th:data-approved-by="${request.approvedBy}"
@@ -94,7 +93,6 @@
                                         th:data-type="${request.requestType}"
                                         th:data-start="${request.startDate}"
                                         th:data-end="${request.endDate}"
-                                        th:data-reason="${request.reason}"
                                         onclick="openEditRequestModal(this)">
                                     Edit
                                 </button>
@@ -154,11 +152,6 @@
                         <input type="text" class="timesheet_form-control" id="calculatedHours" readonly style="background-color: #f8f9fa;">
                         <small style="color: #7f8c8d; font-size: 0.9rem;">Calculated as 8 hours per day</small>
                     </div>
-                    
-                    <div class="timesheet_form-group">
-                        <label for="newReason">Reason</label>
-                        <textarea class="timesheet_form-control" id="newReason" name="reason" rows="3" placeholder="Optional: Provide a reason for your request"></textarea>
-                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -199,11 +192,6 @@
                         <label>Hours Requested</label>
                         <input type="text" class="timesheet_form-control" id="editCalculatedHours" readonly style="background-color: #f8f9fa;">
                         <small style="color: #7f8c8d; font-size: 0.9rem;">Calculated as 8 hours per day</small>
-                    </div>
-                    
-                    <div class="timesheet_form-group">
-                        <label for="editReason">Reason</label>
-                        <textarea class="timesheet_form-control" id="editReason" name="reason" rows="3"></textarea>
                     </div>
                 </form>
             </div>
@@ -293,12 +281,10 @@
             const type = button.getAttribute('data-type');
             const startDate = button.getAttribute('data-start');
             const endDate = button.getAttribute('data-end');
-            const reason = button.getAttribute('data-reason');
             
             document.getElementById('editRequestType').value = type;
             document.getElementById('editStartDate').value = startDate;
             document.getElementById('editEndDate').value = endDate;
-            document.getElementById('editReason').value = reason || '';
             
             calculateEditHours();
             
@@ -375,16 +361,6 @@
                     <div class="info-row" style="background-color: #fee; padding: 1rem; border-radius: 4px; margin-top: 1rem;">
                         <span class="info-label">Rejection Reason:</span>
                         <span class="info-value rejection-text">${button.getAttribute('data-rejection')}</span>
-                    </div>
-                `;
-            }
-            
-            const reason = button.getAttribute('data-reason');
-            if (reason && reason !== 'null') {
-                html += `
-                    <div class="info-row">
-                        <span class="info-label">Reason:</span>
-                        <span class="info-value">${reason}</span>
                     </div>
                 `;
             }

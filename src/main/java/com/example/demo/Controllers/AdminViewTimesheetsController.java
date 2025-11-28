@@ -30,9 +30,9 @@ public class AdminViewTimesheetsController {
     private final PayCodeService PaycodeService;
     private final TimesheetService timesheetService;
 
-    public AdminViewTimesheetsController(EmployeeService employeeService, 
-                                        PayCodeService PayCodeService,
-                                        TimesheetService timesheetService) {
+    public AdminViewTimesheetsController(EmployeeService employeeService,
+            PayCodeService PayCodeService,
+            TimesheetService timesheetService) {
         this.employeeService = employeeService;
         this.PaycodeService = PayCodeService;
         this.timesheetService = timesheetService;
@@ -43,22 +43,23 @@ public class AdminViewTimesheetsController {
         // Get admin firstName from session for navigation
         String firstName = (String) session.getAttribute("firstName");
         model.addAttribute("firstName", firstName != null ? firstName : "Admin");
-        
+
         // Fetch employee data
         Optional<Employee> employeeOpt = employeeService.getEmployee(employeeId);
         if (employeeOpt.isEmpty()) {
             return "redirect:/admin/users";
         }
-        
+
         Employee employee = employeeOpt.get();
         model.addAttribute("employeeFirstName", employee.getFirstName());
         model.addAttribute("employeeLastName", employee.getLastName());
         model.addAttribute("employeeId", employeeId);
-        
+
         // Fetch all timesheets for this employee
         List<Timesheet> timesheets = employeeService.findAllTimesheets(employeeId);
-        
-        // Convert to display objects (reusing ViewTimesheetsController.TimesheetDisplay)
+
+        // Convert to display objects (reusing
+        // ViewTimesheetsController.TimesheetDisplay)
         List<ViewTimesheetsController.TimesheetDisplay> displayTimesheets = new ArrayList<>();
         for (Timesheet timesheet : timesheets) {
             ViewTimesheetsController.TimesheetDisplay display = new ViewTimesheetsController.TimesheetDisplay();
@@ -67,7 +68,7 @@ public class AdminViewTimesheetsController {
             display.setApprovalStatus(timesheet.getApprovalStatus());
             display.setApprovedBy(timesheet.getApprovedBy());
             display.setRejectionReason(timesheet.getRejectionReason());
-            
+
             // Calculate total hours from entries
             double totalHours = 0;
             if (timesheet.getEntries() != null) {
@@ -76,12 +77,12 @@ public class AdminViewTimesheetsController {
                 }
             }
             display.setTotalHours(totalHours);
-            
+
             // Get date range from entries
             if (timesheet.getEntries() != null && !timesheet.getEntries().isEmpty()) {
                 LocalDate minDate = null;
                 LocalDate maxDate = null;
-                
+
                 for (TimesheetEntry entry : timesheet.getEntries()) {
                     if (entry.getDate() != null) {
                         if (minDate == null || entry.getDate().isBefore(minDate)) {
@@ -92,49 +93,49 @@ public class AdminViewTimesheetsController {
                         }
                     }
                 }
-                
+
                 display.setStartDate(minDate);
                 display.setEndDate(maxDate);
             }
-            
+
             displayTimesheets.add(display);
         }
-        
+
         model.addAttribute("timesheets", displayTimesheets);
-        
+
         return "admin-view-timesheets";
     }
-    
+
     @GetMapping("/admin/view-timesheets/{employeeId}/{timesheetId}")
-    public String viewEmployeeTimesheetDetails(@PathVariable Long employeeId, 
-                                              @PathVariable Long timesheetId, 
-                                              Model model, 
-                                              HttpSession session) {
+    public String viewEmployeeTimesheetDetails(@PathVariable Long employeeId,
+            @PathVariable Long timesheetId,
+            Model model,
+            HttpSession session) {
         // Get admin firstName from session for navigation
         String firstName = (String) session.getAttribute("firstName");
         String adminFirstName = firstName != null ? firstName : "Admin";
         model.addAttribute("firstName", adminFirstName);
-        
+
         // Fetch employee data
         Optional<Employee> employeeOpt = employeeService.getEmployee(employeeId);
         if (employeeOpt.isEmpty()) {
             return "redirect:/admin/users";
         }
-        
+
         Employee employee = employeeOpt.get();
         model.addAttribute("employeeFirstName", employee.getFirstName());
         model.addAttribute("employeeLastName", employee.getLastName());
         model.addAttribute("employeeId", employeeId);
-        
+
         // Fetch the specific timesheet
         Optional<Timesheet> timesheetOpt = employeeService.getTimesheet(employeeId, timesheetId);
-        
+
         if (timesheetOpt.isEmpty()) {
             return "redirect:/admin/view-timesheets/" + employeeId;
         }
-        
+
         Timesheet timesheet = timesheetOpt.get();
-        
+
         // Create display object
         ViewTimesheetsController.TimesheetDisplay display = new ViewTimesheetsController.TimesheetDisplay();
         display.setId(timesheet.getId());
@@ -142,51 +143,56 @@ public class AdminViewTimesheetsController {
         display.setApprovalStatus(timesheet.getApprovalStatus());
         display.setApprovedBy(timesheet.getApprovedBy());
         display.setRejectionReason(timesheet.getRejectionReason());
-        
+
         // Get entries
         List<ViewTimesheetsController.TimesheetEntryDisplay> entryDisplays = new ArrayList<>();
         double totalHours = 0;
-        
+
         if (timesheet.getEntries() != null) {
             for (TimesheetEntry entry : timesheet.getEntries()) {
                 ViewTimesheetsController.TimesheetEntryDisplay entryDisplay = new ViewTimesheetsController.TimesheetEntryDisplay();
                 entryDisplay.setId(entry.getId());
                 entryDisplay.setDate(entry.getDate());
                 entryDisplay.setHoursWorked(entry.getHoursWorked());
-                
+
                 if (entry.getPaycode() != null) {
-                    entryDisplay.setPaycodeId(entry.getPaycode().getId());
-                    entryDisplay.setPaycodeName(entry.getPaycode().getName());
-                    entryDisplay.setPaycodeCode(entry.getPaycode().getCode());
+                    entryDisplay.setPayCodeId(entry.getPaycode().getId());
+                    entryDisplay.setPayCodeName(entry.getPaycode().getName());
+                    entryDisplay.setPayCodeCode(entry.getPaycode().getCode());
                     entryDisplay.setHourlyRate(BigDecimal.valueOf(entry.getPaycode().getHourlyRate()));
+                } else {
+                    // Set default values if payCode is null
+                    entryDisplay.setPayCodeName("N/A");
+                    entryDisplay.setPayCodeCode("N/A");
+                    entryDisplay.setHourlyRate(java.math.BigDecimal.ZERO);
                 }
-                
+
                 entryDisplays.add(entryDisplay);
                 totalHours += entry.getHoursWorked();
             }
         }
-        
+
         display.setTotalHours(totalHours);
         display.setEntries(entryDisplays);
-        
+
         model.addAttribute("timesheet", display);
-        
+
         // Get pay codes if timesheet is pending (for editing)
         if ("pending".equals(timesheet.getApprovalStatus())) {
             Long organizationId = null;
             if (employee.getOrganization() != null) {
                 organizationId = employee.getOrganization().getId();
             }
-            
+
             if (organizationId != null) {
                 List<Paycode> Paycodes = PaycodeService.getPaycodesByOrganization(organizationId);
                 model.addAttribute("Paycodes", Paycodes);
             }
         }
-        
+
         return "admin-view-timesheet-details";
     }
-    
+
     @PostMapping("/admin/view-timesheets/{employeeId}/{timesheetId}/entry/{entryId}/edit")
     public String editTimesheetEntry(
             @PathVariable Long employeeId,
@@ -196,68 +202,68 @@ public class AdminViewTimesheetsController {
             @RequestParam double hoursWorked,
             @RequestParam Long PaycodeId,
             HttpSession session) {
-        
+
         // Verify timesheet belongs to employee and is pending
         Optional<Timesheet> timesheetOpt = employeeService.getTimesheet(employeeId, timesheetId);
         if (timesheetOpt.isEmpty() || !"pending".equals(timesheetOpt.get().getApprovalStatus())) {
             return "redirect:/admin/view-timesheets/" + employeeId + "/" + timesheetId;
         }
-        
+
         // Update the entry
         employeeService.updateTimesheetEntry(entryId, date, hoursWorked, PaycodeId);
-        
+
         return "redirect:/admin/view-timesheets/" + employeeId + "/" + timesheetId;
     }
-    
+
     @PostMapping("/admin/view-timesheets/{employeeId}/{timesheetId}/entry/{entryId}/delete")
     public String deleteTimesheetEntry(
             @PathVariable Long employeeId,
             @PathVariable Long timesheetId,
             @PathVariable Long entryId,
             HttpSession session) {
-        
+
         // Verify timesheet belongs to employee and is pending
         Optional<Timesheet> timesheetOpt = employeeService.getTimesheet(employeeId, timesheetId);
         if (timesheetOpt.isEmpty() || !"pending".equals(timesheetOpt.get().getApprovalStatus())) {
             return "redirect:/admin/view-timesheets/" + employeeId + "/" + timesheetId;
         }
-        
+
         // Delete the entry
         employeeService.deleteTimesheetEntry(entryId);
-        
+
         return "redirect:/admin/view-timesheets/" + employeeId + "/" + timesheetId;
     }
-    
+
     @PostMapping("/admin/view-timesheets/{employeeId}/{timesheetId}/approve")
     public String approveTimesheet(
             @PathVariable Long employeeId,
             @PathVariable Long timesheetId,
             HttpSession session) {
-        
+
         // Get admin name from session
         String adminFirstName = (String) session.getAttribute("firstName");
         String approvedBy = adminFirstName != null ? adminFirstName : "Admin";
-        
+
         // Approve the timesheet
         timesheetService.approveTimesheet(timesheetId, approvedBy);
-        
+
         return "redirect:/admin/view-timesheets/" + employeeId;
     }
-    
+
     @PostMapping("/admin/view-timesheets/{employeeId}/{timesheetId}/deny")
     public String denyTimesheet(
             @PathVariable Long employeeId,
             @PathVariable Long timesheetId,
             @RequestParam String rejectionReason,
             HttpSession session) {
-        
+
         // Get admin name from session
         String adminFirstName = (String) session.getAttribute("firstName");
         String deniedBy = adminFirstName != null ? adminFirstName : "Admin";
-        
+
         // Deny the timesheet
         timesheetService.denyTimesheet(timesheetId, rejectionReason, deniedBy);
-        
+
         return "redirect:/admin/view-timesheets/" + employeeId;
     }
 }

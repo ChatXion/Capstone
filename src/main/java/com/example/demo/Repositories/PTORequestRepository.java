@@ -26,4 +26,11 @@ public interface PTORequestRepository extends JpaRepository<PTORequest, Long> {
         @Param("employeeId") Long employeeId, 
         @Param("status") String status
     );
+
+    
+    // Filter by organization
+    List<PTORequest> findByEmployeeOrganizationId(Long organizationId);
+    
+    // Filter by status and organization
+    List<PTORequest> findByApprovalStatusAndEmployeeOrganizationId(String approvalStatus, Long organizationId);
 }
