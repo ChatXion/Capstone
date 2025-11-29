@@ -43,6 +43,10 @@ public class InviteCodeController {
     public String manageInviteCodes(Model model, HttpSession session) {
 
         Long userId = (Long) session.getAttribute("userId");
+
+        if (userId == null) {
+            return "redirect:/login";
+        }
         
         // Fetch ALL Invite Codes using the service
         List<InviteCode> inviteCodes = inviteCodeService.findAllByAdminId(userId);

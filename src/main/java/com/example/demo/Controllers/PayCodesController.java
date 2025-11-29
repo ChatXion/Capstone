@@ -20,15 +20,15 @@ import jakarta.servlet.http.HttpSession;
 public class PayCodesController {
 
     private final EmployeeService employeeService;
-    private final PayCodeService PayCodeService;
+    private final PayCodeService payCodeService;
 
     public PayCodesController(EmployeeService employeeService,
-                             PayCodeService PayCodeService) {
+                             PayCodeService payCodeService) {
         this.employeeService = employeeService;
-        this.PayCodeService = PayCodeService;
+        this.payCodeService = payCodeService;
     }
 
-    @GetMapping("/employee/Paycodes")
+    @GetMapping("/employee/paycodes")
     public String viewPaycodes(Model model, HttpSession session) {
         // Get employee ID from session
         Long userId = (Long) session.getAttribute("userId");
@@ -53,32 +53,32 @@ public class PayCodesController {
         }
         
         // Fetch pay codes for this organization using service
-        List<Paycode> Paycodes = new ArrayList<>();
+        List<Paycode> paycodes = new ArrayList<>();
         if (organizationId != null) {
-            Paycodes = PayCodeService.getPaycodesByOrganization(organizationId);
+            paycodes = payCodeService.getPaycodesByOrganization(organizationId);
         }
         
         // Convert to display objects
         List<PaycodeDisplay> displayPaycodes = new ArrayList<>();
-        for (Paycode Paycode : Paycodes) {
+        for (Paycode paycode : paycodes) {
             PaycodeDisplay display = new PaycodeDisplay();
-            display.setCode(Paycode.getCode());
-            display.setName(Paycode.getName());
-            display.setDescription(Paycode.getDescription());
-            display.setHourlyRate(BigDecimal.valueOf(Paycode.getHourlyRate()));
+            display.setCode(paycode.getCode());
+            display.setName(paycode.getName());
+            display.setDescription(paycode.getDescription());
+            display.setHourlyRate(BigDecimal.valueOf(paycode.getHourlyRate()));
             
             // Determine category based on code pattern
-            String category = determineCategory(Paycode.getCode(), Paycode.getName());
+            String category = determineCategory(paycode.getCode(), paycode.getName());
             display.setCategory(category);
             
             displayPaycodes.add(display);
         }
         
-        model.addAttribute("Paycodes", displayPaycodes);
+        model.addAttribute("payCodes", displayPaycodes);
         model.addAttribute("organizationName", 
             employee.getOrganization() != null ? employee.getOrganization().getName() : "Your Organization");
         
-        return "employee-Paycodes";
+        return "employee-paycodes";
     }
     
     private String determineCategory(String code, String name) {
