@@ -2,6 +2,7 @@ package com.example.demo.Services;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +54,23 @@ public class PTOService {
         return ptoRequestRepository.findByApprovalStatus("pending");
     }
     
+    // Validate PTO request dates
+    // Returns true if the request is valid, false if the request overlaps with any existing requests
+    public boolean validateRequest(Long employeeId, LocalDate startDate, LocalDate endDate){
+
+        List<PTORequest> requests = ptoRequestRepository.findByEmployeeId(employeeId);
+
+        if (!requests.isEmpty()){
+            for (PTORequest request: requests){
+                // Check if dates overlap
+                if (!(request.getStartDate().isAfter(endDate)  || request.getEndDate().isBefore(startDate))){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
     @Transactional
     public void createPTORequest(Long employeeId, LocalDate startDate, LocalDate endDate) {
         // Get the employee
@@ -71,6 +89,11 @@ public class PTOService {
         if (hoursRequested > employee.getPtoBalance()) {
             throw new IllegalArgumentException("Insufficient PTO balance. Requested: " + hoursRequested + 
                                              " hours, Available: " + employee.getPtoBalance() + " hours");
+        }
+
+        //Validate PTO request dates
+        if (!validateRequest(employeeId, startDate, endDate)){
+            throw new IllegalArgumentException("Attempted to create PTO request for date range that overlaps with existing request.");
         }
         
         // Create the PTO request
@@ -93,6 +116,11 @@ public class PTOService {
             // Only allow editing if pending and belongs to employee
             if ("pending".equals(request.getApprovalStatus()) && 
                 request.getEmployee().getId().equals(employeeId)) {
+
+                //Validate PTO request dates
+                if (!validateRequest(employeeId, startDate, endDate)){
+                    throw new IllegalArgumentException("Attempted to create PTO request for date range that overlaps with existing request.");
+                }
                 
                 // Recalculate hours
                 long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
