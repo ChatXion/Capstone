@@ -1,7 +1,6 @@
 package com.example.demo.Controllers;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -21,74 +20,19 @@ import jakarta.servlet.http.HttpSession;
     private final RegistrationService service;
     public RegistrationController(RegistrationService service) { this.service = service; }
 
-    @GetMapping("/admin/registrations")
-    public String viewRegistrations(Model model, HttpSession session) {
-        // Get firstName from session for navigation
-        String firstName = (String) session.getAttribute("firstName");
-        model.addAttribute("firstName", firstName != null ? firstName : "Admin");
-        
-        // Dummy registration data
-        List<PendingRegistration> registrations = new ArrayList<>();
-        
-        registrations.add(new PendingRegistration(
-            1, 
-            "INV12345", 
-            "Jane", 
-            "Smith", 
-            "jane.smith@email.com", 
-            "555-0101", 
-            LocalDate.of(2025, 10, 20),
-            "Pending"
-        ));
-        
-        registrations.add(new PendingRegistration(
-            2, 
-            "INV12346", 
-            "Michael", 
-            "Johnson", 
-            "michael.j@email.com", 
-            "555-0102", 
-            LocalDate.of(2025, 10, 22),
-            "Pending"
-        ));
-        
-        registrations.add(new PendingRegistration(
-            3, 
-            "INV12347", 
-            "Emily", 
-            "Davis", 
-            "emily.davis@email.com", 
-            "555-0103", 
-            LocalDate.of(2025, 10, 23),
-            "Pending"
-        ));
-        
-        registrations.add(new PendingRegistration(
-            4, 
-            "INV12348", 
-            "Robert", 
-            "Wilson", 
-            "r.wilson@email.com", 
-            "555-0104", 
-            LocalDate.of(2025, 10, 24),
-            "Pending"
-        ));
-        
-        registrations.add(new PendingRegistration(
-            5, 
-            "INV12349", 
-            "Sarah", 
-            "Martinez", 
-            "sarah.m@email.com", 
-            "555-0105", 
-            LocalDate.of(2025, 10, 25),
-            "Pending"
-        ));
-        
-        model.addAttribute("registrations", registrations);
-        
-        return "admin-registrations";
-    }
+@GetMapping("/admin/registrations")
+public String viewRegistrations(Model model, HttpSession session) {
+    // Get firstName from session for navigation
+    String firstName = (String) session.getAttribute("firstName");
+    model.addAttribute("firstName", firstName != null ? firstName : "Admin");
+    
+    // Fetch all pending registration requests from database
+    List<RegistrationRequest> registrations = service.getAllPendingRegistrations();
+    
+    model.addAttribute("registrations", registrations);
+    
+    return "admin-registrations";
+}
 
     @ModelAttribute("registration")
     public RegistrationRequest registrationRequest() {
@@ -122,7 +66,7 @@ import jakarta.servlet.http.HttpSession;
     public String approveRegistration(@RequestParam int registrationId) {
         
         System.out.println("Approving registration ID: " + registrationId);
-        
+        service.approve((long) registrationId); // Call service to approve
         return "redirect:/admin/registrations";
     }
 
@@ -131,7 +75,7 @@ import jakarta.servlet.http.HttpSession;
                                    @RequestParam(required = false) String reason) {
         
         System.out.println("Denying registration ID: " + registrationId + " - Reason: " + reason);
-        
+        service.deny((long) registrationId, reason); // Call service to deny
         return "redirect:/admin/registrations";
     }
 
@@ -169,4 +113,5 @@ import jakarta.servlet.http.HttpSession;
         public LocalDate getSubmittedDate() { return submittedDate; }
         public String getStatus() { return status; }
     }
+
 }
