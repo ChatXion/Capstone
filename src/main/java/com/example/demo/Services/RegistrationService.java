@@ -2,17 +2,26 @@ package com.example.demo.Services;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.example.demo.Entities.RegistrationRequest;
+import com.example.demo.Repositories.InviteCodeRepository;
 import com.example.demo.Repositories.RegistrationRequestRepository;
 
 @Service
 public class RegistrationService {
     private final RegistrationRequestRepository repo;
+    private final InviteCodeRepository inviteCodeRepository;
 
-    public RegistrationService(RegistrationRequestRepository repo) { this.repo = repo; }
+    public RegistrationService(RegistrationRequestRepository repo, InviteCodeRepository inviteCodeRepository) { 
+        this.repo = repo;
+        this.inviteCodeRepository = inviteCodeRepository;
+    }
 
     @Transactional
     public RegistrationRequest create(RegistrationRequest req) {
+        if (inviteCodeRepository.findByCode(req.getInvitationCode()).isEmpty()) {
+            throw new IllegalArgumentException("Invalid invitation code");
+        }
         if (repo.findByEmail(req.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email already registered");
         }
