@@ -9,6 +9,9 @@
     <div th:replace="~{fragments/nav :: nav}"></div>
     <div class="hero">
         <h1>Registration Page </h1>
+            <div th:if="${error}" style="background-color: #f8d7da; color: #721c24; padding: 12px; border: 1px solid #f5c6cb; border-radius: 4px; margin-bottom: 20px; text-align: center;">
+                <strong>Error:</strong> <span th:text="${error}"></span>
+            </div>
             <form th:action="@{/register}" th:object="${registration}" method="post" class="registration_registration-form">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <div class="registration_form-group">

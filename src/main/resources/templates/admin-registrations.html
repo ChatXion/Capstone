@@ -9,7 +9,9 @@
 <body>
     <!-- Navigation -->
     <div th:replace="~{fragments/nav_admin :: nav}"></div>
-
+    <div th:if="${error}" style="background-color: #f8d7da; color: #721c24; padding: 12px; border: 1px solid #f5c6cb; border-radius: 4px; margin-bottom: 20px; text-align: center;">
+    <strong>Error:</strong> <span th:text="${error}"></span>
+    </div>
     <div class="registrations-container">
         <div class="registrations-header">
             <h2>Pending Registrations</h2>
@@ -37,7 +39,7 @@
                         <td th:text="${registration.email}">jane.smith@email.com</td>
                         <td th:text="${registration.phone}">555-0101</td>
                         <td th:text="${registration.invitationCode}">INV12345</td>
-                        <td th:text="${#temporals.format(registration.submittedDate, 'MMM dd, yyyy')}">Oct 20, 2025</td>
+                        <td th:text="${#temporals.format(registration.createdAt, 'MMM dd, yyyy')}">Oct 20, 2025</td>
                         <td>
                             <span class="status-badge status-pending" 
                                   th:text="${registration.status}"
