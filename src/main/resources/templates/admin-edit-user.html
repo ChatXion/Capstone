@@ -7,7 +7,6 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <!-- Navigation -->
     <div th:replace="~{fragments/nav_admin :: nav}"></div>
 
     <div class="container">
@@ -19,6 +18,7 @@
         <div class="form-container">
             <form th:action="@{/admin/users/edit}" method="post" class="edit-user-form">
                 <input type="hidden" name="userId" th:value="${user.id}">
+                <input type="hidden" name="organizationId" th:value="${user.organizationId}">
 
                 <div class="form-row">
                     <div class="form-group">
@@ -78,24 +78,6 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="organizationId">Organization <span class="required">*</span></label>
-                        <select id="organizationId" 
-                                name="organizationId" 
-                                required 
-                                class="form-control">
-                            <option value="">Select Organization</option>
-                            <option th:each="org : ${organizations}" 
-                                    th:value="${org.id}" 
-                                    th:text="${org.name}"
-                                    th:selected="${org.id == user.organizationId}">
-                                Organization Name
-                            </option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
                         <label for="roleId">Role <span class="required">*</span></label>
                         <select id="roleId" 
                                 name="roleId" 
@@ -111,14 +93,28 @@
                         </select>
                     </div>
                 </div>
-
+                
                 <div class="form-actions">
                     <a href="/admin/users" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
             </form>
-        </div>
+            
+            <hr style="margin: 30px 0;">
 
+            <form id="removeOrgForm" th:action="@{/admin/users/remove-organization}" method="post" style="display: inline-block;">
+                <input type="hidden" name="userId" th:value="${user.id}">
+                <button type="button" 
+                        class="btn btn-delete" 
+                        onclick="showRemoveOrgModal()"
+                        style="width: auto;">
+                    Remove from Organization
+                </button>
+                <small class="form-text" style="color: #e74c3c; margin-left: 10px;">Warning: This will remove the user's organization and role.</small>
+            </form>
+            
+        </div>
+        
         <div class="user-info-summary">
             <h3>Current User Information</h3>
             <div class="info-grid">
@@ -141,8 +137,51 @@
             </div>
         </div>
     </div>
+    
+    <div id="removeOrgModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Remove User from Organization</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove <strong th:text="${user.firstName + ' ' + user.lastName}">User Name</strong> from <strong th:text="${user.organizationName}">Organization Name</strong>?</p>
+                <p style="color: #e74c3c; font-weight: 600;">This will clear their Organization and Role. They will need to be reassigned.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeRemoveOrgModal()">Cancel</button>
+                <button type="button" class="btn-confirm-delete" onclick="submitRemoveOrgForm()">Remove</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showRemoveOrgModal() {
+            document.getElementById('removeOrgModal').style.display = 'block';
+        }
 
-    <!-- Footer -->
+        function closeRemoveOrgModal() {
+            document.getElementById('removeOrgModal').style.display = 'none';
+        }
+        
+        function submitRemoveOrgForm() {
+            document.getElementById('removeOrgForm').submit();
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('removeOrgModal');
+            if (event.target == modal) {
+                closeRemoveOrgModal();
+            }
+            // Keep other modal logic if present (edit/delete)
+            const deleteModal = document.getElementById('deleteModal');
+            if (event.target == deleteModal) {
+                closeDeleteModal();
+            }
+        }
+    </script>
+
+
     <div th:replace="~{fragments/footer :: footer}"></div>
 
     <style>
@@ -151,7 +190,7 @@
             margin: 2rem auto;
             padding: 0 1rem;
         }
-
+        /* ... (rest of CSS remains the same from the original file) ... */
         .page-header {
             margin-bottom: 2rem;
         }
@@ -282,7 +321,7 @@
         .info-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
+            gap: 1.0rem; /* Adjusted from 1rem to 1.0rem for consistency */
         }
 
         @media (max-width: 768px) {

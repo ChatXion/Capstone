@@ -61,5 +61,13 @@ public class Role {
         return Paycodes;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
     
 }
