@@ -35,6 +35,10 @@ public class RegistrationService {
         if (repo.findByEmail(req.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email already registered");
         }
+        // Also check if email exists in employees table
+        if (employeeRepository.findByEmail(req.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email already registered");
+        }
         req.setStatus(RegistrationRequest.Status.PENDING);
         return repo.save(req);
     }
