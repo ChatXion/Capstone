@@ -3,7 +3,8 @@ INSERT INTO public.organizations (id, name)
 VALUES
 (1, 'TechCorp'),
 (2, 'FinancePlus'),
-(3, 'CreativeWorks');
+(3, 'CreativeWorks')
+ON CONFLICT (id) DO NOTHING;
 
 -- Insert Roles (11 roles as requested)
 INSERT INTO public.roles (id, name, organization_id)
@@ -18,7 +19,8 @@ VALUES
 (8, 'Sales', 2),
 (9, 'Engineering', 3),
 (10, 'Marketing', 3),
-(11, 'HR', 3);
+(11, 'HR', 3)
+ON CONFLICT (id) DO NOTHING;
 
 -- Insert Paycodes (15 paycodes)
 INSERT INTO public.paycodes (id, code, description, hourly_rate, name, organization_id)
@@ -37,7 +39,8 @@ VALUES
 (12, 'FIN003', 'Finance - Regular', 38.00, 'Finance Regular', 2),
 (13, 'FIN004', 'Finance - Overtime', 57.00, 'Finance Overtime', 2),
 (14, 'MKT003', 'Marketing - Regular', 32.00, 'Marketing Regular', 2),
-(15, 'MKT004', 'Marketing - Overtime', 48.00, 'Marketing Overtime', 2);
+(15, 'MKT004', 'Marketing - Overtime', 48.00, 'Marketing Overtime', 2)
+ON CONFLICT (id) DO NOTHING;
 
 -- Insert Admins (8 admins)
 INSERT INTO public.admins (id, email, first_name, last_name, password, organization_id)
@@ -49,7 +52,8 @@ VALUES
 (5, 'admin5@creativeworks.com', 'Eve', 'Jones', 'password5', 3),
 (6, 'admin6@creativeworks.com', 'Frank', 'Garcia', 'password6', 3),
 (7, 'admin7@techcorp.com', 'Grace', 'Martinez', 'password7', 1),
-(8, 'admin8@financeplus.com', 'Hank', 'Davis', 'password8', 2);
+(8, 'admin8@financeplus.com', 'Hank', 'Davis', 'password8', 2)
+ON CONFLICT (id) DO NOTHING;
 
 -- Insert Employees (20 employees)
 INSERT INTO public.employees (id, email, first_name, last_name, password, organization_id, role_id, pto_balance)
@@ -73,7 +77,8 @@ VALUES
 (17, 'fin4@financeplus.com', 'Chloe', 'Hernandez', 'password17', 2, 6, 290.0),
 (18, 'hr5@financeplus.com', 'Liam', 'King', 'password18', 2, 7, 210.0),
 (19, 'sal2@financeplus.com', 'Emily', 'Wright', 'password19', 2, 8, 150.0),
-(20, 'eng6@creativeworks.com', 'Lucas', 'Scott', 'password20', 3, 9, 300.0);
+(20, 'eng6@creativeworks.com', 'Lucas', 'Scott', 'password20', 3, 9, 300.0)
+ON CONFLICT (id) DO NOTHING;
 
 -- Insert Timesheets (240 timesheets - 12 weeks per employee for 3 months, each employee has at least 1 pending)
 INSERT INTO public.timesheets (id, approval_status, approved_by, rejection_reason, week, employee_id)
@@ -356,7 +361,8 @@ VALUES
 (237, 'approved', 'Frank Garcia', NULL, 9, 20),
 (238, 'approved', 'Frank Garcia', NULL, 10, 20),
 (239, 'approved', 'Frank Garcia', NULL, 11, 20),
-(240, 'pending', NULL, NULL, 12, 20);
+(240, 'pending', NULL, NULL, 12, 20)
+ON CONFLICT (id) DO NOTHING;
 
 -- Employee 1 - Engineering (paycodes 3, 4)
 INSERT INTO public.timesheet_entries (id, date, hours_worked, paycode_id, timesheet_id)
@@ -758,7 +764,8 @@ VALUES
 (381, '2023-10-17', 8.0, 10, 96),
 (382, '2023-10-18', 8.0, 10, 96),
 (383, '2023-10-19', 8.0, 10, 96),
-(384, '2023-10-20', 8.0, 10, 96);
+(384, '2023-10-20', 8.0, 10, 96)
+ON CONFLICT (id) DO NOTHING;
 
 -- Employee 9 
 -- Timesheets 97-108
@@ -787,7 +794,8 @@ VALUES
 (429, '2023-10-17', 8.0, 3, 108),
 (430, '2023-10-18', 8.0, 3, 108),
 (431, '2023-10-19', 8.0, 3, 108),
-(432, '2023-10-20', 8.0, 3, 108);
+(432, '2023-10-20', 8.0, 3, 108)
+ON CONFLICT (id) DO NOTHING;
 
 -- Employee 10 - Marketing (CreativeWorks - Assuming TechCorp's paycodes 7, 8 for Marketing, ID 7 and 8)
 -- Timesheets 109-120 (Note T/S 115 was rejected, but entries are still recorded)
@@ -810,7 +818,8 @@ VALUES
 (477, '2023-10-17', 8.0, 7, 120),
 (478, '2023-10-18', 8.0, 7, 120),
 (479, '2023-10-19', 8.0, 7, 120),
-(480, '2023-10-20', 8.0, 7, 120);
+(480, '2023-10-20', 8.0, 7, 120)
+ON CONFLICT (id) DO NOTHING;
 
 -- Employee 11 - HR (CreativeWorks - Assuming TechCorp's paycodes 1, 2 for HR, ID 1 and 2)
 -- Timesheets 121-132
@@ -830,7 +839,8 @@ VALUES
 (525, '2023-10-17', 8.0, 1, 132),
 (526, '2023-10-18', 8.0, 1, 132),
 (527, '2023-10-19', 8.0, 1, 132),
-(528, '2023-10-20', 8.0, 1, 132);
+(528, '2023-10-20', 8.0, 1, 132)
+ON CONFLICT (id) DO NOTHING;
 
 -- Employee 12 - Engineering (TechCorp - paycodes 3, 4)
 -- Timesheets 133-144
@@ -850,7 +860,8 @@ VALUES
 (573, '2023-10-17', 8.0, 3, 144),
 (574, '2023-10-18', 8.0, 3, 144),
 (575, '2023-10-19', 8.0, 3, 144),
-(576, '2023-10-20', 8.0, 3, 144);
+(576, '2023-10-20', 8.0, 3, 144)
+ON CONFLICT (id) DO NOTHING;
 
 -- Employee 13 - Finance (TechCorp - paycodes 5, 6)
 -- Timesheets 145-156
@@ -870,7 +881,8 @@ VALUES
 (621, '2023-10-17', 8.0, 5, 156),
 (622, '2023-10-18', 8.0, 5, 156),
 (623, '2023-10-19', 8.0, 5, 156),
-(624, '2023-10-20', 8.0, 5, 156);
+(624, '2023-10-20', 8.0, 5, 156)
+ON CONFLICT (id) DO NOTHING;
 
 -- Employee 14 - HR (TechCorp - paycodes 1, 2)
 -- Timesheets 157-168
@@ -890,7 +902,8 @@ VALUES
 (669, '2023-10-17', 8.0, 1, 168),
 (670, '2023-10-18', 8.0, 1, 168),
 (671, '2023-10-19', 8.0, 1, 168),
-(672, '2023-10-20', 8.0, 1, 168);
+(672, '2023-10-20', 8.0, 1, 168)
+ON CONFLICT (id) DO NOTHING;
 
 -- Employee 15 - Marketing (TechCorp - paycodes 7, 8)
 -- Timesheets 169-180
@@ -910,7 +923,8 @@ VALUES
 (717, '2023-10-17', 8.0, 7, 180),
 (718, '2023-10-18', 8.0, 7, 180),
 (719, '2023-10-19', 8.0, 7, 180),
-(720, '2023-10-20', 8.0, 7, 180);
+(720, '2023-10-20', 8.0, 7, 180)
+ON CONFLICT (id) DO NOTHING;
 
 -- Employee 16 - Engineering (FinancePlus - paycodes 10, 11)
 -- Timesheets 181-192
@@ -930,7 +944,8 @@ VALUES
 (765, '2023-10-17', 8.0, 10, 192),
 (766, '2023-10-18', 8.0, 10, 192),
 (767, '2023-10-19', 8.0, 10, 192),
-(768, '2023-10-20', 8.0, 10, 192);
+(768, '2023-10-20', 8.0, 10, 192)
+ON CONFLICT (id) DO NOTHING;
 
 -- Employee 17 - Finance (FinancePlus - paycodes 12, 13)
 -- Timesheets 193-204
@@ -950,7 +965,8 @@ VALUES
 (813, '2023-10-17', 8.0, 12, 204),
 (814, '2023-10-18', 8.0, 12, 204),
 (815, '2023-10-19', 8.0, 12, 204),
-(816, '2023-10-20', 8.0, 12, 204);
+(816, '2023-10-20', 8.0, 12, 204)
+ON CONFLICT (id) DO NOTHING;
 
 -- Employee 18 - HR (FinancePlus - paycodes 9)
 -- Timesheets 205-216
@@ -970,7 +986,8 @@ VALUES
 (861, '2023-10-17', 8.0, 9, 216),
 (862, '2023-10-18', 8.0, 9, 216),
 (863, '2023-10-19', 8.0, 9, 216),
-(864, '2023-10-20', 8.0, 9, 216);
+(864, '2023-10-20', 8.0, 9, 216)
+ON CONFLICT (id) DO NOTHING;
 
 -- Employee 19 - Sales (FinancePlus - paycodes 10, 11 as proxy)
 -- Timesheets 217-228
@@ -990,7 +1007,8 @@ VALUES
 (909, '2023-10-17', 8.0, 10, 228),
 (910, '2023-10-18', 8.0, 10, 228),
 (911, '2023-10-19', 8.0, 10, 228),
-(912, '2023-10-20', 8.0, 10, 228);
+(912, '2023-10-20', 8.0, 10, 228)
+ON CONFLICT (id) DO NOTHING;
 
 -- Employee 20 - Engineering (CreativeWorks - paycodes 3, 4 as proxy)
 -- Timesheets 229-240
@@ -1010,7 +1028,8 @@ VALUES
 (957, '2023-10-17', 8.0, 3, 240),
 (958, '2023-10-18', 8.0, 3, 240),
 (959, '2023-10-19', 8.0, 3, 240),
-(960, '2023-10-20', 8.0, 3, 240);
+(960, '2023-10-20', 8.0, 3, 240)
+ON CONFLICT (id) DO NOTHING;
 
 -- Insert PTO Requests
 INSERT INTO pto_requests (id, employee_id, start_date, end_date, approval_status)
@@ -1044,7 +1063,8 @@ VALUES
 (27, 12, '2024-01-08', '2024-01-12', 'pending'),
 (28, 13, '2023-11-29', '2023-12-01', 'approved'),
 (29, 16, '2023-12-27', '2023-12-29', 'approved'),
-(30, 20, '2024-01-22', '2024-01-26', 'pending');
+(30, 20, '2024-01-22', '2024-01-26', 'pending')
+ON CONFLICT (id) DO NOTHING;
 
 -- Insert Invite Codes (9 codes total, 3 per organization)
 INSERT INTO public.invite_codes (id, code, description, organization_id, role_id)
@@ -1060,7 +1080,8 @@ VALUES
 -- Organization 3: CreativeWorks
 (7, 'E3aW-7rY1-sD6V', 'CreativeWorks - Marketing Team Access', 3, 10), -- Role 10: Marketing @ CreativeWorks
 (8, 'I9oK-4uJ2-pV5B', 'CreativeWorks - Human Resources Use', 3, 11),  -- Role 11: HR @ CreativeWorks
-(9, 'M4nQ-9xR6-0e7F', 'CreativeWorks - Design Engineering Team', 3, 9); -- Role 9: Engineering @ CreativeWorks
+(9, 'M4nQ-9xR6-0e7F', 'CreativeWorks - Design Engineering Team', 3, 9) -- Role 9: Engineering @ CreativeWorks
+ON CONFLICT (id) DO NOTHING;
 
 
 --
