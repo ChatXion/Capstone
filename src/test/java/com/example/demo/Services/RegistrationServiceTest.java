@@ -1,7 +1,8 @@
 package com.example.demo.Services;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,11 +11,36 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.Entities.InviteCode;
 import com.example.demo.Entities.Organization;
 import com.example.demo.Entities.RegistrationRequest;
-// import com.example.demo.Entities.Role;
 import com.example.demo.Repositories.InviteCodeRepository;
 import com.example.demo.Repositories.OrganizationRepository;
 import com.example.demo.Repositories.RegistrationRequestRepository;
 // import com.example.demo.Repositories.RoleRepository;
+
+
+
+/* 
+1. testCreate_InvalidInviteCode_ThrowsException
+
+Tests that registration fails when using an invalid invitation code
+Verifies an IllegalArgumentException is thrown
+
+2. testCreate_ValidInviteCode_Success
+
+Tests successful registration with a valid invitation code
+Creates test data (organization and invite code)
+Verifies the registration is saved with PENDING status
+Confirms the email and ID are properly set
+
+3. testCreate_DuplicateEmail_ThrowsException
+
+Tests that duplicate email addresses are rejected
+Creates a first registration successfully
+Attempts to create a second registration with the same email
+Verifies an IllegalArgumentException is thrown for the duplicate
+*/
+
+
+
 
 @SpringBootTest
 @Transactional
