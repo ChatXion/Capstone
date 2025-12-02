@@ -57,9 +57,9 @@ public class InviteCodeService {
         // Loop until a unique code is generated
         do {
             newCode = generateRandomCode(CODE_LENGTH);
-            // The Repository method findByCode is required for this check
+
             existingCode = inviteCodeRepository.findByCode(newCode);
-        } while (existingCode.isPresent()); // Keep looping if the code exists
+        } while (existingCode.isPresent()); 
 
         return newCode;
     }
@@ -70,13 +70,7 @@ public class InviteCodeService {
         return org.getInviteCodes();
     }
 
-    /**
-     * Saves a new InviteCode entity to the database.
-     * @param inviteCode The userId of the admin saving creating the code.
-     * @param roleName The name of the assigning role in the invite code.
-     * @param description The description for the invite code.
-     * @return The saved InviteCode entity.
-     */
+   
     @Transactional
     public InviteCode createInviteCode(Long userId, String roleName, String description) {
 
@@ -96,39 +90,24 @@ public class InviteCodeService {
         return inviteCodeRepository.save(newInviteCode);
     }
 
-    /**
-     * Updates the description and/or assigned role of an existing invite code.
-     * @param id The ID of the code to update.
-     * @param newDescription The new description string.
-     * @param newRole The new Role entity to assign.
-     * @return The updated InviteCode entity.
-     * @throws RuntimeException if the code ID is not found.
-     */
+    
     @Transactional
     public InviteCode editInviteCode(Long inviteCodeId, String newDescription, String roleName, Long adminId) {
-        // Find the existing entity or throw an exception
+        
         InviteCode codeToUpdate = inviteCodeRepository.findById(inviteCodeId)
             .orElseThrow(() -> new IllegalArgumentException("Invite code not found with ID: " + inviteCodeId));
         
-        // 1. Look up the new Role entity using the RoleService
         Role newRole = roleService.findByNameAndAdminId(roleName, adminId);
 
-        // Apply updates
         codeToUpdate.setDescription(newDescription);
         codeToUpdate.setAssigningRole(newRole);
-        // Assuming Organization remains unchanged
         
         return inviteCodeRepository.save(codeToUpdate);
     }
 
-    /**
-     * Deletes an invite code by its ID.
-     * @param id The ID of the code to delete.
-     * @throws RuntimeException if the code ID is not found (though deleteById often handles this gracefully).
-     */
+    
     @Transactional
     public void deleteInviteCode(Long id) {
-        // You can add a check here if necessary, but JpaRepository's deleteById is generally safe.
         inviteCodeRepository.deleteById(id);
     }
 }

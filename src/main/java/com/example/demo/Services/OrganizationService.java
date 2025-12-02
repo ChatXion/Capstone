@@ -15,11 +15,6 @@ public class OrganizationService {
         this.organizationRepository = organizationRepository;
     }
 
-    /**
-     * Retrieves an Organization by ID from the database.
-     * @param id The ID of the organization to find.
-     * @return An Optional containing the Organization if found.
-     */
     public Optional<Organization> findById(Long id) {
         return organizationRepository.findById(id);
     }
